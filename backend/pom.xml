@@ -61,6 +61,13 @@
 			<version>3.25.7</version>
 		</dependency>
 
+		<!-- JGit - Pure Java Git Implementation -->
+		<dependency>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit</artifactId>
+			<version>6.8.0.202311291450-r</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

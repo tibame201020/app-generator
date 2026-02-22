@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.2.0] - 2026-02-22
+
+### Added
+- Implement `GitService` with JGit for bare repository management.
+  - `initBareRepository()`: Create bare git repos with initial commit.
+  - `cloneToWorkspace()`: Clone bare repo to session workspace.
+  - `commitAndPush()`: Stage, commit, and push changes from workspace.
+  - `listFiles()`: Read file tree from bare repo via TreeWalk.
+  - `readFileContent()`: Read file blob content from bare repo.
+- Add `ProjectService` for project CRUD with automatic Git repo initialization.
+- Add `ProjectController` REST API endpoints:
+  - `POST /api/projects` — Create project with auto git init.
+  - `GET /api/projects` — List user projects.
+  - `GET /api/projects/{id}/files` — Get file tree.
+  - `GET /api/projects/{id}/files/content?path=` — Read file content.
+- Add `StorageProperties` configuration for `platform.storage` settings.
+- Add `SecurityConfig` with permitAll for MVP development.
+- Add DTOs: `CreateProjectRequest`, `FileTreeNode`.
+- Add JGit dependency (`org.eclipse.jgit:6.8.0`).
+- Add `GitServiceTest` with 6 unit tests (all passing).
+
 ## [0.1.0] - 2026-02-22
 
 ### Added

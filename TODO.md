@@ -7,10 +7,10 @@
     - [x] `User` & `Project` 表
     - [x] `AgentTask` 表 (用於存儲 CoT)
     - [x] `ContainerInstance` 表 (狀態追蹤)
-- [ ] 實作 `GitService` 基礎:
-    - [ ] 初始化 `/data/repos` 目錄
-    - [ ] 實現建立 Bare Git Repository 的 API
-    - [ ] 實現 Git Commit & Push 邏輯 (用於代碼保存)
+- [x] 實作 `GitService` 基礎:
+    - [x] 初始化 `/data/repos` 目錄
+    - [x] 實現建立 Bare Git Repository 的 API
+    - [x] 實現 Git Commit & Push 邏輯 (用於代碼保存)
 
 ## 第二階段：後端核心模組與沙盒管理 (Phase 2: Core Backend & Sandbox)
 - [ ] 實作 `DockerService`:
