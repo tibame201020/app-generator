@@ -1,8 +1,11 @@
 package com.tibame.app_generator.controller;
 
+import com.tibame.app_generator.dto.ChatRequest;
 import com.tibame.app_generator.dto.CreateProjectRequest;
 import com.tibame.app_generator.dto.FileTreeNode;
+import com.tibame.app_generator.model.AgentTask;
 import com.tibame.app_generator.model.Project;
+import com.tibame.app_generator.service.AgentTaskService;
 import com.tibame.app_generator.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -25,6 +28,7 @@ import java.util.UUID;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final AgentTaskService agentTaskService;
 
     /**
      * 建立新專案。
@@ -95,6 +99,44 @@ public class ProjectController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * 建立 Agent chat 任務（MVP 先落庫，後續由 Orchestrator 非同步處理）。
+     * POST /api/projects/{id}/chat
+     */
+    @PostMapping("/{id}/chat")
+    public ResponseEntity<?> createChatTask(
+            @PathVariable UUID id,
+            @RequestBody ChatRequest request) {
+        try {
+            AgentTask task = agentTaskService.createTask(id, request);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("taskId", task.getId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * 查詢專案 Agent 任務歷史。
+     * GET /api/projects/{id}/tasks
+     */
+    @GetMapping("/{id}/tasks")
+    public ResponseEntity<?> getProjectTasks(@PathVariable UUID id) {
+        try {
+            List<Map<String, Object>> tasks = agentTaskService.getTasksByProject(id).stream()
+                    .map(task -> Map.<String, Object>of(
+                            "id", task.getId(),
+                            "agentType", task.getAgentType(),
+                            "taskName", task.getTaskName(),
+                            "status", task.getStatus(),
+                            "progressPct", task.getProgressPct(),
+                            "createdAt", task.getCreatedAt()))
+                    .toList();
+            return ResponseEntity.ok(tasks);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }
