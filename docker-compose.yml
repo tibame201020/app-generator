@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080" # Traefik Dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - platform-net
+
+  db-platform:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: platform_db
+    volumes:
+      - platform_db_data:/var/lib/postgresql/data
+    networks:
+      - platform-net
+
+  # Placeholder for Backend
+  # backend:
+  #   build: ./backend
+  #   depends_on:
+  #     - db-platform
+  #   networks:
+  #     - platform-net
+
+networks:
+  platform-net:
+    driver: bridge
+
+volumes:
+  platform_db_data:
