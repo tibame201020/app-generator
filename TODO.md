@@ -3,10 +3,10 @@
 ## 第一階段：研發基礎與資料持久層 (Phase 1: Foundation & Persistence)
 - [x] 初始化專案結構 (Backend, Frontend, Docker)
 - [x] 配置 PostgreSQL 與 Traefik 基礎設施
-- [ ] 實作資料庫實體 (Entities) & Repositories:
-    - [ ] `User` & `Project` 表
-    - [ ] `AgentTask` 表 (用於存儲 CoT)
-    - [ ] `ContainerInstance` 表 (狀態追蹤)
+- [x] 實作資料庫實體 (Entities) & Repositories:
+    - [x] `User` & `Project` 表
+    - [x] `AgentTask` 表 (用於存儲 CoT)
+    - [x] `ContainerInstance` 表 (狀態追蹤)
 - [ ] 實作 `GitService` 基礎:
     - [ ] 初始化 `/data/repos` 目錄
     - [ ] 實現建立 Bare Git Repository 的 API
