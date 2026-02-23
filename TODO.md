@@ -13,10 +13,10 @@
     - [x] 實現 Git Commit & Push 邏輯 (用於代碼保存)
 
 ## 第二階段：後端核心模組與沙盒管理 (Phase 2: Core Backend & Sandbox)
-- [ ] 實作 `DockerService`:
-    - [ ] 配置 Docker Java Client 連線
-    - [ ] 容器啟動邏輯 (指定 CPU/RAM Quota)
-    - [ ] 帶有 Traefik Label 的動態容器路由生成
+- [x] 實作 `DockerService`:
+    - [x] 配置 Docker Java Client 連線
+    - [x] 容器啟動邏輯 (指定 CPU/RAM Quota)
+    - [x] 帶有 Traefik Label 的動態容器路由生成
 - [ ] 實作 `ProxyServlet`:
     - [ ] 請求攔截與 Header 轉發
     - [ ] **HTML 注入**: 自動插入 `<base>` 標籤修正路徑
