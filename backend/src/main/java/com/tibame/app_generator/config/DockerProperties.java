@@ -2,6 +2,8 @@ package com.tibame.app_generator.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @ConfigurationProperties(prefix = "platform.docker")
@@ -65,4 +67,15 @@ public class DockerProperties {
      * Default: 1000:1000
      */
     private String containerUser = "1000:1000";
+
+    /**
+     * Default Docker image if no specific stack image is found.
+     * Default: ubuntu:22.04
+     */
+    private String defaultImage = "ubuntu:22.04";
+
+    /**
+     * Map of TechStack to Docker image.
+     */
+    private Map<String, String> stackImages = new HashMap<>();
 }

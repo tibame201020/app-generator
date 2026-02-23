@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.4.0] - 2026-02-23
+
+### Added
+- **Container Lifecycle Management**:
+  - Implement `startProjectContainer`, `stopProjectContainer`, `restartProjectContainer` in `DockerService`.
+  - Add REST endpoints in `ProjectController`: `/run`, `/stop`, `/restart`, `/status`.
+  - Persist container state in `ContainerInstance` (status, internal IP, container ID).
+- **Preview Proxy**:
+  - Verify and enable `ProxyServlet` for `/proxy/{projectId}/*` routing.
+  - Implement HTML `<base>` tag injection for correct asset resolution.
+- **Configuration**:
+  - Add `defaultImage` and `stackImages` to `DockerProperties`.
+- **Testing**:
+  - Add `ProjectRuntimeIntegrationTest` for end-to-end lifecycle verification.
+  - Update `DockerServiceTest` and `ReaperTaskTest` to match new API.
+
 ## [0.3.0] - 2026-02-23
 
 ### Added

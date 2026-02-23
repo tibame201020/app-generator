@@ -17,9 +17,9 @@
     - [x] 配置 Docker Java Client 連線
     - [x] 容器啟動邏輯 (指定 CPU/RAM Quota)
     - [x] 帶有 Traefik Label 的動態容器路由生成
-- [ ] 實作 `ProxyServlet`:
-    - [ ] 請求攔截與 Header 轉發
-    - [ ] **HTML 注入**: 自動插入 `<base>` 標籤修正路徑
+- [x] 實作 `ProxyServlet`:
+    - [x] 請求攔截與 Header 轉發
+    - [x] **HTML 注入**: 自動插入 `<base>` 標籤修正路徑
 - [x] 實作 `ReaperTask`:
     - [x] 定期檢查並清除 15 分鐘無活動的容器
 
