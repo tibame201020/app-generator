@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1] - 2026-02-23
+
+### Added
+- Add Agent task API foundation for orchestration MVP:
+  - `POST /api/projects/{id}/chat` to create async agent task and return `taskId`.
+  - `GET /api/projects/{id}/tasks` to list task history for a project.
+- Add `ChatRequest` DTO and `AgentTaskService` to encapsulate task creation/query logic.
+
 ## [0.2.0] - 2026-02-22
 
 ### Added

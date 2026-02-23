@@ -35,6 +35,9 @@
     - [ ] 管理當前專案、檔案、Agent 活躍狀態
 
 ## 第四階段：AI 任務編排與畫布互動 (Phase 4: Agent Orchestration & Canvas)
+- [x] 實作 Agent 任務 API (MVP):
+    - [x] `POST /api/projects/{id}/chat`（建立非同步 task）
+    - [x] `GET /api/projects/{id}/tasks`（查詢任務歷史）
 - [ ] 配置 WebSocket (STOMP):
     - [ ] 後端消息推送頻道 (`/topic/project/{id}`)
     - [ ] 前端訂閱並即時反應檔案/Agent 異動
