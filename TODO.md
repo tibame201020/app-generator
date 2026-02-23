@@ -20,8 +20,8 @@
 - [ ] 實作 `ProxyServlet`:
     - [ ] 請求攔截與 Header 轉發
     - [ ] **HTML 注入**: 自動插入 `<base>` 標籤修正路徑
-- [ ] 實作 `ReaperTask`:
-    - [ ] 定期檢查並清除 15 分鐘無活動的容器
+- [x] 實作 `ReaperTask`:
+    - [x] 定期檢查並清除 15 分鐘無活動的容器
 
 ## 第三階段：前端介面與編輯器集成 (Phase 3: Frontend Shell & IDE)
 - [ ] 建立 VS Code Style Layout:
