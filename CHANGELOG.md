@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.0] - 2026-02-23
+
+### Added
+- Add `ReaperTask` MVP to scheduled stop/remove idle containers (>15 min).
+
 ## [0.2.0] - 2026-02-22
 
 ### Added
