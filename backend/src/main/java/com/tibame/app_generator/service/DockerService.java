@@ -140,4 +140,27 @@ public class DockerService {
     public InspectContainerResponse inspectContainer(String containerId) {
         return dockerClient.inspectContainerCmd(containerId).exec();
     }
+
+    /**
+     * Retrieves the IP address of the container for the given project.
+     *
+     * @param projectId The project ID.
+     * @return The IP address of the container.
+     */
+    public String getContainerIp(String projectId) {
+        validateProjectId(projectId);
+        try {
+            InspectContainerResponse response = dockerClient.inspectContainerCmd(projectId).exec();
+            // Assuming the container is connected to at least one network
+            var networks = response.getNetworkSettings().getNetworks();
+            if (networks == null || networks.isEmpty()) {
+                throw new RuntimeException("Container has no network attached: " + projectId);
+            }
+            return networks.values().iterator().next().getIpAddress();
+        } catch (com.github.dockerjava.api.exception.NotFoundException e) {
+            throw new RuntimeException("Container not found for project: " + projectId, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error inspecting container for project: " + projectId, e);
+        }
+    }
 }
