@@ -3,6 +3,7 @@ package com.tibame.app_generator.controller;
 import com.tibame.app_generator.dto.CreateProjectRequest;
 import com.tibame.app_generator.dto.FileTreeNode;
 import com.tibame.app_generator.model.Project;
+import com.tibame.app_generator.service.DockerService;
 import com.tibame.app_generator.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -25,6 +26,7 @@ import java.util.UUID;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final DockerService dockerService;
 
     /**
      * 建立新專案。
@@ -95,6 +97,64 @@ public class ProjectController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * 啟動專案容器。
+     * POST /api/projects/{id}/run
+     */
+    @PostMapping("/{id}/run")
+    public ResponseEntity<?> runProject(@PathVariable UUID id) {
+        try {
+            dockerService.startProjectContainer(id);
+            return ResponseEntity.ok(Map.of("message", "Project container started"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * 停止專案容器。
+     * POST /api/projects/{id}/stop
+     */
+    @PostMapping("/{id}/stop")
+    public ResponseEntity<?> stopProject(@PathVariable UUID id) {
+        try {
+            dockerService.stopProjectContainer(id);
+            return ResponseEntity.ok(Map.of("message", "Project container stopped"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * 重啟專案容器。
+     * POST /api/projects/{id}/restart
+     */
+    @PostMapping("/{id}/restart")
+    public ResponseEntity<?> restartProject(@PathVariable UUID id) {
+        try {
+            dockerService.restartProjectContainer(id);
+            return ResponseEntity.ok(Map.of("message", "Project container restarted"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * 取得專案容器狀態。
+     * GET /api/projects/{id}/status
+     */
+    @GetMapping("/{id}/status")
+    public ResponseEntity<?> getProjectStatus(@PathVariable UUID id) {
+        try {
+            Map<String, Object> status = dockerService.getProjectContainerStatus(id);
+            return ResponseEntity.ok(status);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
         }
     }
 }

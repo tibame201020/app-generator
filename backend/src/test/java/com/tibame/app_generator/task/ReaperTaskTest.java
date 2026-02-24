@@ -2,6 +2,7 @@ package com.tibame.app_generator.task;
 
 import com.tibame.app_generator.enums.ContainerStatus;
 import com.tibame.app_generator.model.ContainerInstance;
+import com.tibame.app_generator.model.Project;
 import com.tibame.app_generator.repository.ContainerInstanceRepository;
 import com.tibame.app_generator.service.DockerService;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -38,10 +38,12 @@ class ReaperTaskTest {
     void checkIdleContainers_ShouldStopAndRemoveIdleContainer() {
         // Arrange
         UUID instanceId = UUID.randomUUID();
-        String containerId = "test-container-id";
+        UUID projectId = UUID.randomUUID();
+        Project project = Project.builder().id(projectId).build();
+
         ContainerInstance instance = ContainerInstance.builder()
                 .id(instanceId)
-                .containerId(containerId)
+                .project(project)
                 .status(ContainerStatus.RUNNING)
                 .lastAccessAt(ZonedDateTime.now().minusMinutes(20))
                 .build();
@@ -53,10 +55,8 @@ class ReaperTaskTest {
         reaperTask.checkIdleContainers();
 
         // Assert
-        verify(dockerService, times(1)).stopContainer(containerId);
-        verify(dockerService, times(1)).removeContainer(containerId);
-        verify(containerInstanceRepository, times(1)).save(instance);
-        assertEquals(ContainerStatus.STOPPED, instance.getStatus());
+        verify(dockerService, times(1)).stopProjectContainer(projectId);
+        verify(dockerService, times(1)).removeProjectContainer(projectId);
     }
 
     @Test
@@ -69,8 +69,7 @@ class ReaperTaskTest {
         reaperTask.checkIdleContainers();
 
         // Assert
-        verify(dockerService, times(0)).stopContainer(any());
-        verify(dockerService, times(0)).removeContainer(any());
-        verify(containerInstanceRepository, times(0)).save(any());
+        verify(dockerService, times(0)).stopProjectContainer(any());
+        verify(dockerService, times(0)).removeProjectContainer(any());
     }
 }
