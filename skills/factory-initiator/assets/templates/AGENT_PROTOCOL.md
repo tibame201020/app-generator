@@ -1,14 +1,15 @@
 # {{AGENT_NAME}} Agent Execution Protocol
 > 每次 Schedule 觸發後，{{AGENT_NAME}} 必須依序執行以下步驟，不得跳過。
 
-## Step 1: Read State & Prevent Duplication (防撞車機制)
+## Step 1: Read Rules & State (防撞車機制)
+- **⚖️ 規則預載 (Rules First)**：在執行任何操作（包含領取鎖）前，先讀取 `.agents/rules/*.md`。所有後續的分支刪除或開發行為均受此規約約束。
 - 讀取 `.{{AGENT_NAME}}/tracker.json`。
 - 🛡️ **健康檢查 (Attempts Check)**：若該任務的 `attempts` >= 5，視為「持續性死鎖」，您**必須**跳過該任務並提示人類介入。
 - 🛑 **重要！物理互斥鎖 (Branch-as-Lock & Self-Healing)**：在領取任務前，您**必須**檢查遠端 (Origin) 是否已存在分支 `{{AGENT_NAME}}/task-{task_id}`：
   1. **若不存在**：可領取。
   2. **若已存在**：檢查其 PR 狀態（使用 `gh pr list --head {{AGENT_NAME}}/task-{task_id} --state all --json state`）。
-      - **異常狀態情境 (Issue C Fix)**：若 PR 狀態為 `MERGED` 但主線 tracker 仍為 `pending`，這代表 Transaction 不一致（可能是合併後更新 tracker 失敗）。**禁止自動重啟**，這將導致重複代碼提交。您必須停止執行並回報：「Critical: Transaction mismatch (PR merged but tracker pending). Human intervention required.」。
-      - **可重啟情境**：若 `gh` 返回空（無 PR 存在）或 PR 狀態為 `CLOSED`，代表該分支已失效或 Worker 在提 PR 前崩潰。您**被授權強制刪除舊分支**並重新領取：`git push origin --delete {{AGENT_NAME}}/task-{task_id}`。
+      - **異常狀態情境 (Issue C Fix)**：若 PR 狀態為 `MERGED` 但主線 tracker 仍為 `pending`，這代表 Transaction 不一致。**禁止自動重啟**。您必須停止執行並回報：「Critical: Transaction mismatch (PR merged but tracker pending). Human intervention required.」。
+      - **可重啟情境**：若 `gh` 返回空（無 PR 存在）或 PR 狀態為 `CLOSED`，代表該分支已失效。您**被授權強制刪除舊分支**並重新領取：`git push origin --delete {{AGENT_NAME}}/task-{task_id}`。
       - **鎖定情境**：若 PR 狀態為 `OPEN`，代表任務由其他 Worker 處理中，請立刻跳過。
 - 若找不到可領取任務，輸出「Tasks are currently locked or in CI/CD pipeline. Halting.」並終止。
 
@@ -19,11 +20,10 @@
     2. 立刻推送到遠端：`git push origin {{AGENT_NAME}}/task-{task_id}`
   - **語義去噪說明**：禁止在 Feature Branch 頻繁改動 `tracker.json` 的 `in_progress` 狀態。工廠的「在途事實」完全由**分支/PR 偵測**與主線 tracker 定義。
 
-## Step 2: Claim Task & Load Spec (領取與加載)
+## Step 2: Acquire Context & Load Spec (領取與加載)
 - **1:1 Spec 讀取 (No Guessing)**：
   - 完整讀取 `spec_ref` 檔案。
   - **嚴格限令**：禁止根據檔案名稱或上下文「猜測」任務，必須以該檔案內容為唯一準則。若檔案不存在，立刻停機回報。
-- 讀取所有可用的 `.agents/rules/*.md` 指令規約。
 - 讀取 `docs/doc-categories.md` 索引以獲取專案背景。
 
 ## Step 3: Implement & Cognitive Load Limit (認知上限守則)
@@ -67,7 +67,9 @@
 - {{AGENT_NAME}} 每次執行任務時，必須從 `{{BASE_BRANCH}}` 切出新分支：`{{AGENT_NAME}}/task-{task_id}`。
 - **重要狀態轉移 (Transaction)**：
   - 在您確認所有測試通過、且 `git diff` 符合路徑約束後，**您必須在 Feature Branch 分支上將 `.{{AGENT_NAME}}/tracker.json` 中該任務的 status 改為 `completed` 並 commit**。
-  - **Phase 自動推進 (Issue D Fix)**：若本任務是當前 Phase 的最後一個任務，您**必須同時將 `current_phase` 更新為下一個階段**（參考 `tracker.json` 的階段順序）。
+  - **Phase 自動推進 (Issue B/D Fix)**：您必須判定自己是否為該階段的「最後任務」：
+    - **判定準則**：若 `tracker.json` 中同 Phase 的**所有其他任務**狀態皆已為 `completed`，則您為最後一人。
+    - **動作**：此時您必須同步將頂層的 `current_phase` 更新為下一階段（參考階段順序）。
   - 這代表了本次任務的「交易提交」。只有 PR 被合併後，主分支的狀態才會同步更新。
 - 提交 PR 時，目標分支 (Base Branch) 必須設定為 `{{BASE_BRANCH}}`。
 - PR Title 格式：`[{{AGENT_NAME}}] {task_title}`

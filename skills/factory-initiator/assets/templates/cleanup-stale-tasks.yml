@@ -28,6 +28,8 @@ jobs:
           git pull --rebase origin {{BASE_BRANCH}}
 
           # 2. 取得遠端分支列表
+          NEED_PUSH=false
+          BRANCHES_TO_DELETE=()
           branches=$(git branch -r | grep "origin/{{AGENT_NAME}}/task-" | sed 's/origin\///')
           
           for branch in $branches; do
