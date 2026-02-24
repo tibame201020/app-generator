@@ -10,7 +10,7 @@
 
 ### 2. 初始化核心文件與知識庫
 - **建立目錄**：若不存在，則建立 `docs/` 與 `docs/ADR/`。
-- **部署規則庫**：將 `../rules/*` 複製至 `.agents/rules/`。
+- **部署規則庫**：將 `factory-initiator/rules/*` 內容複製至目標專案的 `.agents/rules/`。
   - **重要**：必須對 `git-workflow.md` 等包含變數的檔案執行與協議相同的變數替換（如 `{{AGENT_NAME}}`, `{{BASE_BRANCH}}`），確保規範完全符合當前專案環境。
 - **初始化索引**：將 `../assets/templates/doc-categories.md` 複製至 `docs/doc-categories.md`。
 - **產出占位文件**：根據 Architect 在階段 1 的規劃，建立對應檔案。
@@ -25,4 +25,21 @@
     3. **權限要求**：該 PAT 必須具備 `repo` 與 `workflow` 完整權限。
 
 ---
-> 🎉 **完成**：告知使用者軟體工廠已就緒！
+> 🎉 **完成：發送最終驗收報告**
+> 
+> 在您完成所有目錄與檔案的部署後，您**必須**向使用者輸出以下內容（請直接複製並根據變數替換）：
+> 
+> ---
+> ### 🏁 軟體工廠初始化完成！
+> 基地與生產線已部署至 `.{{AGENT_NAME}}/`。
+> 
+> ⚠️ **重要：在啟動工人之前，請手動完成以下安全配置，否則生產線將因權限不足而卡死 (Silent Failure)：**
+> 
+> 1.  **[ ] 開啟自動合併**：`Repo Settings` -> `General` -> 勾選 `Allow auto-merge`。
+> 2.  **[ ] 配置 PAT_TOKEN**：
+>     -   請產生一個具備 `repo (full)` 與 `workflow` 權限的 Personal Access Token。
+>     -   前往 `Repo Settings` -> `Secrets and variables` -> `Actions`。
+>     -   點擊 `New repository secret`，名稱填入 `PAT_TOKEN`，值填入剛產出的 Token。
+> 3.  **[ ] 確認 Bot 身分**：確認正在執行的環境變數與 `{{BOT_USERNAME}}` 一致。
+> 
+> 只要完成上述步驟，您的無人值守工廠就能正式運轉了！

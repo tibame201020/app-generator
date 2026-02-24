@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     # 🕵️ 安全門戶 (Security Gates)
     # 1. 僅限 BOT_USERNAME 觸發
-    # 2. 必須具備 auto-merge 標籤 (Label)
+    # 2. 必須具備 GitHub Label 'auto-merge' (由 Worker 透過 API/CLI 添加)
     if: |
       github.event.pull_request.user.login == '{{BOT_USERNAME}}' &&
       contains(github.event.pull_request.labels.*.name, 'auto-merge')

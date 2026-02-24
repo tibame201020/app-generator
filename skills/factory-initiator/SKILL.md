@@ -31,3 +31,6 @@ description: 無人值守軟體工廠的首席架構與規劃核心，負責將�
 
 ### Step 2：切換至 Architect 模式
 確認上述資訊後，閱讀 **[Architect Decisions](references/architect-decisions.md)** 開始規畫技術法律。
+
+> [!IMPORTANT]
+> **交付物完整性**：在階段 4 的建廠流程結尾，您必須根據 `factory-scaffolding.md` 的指引提供「手動配置清單」。**未完成此提醒前，本技能不算執行結束。**
