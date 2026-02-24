@@ -14,7 +14,7 @@
 - 將該 task 的 `spec_ref` 對應的 spec 文件 (`.yml` 格式) 完整讀取。
 - 讀取所有 `.{{AGENT_NAME}}/skills/*.md` 技術規範 (若存在此目錄)。
 - **重要：讀取 `docs/doc-categories.md` 知識庫索引**，並根據即將修改的模組，導航至 `docs/` 對應的子文件閱讀。
-- 將該 task 的 `status` 更新為 `in_progress` 並 commit。
+- **狀態隔離守則**：將該 task 的 `status` 更新為 `in_progress` 並 commit。**注意：此更新僅限於 Feature Branch，嚴禁將 in_progress 狀態 commit 回主線分支。**
 
 ## Step 3: Implement & Cognitive Load Limit (認知上限守則)
 - 依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。
@@ -25,9 +25,12 @@
   2. **反模式禁令 (Anti-Patterns Ban)**：絕對禁止寫出「全能上帝物件 (God Object)」或「大泥球 (Big Ball of Mud)」。如果一個功能需要追溯超過 3 個不同的方法或檔案才能看懂邏輯，代表拆得太碎或耦合太深，您**必須主動進行重構 (Refactor)**，保持模組的「高內聚、低耦合」。
   3. **壞了就換 (Disposable Components)**：如果舊有的小型模組充滿 Bug 難以修復，請果斷刪除並重寫，不要疊床架屋。
 
-## Step 4: Self-Healing & Autonomy (自我修復與自治)
-- 雖然需嚴格遵守 Spec，但身為高階 Agent，**您被授權進行邏輯上的自我修復與環境適應**。
-- 若遇到未列於 Spec 但為達成功能**絕對必要**的缺失（例如：框架衝突、缺少依賴套件、環境變數遺漏、或是前置任務邏輯導致編譯失敗）。
+## Step 4: Self-Healing & Path Auditing (自我修復與路徑審計)
+- 雖然需嚴格遵守 Spec，但身為高階 Agent，**您被授權進行邏輯上的自我修復與環境適適應**。
+- 🛡️ **機械性約束 (Allowed Paths Check)**：
+  - 在執行 `git commit` 前，您**必須**執行 `git diff --name-only`。
+  - **嚴格限令**：所有異動檔案的路徑必須位於此任務定義的 `allowed_paths` 範圍內。
+  - 若偵測到超出範圍的異動，您必須修正代碼，或在 PR 中明確說明理由並請求人類核准權限擴張。
 - **授權行為**：您可自行加入必要的配置、微調架構或修正先前的錯誤，並將此「自主修正 (Self-Healing)」的紀錄寫入 `CHANGELOG.md` 及 PR 描述中。
 - 目標是：**在不偏離核心功能的目標下，確保程式碼能 100% 成功執行與編譯。**
 
@@ -50,18 +53,18 @@
 ## Step 6: Finalize Status & Submit PR
 - 專案的主開發分支為 `{{BASE_BRANCH}}`。
 - {{AGENT_NAME}} 每次執行任務時，必須從 `{{BASE_BRANCH}}` 切出新分支：`{{AGENT_NAME}}/task-{task_id}`。
-- **重要狀態轉移**：在您確認所有測試通過、程式碼完成後，**您必須親自將 `.{{AGENT_NAME}}/tracker.json` 中該任務的 status 改為 `completed` 並 commit**，這代表您對本次任務的品質背書。
+- **重要狀態轉移 (Transaction)**：
+  - 在您確認所有測試通過、且 `git diff` 符合路徑約束後，**您必須在 Feature Branch 分支上將 `.{{AGENT_NAME}}/tracker.json` 中該任務的 status 改為 `completed` 並 commit**。
+  - 這代表了本次任務的「交易提交」。只有 PR 被合併後，主分支的狀態才會同步更新。
 - 提交 PR 時，目標分支 (Base Branch) 必須設定為 `{{BASE_BRANCH}}`。
 - PR Title 格式：`[{{AGENT_NAME}}] {task_title}`
 - PR Description 必須包含：
   - 對應 Task ID。
-  - 已完成的 Acceptance Criteria 列表（逐條勾選）。
-  - 測試覆蓋摘要。
-  - 所影響的文件或 `CHANGELOG.md` 變更說明。
-  - **必須在結尾標註 `[auto-merge]` 標籤**，以便觸發 GitHub Actions 的自動合併機制。
+  - 已完成的 Acceptance Criteria 列表。
+  - **路徑審計報告**：聲明所有變更均符合 `allowed_paths`。
+  - **必須添加 `auto-merge` 標籤 (Label)** 以觸發自動合併（而不是在 Body 寫標籤）。
 
 ## Step 7: Wait for CI/CD Auto-Merge (Git as State Machine)
-- 您提交的 PR 在通過 GitHub Actions 的自動測試後，自動合併機器人 (如 enable-pull-request-automerge) 會自動將其 Squash Merge 至 `{{BASE_BRANCH}}` 分支。
-- **因為您已經在 PR 中將 tracker 改成了 completed**，只要 PR 測試通過且順利被 Merge，主分支的 tracker 就會自然成為 completed 狀態。
-- 若 PR 測試失敗遭到 CI 阻擋，該 PR 就不會 Merge，主分支的狀態仍會保持 pending/in_progress。下次您醒來時，就會發現任務依舊尚未完成，從而繼續修復它。
-- **{{AGENT_NAME}} 的唯一責任就是在 Step 6 提好包含 completed 狀態的乾淨 PR，接著就可以直接離線**，直到下一次 Schedule 被系統喚醒。
+- 提交 PR 後，身分驗證後的自動合併機器人會接手。
+- 如果 CI 測試通過且符合安全門檻（由具備 PAT 權限的 Bot 操作），PR 將會被 Squash Merge。
+- **由於主分支的 tracker 狀態是透過 PR 合併而成，只有 Merge 成功，該任務才算正式結束。**

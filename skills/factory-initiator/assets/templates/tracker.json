@@ -10,8 +10,18 @@
                     "id": "task_1",
                     "title": "任務名稱",
                     "status": "pending",
+                    "priority": 0,
+                    "attempts": 0,
                     "depends_on": [],
-                    "spec_ref": "specs/phase_1.yml"
+                    "allowed_paths": [
+                        "path/to/module/*",
+                        "tests/to/module/*"
+                    ],
+                    "spec_ref": "specs/phase_1.yml",
+                    "lease": {
+                        "holder": null,
+                        "expires_at": null
+                    }
                 }
             ]
         }

@@ -20,7 +20,13 @@
 - **錯誤路徑恢復** (API Timeout、DB 連線失敗)
 - **併發競爭 (Race Conditions)**
 
-這確保了無論 AI 寫的程式多麼隨性，沒有經過這八大地獄測試的代碼，絕對過不了 CI 裁判所。
+### 3. 機械式路徑檢查 (Allowed Paths Audit) [NEW]
+為了防止代碼漂移 (Scope Creep)，工人現在被施加了「物理枷鎖」。
+- **路徑審計**：在提交前執行 `git diff`，所有變更必須精確落在 `allowed_paths` 內。
+- **防止擴張**：嚴禁在單一任務中偷偷修改框架底層或不相關模組。
+
+### 4. 標籤驅動安全性 PR (Label-Based Merge) [NEW]
+自動合併不再依賴不安全的 PR Body 字串標註，而是由具備 `PAT_TOKEN` 權限的系統通過 **Label (`auto-merge`)** 進行仲裁與合併，徹底杜絕注入風險。
 
 ### 3. 認知上限守則與樂高法 (Cognitive Load Limit)
 AI 寫程式很快，但如果讓他無限制地往下寫，檔案會變得極度肥大，最終導致 AI 自己的 Context Window (脈絡視窗) 崩潰而陷入幻覺。

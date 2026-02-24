@@ -26,12 +26,13 @@ cd my-new-app
 
 ### 2. 喚醒架構師 (The Initiator)
 打開你偏好的 AI 工具 (如 Claude Code, Cursor, 或是任何掛載這包資料夾的 LLM)，並丟入起手式：
-> 👉 **「請讀取 `.agents/skills/initiator/index.md`，你現在是 Initiator 架構師，我們準備開工。」**
+> 👉 **「請讀取 `skills/factory-initiator/SKILL.md`，你現在是 Factory Initiator 啟動器，我們準備開工。」**
 
-接下來，架構師會透過三個嚴格階段引導你：
-1. **需求微型拆解** (Micro-tasking & ADRs)
-2. **極限沙盤推演** (Mental Simulation)
-3. **產出最終藍圖** (Factory Scaffolding)
+接下來，啟動器會透過 **「雙腦架構 (Dual-Brain)」** 引導你：
+1. **Architect (架構決策)**：高階技術選型、ADR 與安全禁令。
+2. **Planner (任務規劃)**：將願景拆解為具備 `allowed_paths` 約束的微型任務。
+3. **Mental Simulation (沙盤推演)**：預判執行風險。
+4. **Scaffolding (建廠部署)**：產出最終藍圖。
 
 ### 3. 放牛吃草 (Unleash the Worker)
 當架構師產出 `.worker/tracker.json` 與所有規格書後，他的任務就結束了。

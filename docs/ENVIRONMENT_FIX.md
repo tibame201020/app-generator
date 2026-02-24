@@ -25,8 +25,13 @@
   - 確認 H2 In-memory 模式是否遺失 Context。
   - 檢查資料庫密鑰是否存在於環境變數。
 
-## 4. 依賴與編譯錯誤
-- **Error**: `Cannot resolve symbol` 或 `Package not found`。
+## 5. Git 工作流與路徑審計 (Refined)
+- **Error**: `Audit failed: Modified files outside allowed_paths`。
 - **Fix**: 
-  - 執行 `mvn clean install` 或 `npm install` 強制刷新。
-  - 檢查 `pom.xml` 或 `package.json` 是否遺漏前置任務定義的依賴。
+  - 檢查是否無意中修改了不相關檔案。
+  - 若修改是必要的，請在 PR 描述中說明理由，或請求人類更新 `tracker.json` 的 `allowed_paths` 分配。
+- **Error**: `Auto-merge failed (403 Forbidden)`。
+- **Fix**: 
+  - 確認 `PAT_TOKEN` 是否已正確設定於 Repo Secrets。
+  - 確認該 Token 具備 `repo` 與 `workflow` 讀寫權限。
+  - 檢查 PR 是否具備 `auto-merge` 標籤 (Label) 而非僅是 Body 文字。
