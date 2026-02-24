@@ -5,7 +5,15 @@
         {
             "phase_id": "phase_1",
             "name": "Phase 1: Setup",
-            "tasks": []
+            "tasks": [
+                {
+                    "id": "task_1",
+                    "title": "任務名稱",
+                    "status": "pending",
+                    "depends_on": [],
+                    "spec_ref": "specs/phase_1.yml"
+                }
+            ]
         }
     ]
 }

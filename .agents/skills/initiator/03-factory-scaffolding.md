@@ -24,7 +24,7 @@ description: 根據前述推演結果與變數，利用本機端的架構模板�
 
 ### 3. 設置 CI/CD 自動裁判所
 - 讀取 `.agents/templates/auto-merge.yml`，明確替換其中的變數 `{{AGENT_NAME}}`, `{{BASE_BRANCH}}`, 與 `{{BOT_USERNAME}}`。
-- 將替換後的內容另存為 `.github/workflows/{{AGENT_NAME}}-auto-merge.yml`。
+- **重要調整權限**：該範本預設使用 Maven 與 NPM 進行測試。身為 Architect，您**必須**依據使用者在階段一選擇的技術堆疊 (如 Python, Go 等)，自行將範本中的「Backend Tests」與「Frontend Checks」步驟修改為對應的真實測試指令 (例如 `pytest`, `go test`)，然後再將替換與修改後的內容另存為 `.github/workflows/{{AGENT_NAME}}-auto-merge.yml`。
 
 ### 4. (條件觸發) API 串接擴充套件
 - 所有的系統擴充套件皆存放於 `.agents/extensions/`。

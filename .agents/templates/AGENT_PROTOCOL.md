@@ -8,7 +8,7 @@
 
 ## Step 2: Acquire Context
 - 將該 task 的 `spec_ref` 對應的 spec 文件 (`.yml` 格式) 完整讀取。
-- 讀取所有 `.{{AGENT_NAME}}/skills/*.md` 技術規範。
+- 讀取所有 `.{{AGENT_NAME}}/skills/*.md` 技術規範 (若存在此目錄)。
 - **重要：讀取 `docs/doc-categories.md` 知識庫索引**，並根據即將修改的模組，導航至 `docs/` 對應的子文件閱讀。
 - 將該 task 的 `status` 更新為 `in_progress` 並 commit。
 
