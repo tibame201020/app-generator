@@ -59,7 +59,7 @@ jobs:
           
   update-tracker-post-merge:
     name: Update Tracker to Completed
-    if: github.event.pull_request.merged == true
+    if: github.event.action == 'closed' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
