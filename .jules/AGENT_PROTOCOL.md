@@ -29,9 +29,10 @@
 - 對照相關 skill 文件末尾的 PR Checklist 逐條確認。
 - 若任何一條未通過，回到 Step 3 或 Step 4 修正，不得帶著失敗的測試提 PR。
 
-## Step 6: Submit PR
+## Step 6: Finalize Status & Submit PR
 - 專案的主開發分支為 `feature/jules-factory`。
 - Jules 每次執行任務時，必須從 `feature/jules-factory` 切出新分支：`jules/task-{task_id}`。
+- **重要狀態轉移**：在您確認所有測試通過、程式碼完成後，**您必須親自將 `.jules/tracker.json` 中該任務的 status 改為 `completed` 並 commit**，這代表您對本次任務的品質背書。
 - 提交 PR 時，目標分支 (Base Branch) 必須設定為 `feature/jules-factory`。
 - PR Title 格式：`[Jules] {task_title}`
 - PR Description 必須包含：
@@ -41,8 +42,8 @@
   - 所影響的文件或 `CHANGELOG.md` 變更說明。
   - **必須在結尾標註 `[auto-merge]` 標籤**，以便觸發 GitHub Actions 的自動合併機制。
 
-## Step 7: Wait for CI/CD Auto-Merge
-- **警告：Jules 在提交 PR 後，絕對「不可以」自行將 tracker.json 改為 completed 並提交！**
-- 您提交的 PR 在通過 GitHub Actions 的自動測試後，CI/CD 腳本會自動將其 Squash Merge 至 `feature/jules-factory` 分支。
-- CI/CD 腳本在 Merge 成功後，將會由系統機器人自動去修改 `tracker.json` 的狀態為 `completed`。
-- **Jules 的唯一責任就是在 Step 6 提好乾淨的 PR，接著就可以直接離線**，直到下一次 Schedule 被系統喚醒。
+## Step 7: Wait for CI/CD Auto-Merge (Git as State Machine)
+- 您提交的 PR 在通過 GitHub Actions 的自動測試後，自動合併機器人 (如 enable-pull-request-automerge) 會自動將其 Squash Merge 至 `feature/jules-factory` 分支。
+- **因為您已經在 PR 中將 tracker 改成了 completed**，只要 PR 測試通過且順利被 Merge，主分支的 tracker 就會自然成為 completed 狀態。
+- 若 PR 測試失敗遭到 CI 阻擋，該 PR 就不會 Merge，主分支的狀態仍會保持 pending/in_progress。下次您醒來時，就會發現任務依舊尚未完成，從而繼續修復它。
+- **Jules 的唯一責任就是在 Step 6 提好包含 completed 狀態的乾淨 PR，接著就可以直接離線**，直到下一次 Schedule 被系統喚醒。

@@ -56,35 +56,4 @@ jobs:
           pull-request-number: ${{ github.event.pull_request.number }}
           merge-method: squash
           token: ${{ secrets.GITHUB_TOKEN }}
-          
-  update-tracker-post-merge:
-    name: Update Tracker to Completed
-    if: github.event.action == 'closed' && github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          ref: feature/jules-factory
 
-      - name: Extract Task ID from PR Description or Branch Map
-        id: extract_task
-        run: |
-          # assuming branch is jules/task-{task_id}
-          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
-          TASK_ID=$(echo $BRANCH_NAME | sed 's/jules\/task-//')
-          echo "Extracted TASK_ID: $TASK_ID"
-          echo "task=$TASK_ID" >> $GITHUB_OUTPUT
-
-      - name: Update tracker.json
-        run: |
-          TASK_ID="${{ steps.extract_task.outputs.task }}"
-          echo "Updating task $TASK_ID to completed..."
-          jq "(.phases[].tasks[] | select(.id == \"$TASK_ID\")).status = \"completed\"" .jules/tracker.json > tmp.json && mv tmp.json .jules/tracker.json
-
-      - name: Commit and Push Tracker Update
-        run: |
-          git config --global user.name "jules-bot[bot]"
-          git config --global user.email "jules-bot[bot]@users.noreply.github.com"
-          git commit -am "chore(tracker): mark $TASK_ID as completed [skip ci]" || echo "No changes to commit"
-          git push origin feature/jules-factory
