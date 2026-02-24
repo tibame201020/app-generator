@@ -11,23 +11,15 @@
      - **鎖定情境**：若 PR 狀態為 `OPEN`，代表任務由其他 Worker 處理中，請立刻跳過。
 - 若找不到可領取任務，輸出「Tasks are currently locked or in CI/CD pipeline. Halting.」並終止。
 
-- **狀態標記 (State Marking)**：
-  - 您領取任務後，可將 `status` 改為 `in_progress` 並 commit (於 Feature Branch)。
-  - **語義警告**：此狀態僅供分支視覺化參考。工廠的「真實事實」由**主線 tracker 狀態**與**分支存在性**定義。
-
-## Step 2: Acquire Context & Heartbeat
-- 讀取 `.{{AGENT_NAME}}/tracker.json`。
-- **重要：讀取 `.agents/rules/*.md` 中的編碼與 Git 規範**。
-- **1:1 Spec 讀取 (No Guessing)**：
-  - 完整讀取 `spec_ref` 指向的獨立 YAML (例如 `specs/tasks/task_1_1_1.yml`)。
-  - **嚴格限令**：禁止根據檔案名稱或上下文「猜測」任務，必須以該 Spec 定義為唯一準則。若檔案不存在，立刻停機回報。
-- 讀取所有 `.{{AGENT_NAME}}/skills/*.md` 技術規範 (若存在)。
-- **重要：讀取 `docs/doc-categories.md` 知識庫索引**，導航至對應文件。
-- **初始心跳包 (Heartbeat Commit)**：
-  - 切換至 Feature Branch 後，**必須立刻執行**以下操作以防止被 Arbitrator 誤殺：
+- **狀態及計數遞增 (State Update)**：
+  - 您領取任務後，必須切換至 Feature Branch。
+  - **初始心跳包 (Heartbeat Commit)**：
     1. 產生空提交：`git commit --allow-empty -m "chore: start task_{task_id}"`
     2. 立刻推送到遠端：`git push origin {{AGENT_NAME}}/task-{task_id}`
-  - **注意**：這確保了長時任務 (Long-running tasks) 的存活標記。
+  - **語義去噪說明**：禁止在 Feature Branch 頻繁改動 `tracker.json` 的 `in_progress` 狀態。工廠的「在途事實」完全由**分支/PR 存在性**定義。
+- **1:1 Spec 定義 (No Guessing)**：
+  - 完整讀取 `spec_ref` 檔案。
+  - **嚴格限令**：禁止根據檔案名稱或上下文「猜測」任務，必須以該檔案內容為唯一準則。若檔案不存在，立刻停機回報。
 
 ## Step 3: Implement & Cognitive Load Limit (認知上限守則)
 - 依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。

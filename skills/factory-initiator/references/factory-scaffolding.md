@@ -14,7 +14,8 @@
   - **重要**：必須對 `git-workflow.md` 等包含變數的檔案執行與協議相同的變數替換（如 `{{AGENT_NAME}}`, `{{BASE_BRANCH}}`），確保規範完全符合當前專案環境。
 - **初始化索引**：將 `../assets/templates/doc-categories.md` 複製至 `docs/doc-categories.md`。
 - **產出占位文件**：根據 Architect 在階段 1 的規劃，建立對應檔案。
-  - **內容規範**：占位文件不得為空，必須包含 `# [文件名]` 標題、`## Status: Pending` 狀態，以及一段說明「本文件由 Initiator 置放，等待后續任務填充詳情」。
+  - **重要**：必須生成 `docs/doc-categories.md` 骨架，防止 Worker 卡死。
+  - **內容規範**：占位文件不得為空，包含 `# [文件名]` 標題與 `## Status: Pending`。
 
 ### 3. 部署自動化裁判所
 - 從 `skills/factory-initiator/assets/templates/auto-merge.yml` 複製並生成 `.github/workflows/{{AGENT_NAME}}-auto-merge.yml`。
