@@ -13,7 +13,21 @@
 
 - **狀態標記 (State Marking)**：
   - 您領取任務後，可將 `status` 改為 `in_progress` 並 commit (於 Feature Branch)。
-  - **語義警告**：此狀態僅供本機與分支視覺化參考。工廠的「真實事實」完全由**主線 tracker 狀態**與**遠端分支存在性**定義。
+  - **語義警告**：此狀態僅供分支視覺化參考。工廠的「真實事實」由**主線 tracker 狀態**與**分支存在性**定義。
+
+## Step 2: Acquire Context & Heartbeat
+- 讀取 `.{{AGENT_NAME}}/tracker.json`。
+- **重要：讀取 `.agents/rules/*.md` 中的編碼與 Git 規範**。
+- **1:1 Spec 讀取 (No Guessing)**：
+  - 完整讀取 `spec_ref` 指向的獨立 YAML (例如 `specs/tasks/task_1_1_1.yml`)。
+  - **嚴格限令**：禁止根據檔案名稱或上下文「猜測」任務，必須以該 Spec 定義為唯一準則。若檔案不存在，立刻停機回報。
+- 讀取所有 `.{{AGENT_NAME}}/skills/*.md` 技術規範 (若存在)。
+- **重要：讀取 `docs/doc-categories.md` 知識庫索引**，導航至對應文件。
+- **初始心跳包 (Heartbeat Commit)**：
+  - 切換至 Feature Branch 後，**必須立刻執行**以下操作以防止被 Arbitrator 誤殺：
+    1. 產生空提交：`git commit --allow-empty -m "chore: start task_{task_id}"`
+    2. 立刻推送到遠端：`git push origin {{AGENT_NAME}}/task-{task_id}`
+  - **注意**：這確保了長時任務 (Long-running tasks) 的存活標記。
 
 ## Step 3: Implement & Cognitive Load Limit (認知上限守則)
 - 依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。
@@ -36,14 +50,16 @@
 ## Step 5: Validate & TDD (ECC Standard)
 - **TDD 三部曲**：撰寫測試 -> 執行測試確認失敗 (RED) -> 實作功能 -> 執行測試確認通過 (GREEN)。
 - **80% 覆蓋率**：確保單元測試 + 整合測試覆蓋率達到 80% 以上。
-- 🛡️ **八大破壞性邊界測試 (Edge Case Checklist)**：您撰寫的測試檔案**絕對不允許只測 Happy Path**。您必須確保測試涵蓋以下破壞性情境：
+- 🛡️ **TDD 分級制 (Phase-aware Testing)**：
+  - **Phase 1 (Setup)**：僅強制要求測試 1-4 項 (基礎守後)。
+  - **Phase 2+ (Implementation)**：必須全面涵蓋 1-8 項破壞性邊界測試。
   1. `Null/Undefined` 行為。
   2. 空陣列 / 空字串傳入。
   3. Spec 中定義的 `negative_test_cases`。
   4. 邊界數值 (Max/Min)。
-  5. 錯誤路徑 (網路斷線、API Timeout、DB 連線失敗)。
+  5. 錯誤路徑 (網路請求失敗、Timeout、DB 失聯)。
   6. **併發競爭 (Race Conditions)**。
-  7. 極端大資料量 (10k+ items) 效能測試。
+  7. 極端大資料量 (10k+ items) 效能分析。
   8. 特殊字元 (Unicode, Emoji, SQL injection 防禦)。
 - 對照 spec 的 Acceptance Criteria 與 Success Criteria 逐條自我檢查。
 - 對照相關 skill 或 rule 文件末尾的 PR Checklist 逐條確認。

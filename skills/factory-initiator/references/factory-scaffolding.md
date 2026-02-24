@@ -19,12 +19,13 @@
 ### 3. 部署自動化裁判所
 - 從 `skills/factory-initiator/assets/templates/auto-merge.yml` 複製並生成 `.github/workflows/{{AGENT_NAME}}-auto-merge.yml`。
 - 從 `skills/factory-initiator/assets/templates/cleanup-stale-tasks.yml` 複製並生成 `.github/workflows/{{AGENT_NAME}}-cleanup.yml`。
-- 🛑 **重要！手動配置清單 (Manual Action Required)**：
-  - 您必須告知使用者執行以下操作，否則自動化生產線將無法合併程式碼：
-    1. **開啟開關**：Repo Settings -> General -> ✅ Allow auto-merge。
-    2. **建立 Label**：執行 `gh label create "auto-merge" --color "#0075ca" --description "Trigger for factory auto-merge"`。
-    3. **設定 Secret**：Repo Settings -> Secrets -> Actions -> 新增 `PAT_TOKEN`。
-    4. **權限要求**：該 PAT 必須具備 `repo` 與 `workflow` 完整權限。
+
+### 4. 手動配置清單 (Manual Action Required)
+- 您必須告知使用者執行以下操作，否則自動化生產線將無法合併程式碼：
+  1. **開啟開關**：Repo Settings -> General -> ✅ Allow auto-merge。
+  2. **建立 Label**：執行 `gh label create "auto-merge" --color "#0075ca" --description "Trigger for factory auto-merge"`。
+  3. **設定 Secret**：Repo Settings -> Secrets -> Actions -> 新增 `PAT_TOKEN`。
+  4. **權限要求**：該 PAT 必須具備 `repo` 與 `workflow` 完整權限。
 
 ---
 > 🎉 **完成：發送最終驗收報告**
