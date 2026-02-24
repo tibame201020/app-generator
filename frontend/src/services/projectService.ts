@@ -1,0 +1,36 @@
+import api from './api';
+import { Project, FileNode, FileContent } from '../types';
+
+export const getProjects = async (userId: string): Promise<Project[]> => {
+  const response = await api.get<Project[]>('/projects', { params: { userId } });
+  return response.data;
+};
+
+export const getFileTree = async (projectId: string): Promise<FileNode[]> => {
+  const response = await api.get<FileNode[]>(`/projects/${projectId}/files`);
+  return response.data;
+};
+
+export const getFileContent = async (projectId: string, path: string): Promise<FileContent> => {
+  const response = await api.get<FileContent>(`/projects/${projectId}/files/content`, {
+    params: { path },
+  });
+  return response.data;
+};
+
+export const saveFileContent = async (projectId: string, path: string, content: string): Promise<void> => {
+  await api.put(`/projects/${projectId}/files/content`, { path, content });
+};
+
+export const runProject = async (projectId: string): Promise<void> => {
+  await api.post(`/projects/${projectId}/run`);
+};
+
+export const stopProject = async (projectId: string): Promise<void> => {
+  await api.post(`/projects/${projectId}/stop`);
+};
+
+export const getProjectStatus = async (projectId: string): Promise<any> => {
+  const response = await api.get(`/projects/${projectId}/status`);
+  return response.data;
+};

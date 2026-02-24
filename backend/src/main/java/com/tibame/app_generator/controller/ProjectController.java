@@ -101,6 +101,32 @@ public class ProjectController {
     }
 
     /**
+     * 更新專案中指定檔案的內容。
+     * PUT /api/projects/{id}/files/content
+     */
+    @PutMapping("/{id}/files/content")
+    public ResponseEntity<?> updateFileContent(
+            @PathVariable UUID id,
+            @RequestBody Map<String, String> payload) {
+        String path = payload.get("path");
+        String content = payload.get("content");
+
+        if (path == null || content == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Missing path or content"));
+        }
+
+        try {
+            projectService.saveFileContent(id, path, content);
+            return ResponseEntity.ok(Map.of("message", "File saved"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Failed to save file: " + e.getMessage()));
+        }
+    }
+
+    /**
      * 啟動專案容器。
      * POST /api/projects/{id}/run
      */

@@ -24,15 +24,15 @@
     - [x] 定期檢查並清除 15 分鐘無活動的容器
 
 ## 第三階段：前端介面與編輯器集成 (Phase 3: Frontend Shell & IDE)
-- [ ] 建立 VS Code Style Layout:
-    - [ ] 可伸縮之 SideBar (File Explorer)
-    - [ ] 可切換之 Main Tab System (Editor / Canvas)
+- [x] 建立 VS Code Style Layout:
+    - [x] 可伸縮之 SideBar (File Explorer)
+    - [x] 可切換之 Main Tab System (Editor / Canvas)
     - [ ] Chat Panel (右側)
-- [ ] 整合 `Monaco Editor`:
-    - [ ] 檔案樹讀取邏輯
-    - [ ] 檔案保存連動 Git Commit
-- [ ] 建立 `Zustand` 全域狀態機:
-    - [ ] 管理當前專案、檔案、Agent 活躍狀態
+- [x] 整合 `Monaco Editor`:
+    - [x] 檔案樹讀取邏輯
+    - [x] 檔案保存連動 Git Commit
+- [x] 建立 `Zustand` 全域狀態機:
+    - [x] 管理當前專案、檔案、Agent 活躍狀態
 
 ## 第四階段：AI 任務編排與畫布互動 (Phase 4: Agent Orchestration & Canvas)
 - [ ] 配置 WebSocket (STOMP):

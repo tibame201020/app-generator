@@ -224,6 +224,49 @@ public class GitService {
     }
 
     /**
+     * 更新檔案內容並提交。
+     *
+     * @param userId    使用者 ID
+     * @param projectId 專案 ID
+     * @param filePath  檔案路徑
+     * @param content   新內容
+     */
+    public void updateFileContent(UUID userId, UUID projectId, String filePath, String content) throws IOException, GitAPIException {
+        Path repoPath = getBareRepoPath(userId, projectId);
+
+        // 建立暫存工作區
+        Path tempWorkspace = Files.createTempDirectory("git-update-");
+
+        try {
+            // Clone
+            try (Git git = Git.cloneRepository()
+                    .setURI(repoPath.toUri().toString())
+                    .setDirectory(tempWorkspace.toFile())
+                    .call()) {
+
+                // 寫入檔案
+                Path fullPath = tempWorkspace.resolve(filePath);
+                if (fullPath.getParent() != null) {
+                    Files.createDirectories(fullPath.getParent());
+                }
+                Files.writeString(fullPath, content);
+
+                // Commit & Push
+                git.add().addFilepattern(".").call();
+                git.commit()
+                        .setMessage("Update " + filePath)
+                        .setAuthor("AppGenerator", "system@app-generator.local")
+                        .call();
+                git.push().call();
+
+                log.info("Updated file '{}' in project {}", filePath, projectId);
+            }
+        } finally {
+            deleteDirectoryRecursively(tempWorkspace);
+        }
+    }
+
+    /**
      * 讀取 Bare Repository 中指定檔案的內容。
      *
      * @param userId    使用者 ID

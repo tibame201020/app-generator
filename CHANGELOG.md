@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.5.0] - 2026-02-24
+
+### Added
+- **Frontend Shell Foundation**:
+  - Implement VS Code-style layout with Sidebar, Editor, and Status Bar.
+  - Add `FileExplorer` component with recursive tree view.
+  - Add `CodeEditor` component using Monaco Editor.
+  - Implement state management using `zustand` (`useProjectStore`, `useEditorStore`).
+  - Add routing with `react-router-dom` (`HomePage`, `ProjectPage`).
+- **Backend Enhancements**:
+  - Add `PUT /api/projects/{id}/files/content` endpoint for saving file changes.
+  - Implement `saveFileContent` in `ProjectService` and `GitService`.
+  - Add integration tests for file updates.
+- **Configuration**:
+  - Configure Vite proxy for backend API integration.
+  - Setup TailwindCSS and TypeScript for frontend.
+
 ## [0.4.0] - 2026-02-23
 
 ### Added
