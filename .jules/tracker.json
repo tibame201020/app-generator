@@ -80,7 +80,7 @@
           "id": "task_1_2_3",
           "phase": "phase_1",
           "title": "加入 Spring Cloud Stream 依賴與 in-memory Message Queue 設定",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_1_1_1"
           ],
