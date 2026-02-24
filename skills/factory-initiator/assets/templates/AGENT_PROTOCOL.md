@@ -4,6 +4,7 @@
 ## Step 1: Read State & Prevent Duplication (防撞車機制)
 - 讀取 `.{{AGENT_NAME}}/tracker.json`。
 - 依照順序找出第一個狀態為 `pending` 且 `depends_on` 中所有 task 均為 `completed` 的 task。
+- 🛡️ **健康檢查 (Attempts Check)**：若該任務的 `attempts` >= 5，視為「持續性死鎖」或「無法修復的衝突」，您**必須**跳過該任務並輸出 log 提示人類介入。
 - 🛑 **重要！分散式鎖定檢查 (Mutex Lock via Git & Lease)**：在領取任務前，您**必須**同時滿足以下條件：
   1. **Git 分支檢查**：檢查遠端 (Origin) 是否已存在該任務的分支 `{{AGENT_NAME}}/task-{task_id}` 或 Open PR。
   2. **Lease 租約檢查**：檢查 `tracker.json` 中該任務的 `lease` 欄位。
@@ -17,7 +18,10 @@
 - 將該 task 的 `spec_ref` 對應的 spec 文件 (`.yml` 格式) 完整讀取。
 - 讀取所有 `.{{AGENT_NAME}}/skills/*.md` 技術規範 (若存在此目錄)。
 - **重要：讀取 `docs/doc-categories.md` 知識庫索引**，並根據即將修改的模組，導航至 `docs/` 對應的子文件閱讀。
-- **狀態隔離守則**：將該 task 的 `status` 更新為 `in_progress` 並 commit。**注意：此更新僅限於 Feature Branch，嚴禁將 in_progress 狀態 commit 回主線分支。**
+- **狀態遞增與隔離 (State Update)**：
+  1. 將 `attempts` 次數 +1。
+  2. 將 `status` 更新為 `in_progress`。
+  3. 將上述變更 commit。**注意：此更新僅限於 Feature Branch，嚴禁將次數與狀態 commit 回主線分支。**
 
 ## Step 3: Implement & Cognitive Load Limit (認知上限守則)
 - 依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。
@@ -29,7 +33,7 @@
   3. **壞了就換 (Disposable Components)**：如果舊有的小型模組充滿 Bug 難以修復，請果斷刪除並重寫，不要疊床架屋。
 
 ## Step 4: Self-Healing & Path Auditing (自我修復與路徑審計)
-- 雖然需嚴格遵守 Spec，但身為高階 Agent，**您被授權進行邏輯上的自我修復與環境適適應**。
+- 雖然需嚴格遵守 Spec，但身為高階 Agent，**您被授權進行邏輯上的自我修復與環境適應**。
 - 🛡️ **機械性約束 (Allowed Paths Check)**：
   - 在執行 `git commit` 前，您**必須**執行 `git diff --name-only`。
   - **嚴格限令**：所有異動檔案的路徑必須位於此任務定義的 `allowed_paths` 範圍內。
