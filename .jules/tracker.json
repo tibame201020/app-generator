@@ -98,7 +98,7 @@
           "id": "task_1_3_2",
           "phase": "phase_1",
           "title": "安裝 Tailwind CSS 與 PostCSS 並完成配置",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_1_3_1"
           ],
