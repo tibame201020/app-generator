@@ -18,9 +18,9 @@
 - 依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。
 - 實作必須包含：功能程式碼 + 對應的單元測試／整合測試。
 - 若有架構或 Schema 變更，必須同步更新 `docs/` 內的對應文件與 `CHANGELOG.md`。
-- 🧠 **認知上限守則 (Cognitive Load Limit)**：身為 AI，您的上下文記憶有限。
+- 🧠 **認知上限與架構守則 (Cognitive Load & Architecture Limit)**：
   1. **檔案長度控制**：新建立或修改的檔案，長度應盡量保持在 200~300 行以內。
-  2. **單一職責與反義大利麵程式碼**：如果一個功能需要追溯超過 3 個不同的方法或檔案才能看懂邏輯，代表拆得太碎或耦合太深。遇到此情形，您**必須主動進行重構 (Refactor)**，保持模組的「高內聚、低耦合」。
+  2. **反模式禁令 (Anti-Patterns Ban)**：絕對禁止寫出「全能上帝物件 (God Object)」或「大泥球 (Big Ball of Mud)」。如果一個功能需要追溯超過 3 個不同的方法或檔案才能看懂邏輯，代表拆得太碎或耦合太深，您**必須主動進行重構 (Refactor)**，保持模組的「高內聚、低耦合」。
   3. **壞了就換 (Disposable Components)**：如果舊有的小型模組充滿 Bug 難以修復，請果斷刪除並重寫，不要疊床架屋。
 
 ## Step 4: Self-Healing & Autonomy (自我修復與自治)
@@ -29,8 +29,17 @@
 - **授權行為**：您可自行加入必要的配置、微調架構或修正先前的錯誤，並將此「自主修正 (Self-Healing)」的紀錄寫入 `CHANGELOG.md` 及 PR 描述中。
 - 目標是：**在不偏離核心功能的目標下，確保程式碼能 100% 成功執行與編譯。**
 
-## Step 5: Validate
+## Step 5: Validate & Edge Cases (破壞性邊界測試)
 - 執行所有測試（後端 `mvn test`，前端 TypeScript 檢查與 Lint），確認全數通過。
+- 🛡️ **八大破壞性邊界測試 (Edge Case Checklist)**：您撰寫的測試檔案**絕對不允許只測 Happy Path**。您必須確保測試涵蓋以下破壞性情境：
+  1. `Null/Undefined` 行為。
+  2. 空陣列 / 空字串傳入。
+  3. 型別錯誤防呆。
+  4. 邊界數值 (Max/Min)。
+  5. 錯誤路徑 (網路斷線、API Timeout、DB 連線失敗)。
+  6. **併發競爭 (Race Conditions)**。
+  7. 極端大資料量 (10k+ items) 效能測試。
+  8. 特殊字元 (Unicode, Emoji, SQL injection 防禦)。
 - 對照 spec 的 Acceptance Criteria 逐條自我檢查。
 - 對照相關 skill 文件末尾的 PR Checklist 逐條確認。
 - 若任何一條未通過，回到 Step 3 或 Step 4 修正，不得帶著失敗的測試提 PR。

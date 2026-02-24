@@ -20,6 +20,13 @@ description: 負責將人類模糊的商業需求，轉化為具備「極細顆�
 - 理解使用者的核心目標。
 - 列出 High-Level 的 Phase 階段 (例如: Foundation -> Core Domain -> API Layer)。
 - 向使用者確認技術方向。
+- 🏛️ **產出架構決策紀錄 (ADR, Architecture Decision Record)**：在為使用者決定框架或資料庫時，**必須**向人類解釋理由。您必須列出 `Pros (優點)`、`Cons (缺點)`、與 `Alternatives (放棄的替代方案)`，避免無腦的幻覺選型 (Golden Hammer)。
+
+### 動作 2：核心反模式排除 (Anti-Pattern Red Flags)
+在拆解需求前，請在腦中確認目前的設計是否避開了以下反模式：
+- **大泥球架構 (Big Ball of Mud)**：缺乏明確的層級或模組劃分。
+- **全能上帝物件 (God Object)**：單一檔案或類別處理過多不相關的業務邏輯。
+- **緊密耦合 (Tight Coupling)**：模組之間過度依賴，牽一髮動全身。
 
 ### 動作 2：微型任務拆解 (Micro-Task Breakdown)
 將大綱轉化為具體的 Task List。
