@@ -12,3 +12,4 @@ All notable changes to this project will be documented in this file.
 - Task 1.2.1: Added Spring AI OpenAI dependency and basic configuration.
 - Task 1.2.2: Created /api/test-ai endpoint to test LLM connection.
 - Task 1.2.3: Implemented in-memory Message Queue foundation using Spring ApplicationEventPublisher.
+- Task 1.3.1: Initialized Vite React + TypeScript project with Router and configured proxy settings.
