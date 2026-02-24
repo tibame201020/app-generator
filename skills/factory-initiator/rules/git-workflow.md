@@ -23,4 +23,4 @@
 ## 3. PR 提交規範
 - **標題**：`[{{AGENT_NAME}}] {task_title}`。
 - **內容**：必須包含測試摘要與影響範圍說明。
-- **標籤**：必須包含 `[auto-merge]` 標籤以觸發自動合併。
+- **標籤**：必須透過 GitHub API/CLI 為 PR 添加 **GitHub Label `auto-merge`**，嚴禁僅在 PR Body 寫文字標籤。
