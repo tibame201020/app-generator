@@ -1,3 +1,4 @@
+```yaml
 id: "phase_X"
 name: "Phase X: Description"
 description: "在此填寫階段描述，例如：建置底層架構與核心模組"
@@ -14,3 +15,10 @@ modules:
           - "建立 pom.xml 或 package.json"
           - "[禁令] 絕對不可以做ＯＯＯ"
           - "[Fallback] API Key 必須設定預設值"
+        # ECC-Inspired fields
+        success_criteria:
+          - "定義明確的量化指標"
+        negative_test_cases:
+          - "描述應被阻擋或妥善處理的異常輸入情境"
+
+```
