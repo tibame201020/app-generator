@@ -7,15 +7,5 @@ modules:
   - id: "X.1"
     name: "專案初始化"
     tasks:
-      - id: "task_X_1_1" # 必須與 tracker.json 中的 ID 完全一致
-        title: "初始化專案"
-        objective: "客觀具體目標描述"
-        acceptance_criteria:
-          - "建立 pom.xml 或 package.json"
-          - "[禁令] 絕對不可以做ＯＯＯ"
-          - "[Fallback] API Key 必須設定預設值"
-        # ECC-Inspired fields
-        success_criteria:
-          - "定義明確的量化指標"
-        negative_test_cases:
-          - "描述應被阻擋或妥善處理的異常輸入情境"
+      - id: "task_X_1_1" # 必須與 tracker.json 中的 ID 保持一致
+        spec_ref: "specs/tasks/task_X_1_1.yml"

@@ -18,7 +18,10 @@
 - 讀取所有 `.{{AGENT_NAME}}/skills/*.md` 技術規範 (若存在)。
 - **重要：讀取 `docs/doc-categories.md` 知識庫索引**，導航至對應文件。
 - **狀態與計數遞增 (State Update)**：
-  - 您領取任務後，必須切換至 Feature Branch，並立刻將 `attempts` +1 與 `status` 改為 `in_progress` 並 commit。
+  - 您領取任務後，必須切換至 Feature Branch，並**立刻執行這兩項操作作為初始心跳 (Heartbeat Commit)**，以防止被 Arbitrator 誤殺：
+    1. 產生空提交：`git commit --allow-empty -m "chore: start task_{task_id}"`
+    2. 立刻推送到遠端：`git push origin {{AGENT_NAME}}/task-{task_id}`
+  - 完成後，再將 `attempts` +1 與 `status` 改為 `in_progress` 並 commit。
   - **注意**：由於此 commit 位於 Feature Branch，主線狀態僅在 PR 合併時更新。此計數用於給 CI 裁判所作合併參考。
 
 ## Step 3: Implement & Cognitive Load Limit (認知上限守則)
