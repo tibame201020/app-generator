@@ -35,7 +35,8 @@
 - **職責**：不准做大決策，只准乖乖照著 Specs 寫程式。
 - **物理隔離哲學 (Branch-as-Lock)**：為解決分散式環境下的狀態衝突，工廠採用「主線外掛」模式。
   - **分支即鎖**：遠端分支 `origin/task-{id}` 的存在即代表該任務已被鎖定。領取任務前必須檢查分支存在性。
-  - **無中間態回寫**：Worker 領取任務時「不准」直接修改主線 tracker。所有 attempts 與 in_progress 更新僅限於 Feature Branch。
-  - **CI 裁判所**：只有 PR 被 Squash Merge 時，主線狀態才正式轉變。若任務失敗或超時，由 CI 裁判所統一執行清理與次數累加。
+  - **主線無雜訊**：Worker 領取任務時「不准」直接修改主線 tracker。所有 attempts 與 in_progress 更新僅限於 Feature Branch。
+  - **CI 裁判所 (Absolute Arbitrator)**：只有 PR 被 Squash Merge 時，主線狀態才正式轉變。**禁止**任何本地腳本 (如 `cmd_cycle`) 直接呼叫 `gh pr merge`，合併權限必須全量交由 CI 仲裁，確保測試百分之百通過。
+  - **自愈機制**：若任務失敗或超時，由 CI 裁判所之 Cleanup 腳本統一執行清理。
 
 當大腦 (Initiator) 與手腳 (Worker) 被物理隔離後，LLM 最容易發生的「無效重構」與「幻覺迷失」將被徹底杜絕。
