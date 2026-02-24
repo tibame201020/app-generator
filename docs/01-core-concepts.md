@@ -31,9 +31,11 @@
 - **產出物**：`tracker.json` (帶有 `allowed_paths` 約束)、`specs/*.yml` (Spec 2.0 規格) 與 ADR 紀錄。
 - **生命週期**：一次性啟動，完成建廠與知識庫初始化後即下線。
 
-### 2. The Worker (工人)
+### 2. The Worker (工人 - 單軌執行)
 - **職責**：不准做大決策，只准乖乖照著 Specs 寫程式。
-- **產出物**：真正的業務程式碼 (Frontend/Backend) 與 自動化測試。
-- **生命週期**：藉由 Cronjob 排程或是 Webhook 被無限次喚醒，直到所有的 `pending` 任務都被清除。
+- **物理隔離哲學 (Branch-as-Lock)**：為解決分散式環境下的狀態衝突，工廠採用「主線外掛」模式。
+  - **分支即鎖**：遠端分支 `origin/task-{id}` 的存在即代表該任務已被鎖定。領取任務前必須檢查分支存在性。
+  - **無中間態回寫**：Worker 領取任務時「不准」直接修改主線 tracker。所有 attempts 與 in_progress 更新僅限於 Feature Branch。
+  - **CI 裁判所**：只有 PR 被 Squash Merge 時，主線狀態才正式轉變。若任務失敗或超時，由 CI 裁判所統一執行清理與次數累加。
 
 當大腦 (Initiator) 與手腳 (Worker) 被物理隔離後，LLM 最容易發生的「無效重構」與「幻覺迷失」將被徹底杜絕。

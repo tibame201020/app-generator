@@ -4,24 +4,19 @@
 ## Step 1: Read State & Prevent Duplication (防撞車機制)
 - 讀取 `.{{AGENT_NAME}}/tracker.json`。
 - 依照順序找出第一個狀態為 `pending` 且 `depends_on` 中所有 task 均為 `completed` 的 task。
-- 🛡️ **健康檢查 (Attempts Check)**：若該任務的 `attempts` >= 5，視為「持續性死鎖」或「無法修復的衝突」，您**必須**跳過該任務並輸出 log 提示人類介入。
-- 🛑 **重要！分散式鎖定檢查 (Mutex Lock via Git & Lease)**：在領取任務前，您**必須**同時滿足以下條件：
-  1. **Git 分支檢查**：檢查遠端 (Origin) 是否已存在該任務的分支 `{{AGENT_NAME}}/task-{task_id}` 或 Open PR。
-  2. **Lease 租約檢查**：檢查 `tracker.json` 中該任務的 `lease` 欄位。
-     - 若 `lease.holder` 不為空且 `lease.expires_at` 尚未過期，代表已有其他 Worker 宣告主權，請立刻跳過。
-  - **宣告主權 (Acquire Lease)**：若符合領取條件，您**必須**在 Feature Branch 領取時同步更新 `lease` 資訊（`holder` 填入您的代號，`expires_at` 設定為目前時間 +1 小時）並 commit。
-- 若找不到可領取任務，輸出「Tasks are currently in CI/CD pipeline. Halting.」並終止。
+- 🛡️ **健康檢查 (Attempts Check)**：若該任務的 `attempts` >= 5，視為「持續性死鎖」，您**必須**跳過該任務並提示人類介入。
+- 🛑 **重要！物理互斥鎖 (Branch-as-Lock)**：在領取任務前，您**必須**檢查遠端 (Origin) 是否已存在該任務的分支 `{{AGENT_NAME}}/task-{task_id}` 或 Open PR。
+  - **原則**：**「遠端分支的存在」即代表該任務已被鎖定**。
+  - 若已存在，請立刻放棄此 task，繼續尋找下一個符合條件的任務。
+- 若找不到可領取任務，輸出「Tasks are currently locked or in CI/CD pipeline. Halting.」並終止。
 
 ## Step 2: Acquire Context
 - 讀取 `.{{AGENT_NAME}}/tracker.json`。
-- **重要：讀取 `.agents/rules/*.md` 中的編碼與 Git 規範**，確保本次實作完全符合憲法。
+- **重要：讀取 `.agents/rules/*.md` 中的編碼與 Git 規範**。
 - 將該 task 的 `spec_ref` 對應的 spec 文件 (`.yml` 格式) 完整讀取。
-- 讀取所有 `.{{AGENT_NAME}}/skills/*.md` 技術規範 (若存在此目錄)。
-- **重要：讀取 `docs/doc-categories.md` 知識庫索引**，並根據即將修改的模組，導航至 `docs/` 對應的子文件閱讀。
-- **狀態遞增與隔離 (State Update)**：
-  1. 將 `attempts` 次數 +1。
-  2. 將 `status` 更新為 `in_progress`。
-  3. 將上述變更 commit。**注意：此更新僅限於 Feature Branch，嚴禁將次數與狀態 commit 回主線分支。**
+- 讀取所有 `.{{AGENT_NAME}}/skills/*.md` 技術規範 (若存在)。
+- **重要：讀取 `docs/doc-categories.md` 知識庫索引**，導航至對應文件。
+- **狀態管理守則**：由於 GitHub 只有在 PR 合併時才會更新主線狀態，您领取任務時**禁止**嘗試更新主線 Tracker。您只需切換至 Feature Branch 開始工作。
 
 ## Step 3: Implement & Cognitive Load Limit (認知上限守則)
 - 依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。
@@ -69,7 +64,9 @@
   - 對應 Task ID。
   - 已完成的 Acceptance Criteria 列表。
   - **路徑審計報告**：聲明所有變更均符合 `allowed_paths`。
-  - **重要**：您必須為 PR 添加 **GitHub Label `auto-merge`** 以觸發自動合併（**嚴禁**僅在 PR Body 寫文字標籤）。
+  - **重要**：您必須為 PR 添加 **GitHub Label `auto-merge`** 以觸發自動合併。
+  - **推薦指令**：`gh pr create --title "[{{AGENT_NAME}}] {task_title}" --body "{description}" --label "auto-merge"`。
+  - **嚴禁**僅在 PR Body 寫文字標籤，那將無法觸發 CI 裁判。
 
 ## Step 7: Wait for CI/CD Auto-Merge (Git as State Machine)
 - 提交 PR 後，身分驗證後的自動合併機器人會接手。

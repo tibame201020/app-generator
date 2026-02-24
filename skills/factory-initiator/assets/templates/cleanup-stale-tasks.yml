@@ -1,0 +1,49 @@
+name: {{AGENT_NAME}} Task Arbitrator (Cleanup)
+
+on:
+  schedule:
+    - cron: '0 * * * *' # 每小時執行一次
+  workflow_dispatch: # 支援手動觸發
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  cleanup-stale-tasks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Main
+        uses: actions/checkout@v4
+        with:
+          ref: {{BASE_BRANCH}}
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Detect Stale Branches and Increment Attempts
+        shell: bash
+        run: |
+          # 取得所有以 {{AGENT_NAME}}/task- 開頭的遠端分支
+          branches=$(git branch -r | grep "origin/{{AGENT_NAME}}/task-" | sed 's/origin\///')
+          
+          for branch in $branches; do
+            task_id=$(echo $branch | sed 's/{{AGENT_NAME}}\/task-//')
+            echo "Checking stale state for Task ID: $task_id"
+            
+            # TODO: 這裡可以加入更複雜的檢查，例如：
+            # 1. 檢查 PR 是否已 Close 但分支未刪除
+            # 2. 檢查分支最後提交時間是否超過 24 小時
+            # 3. 如果確定任務卡死（例如 CI 連續失敗），則執行以下邏輯：
+            
+            # 此處為示意邏輯：更新 tracker.json 中的 attempts 並推回主線
+            # 實際執行需要解析 JSON，此處假設使用 jq
+            # jq --arg id "$task_id" '(.phases[].tasks[] | select(.id == $id)).attempts += 1' .{{AGENT_NAME}}/tracker.json > tmp.json && mv tmp.json .{{AGENT_NAME}}/tracker.json
+            
+            # git add .{{AGENT_NAME}}/tracker.json
+            # git commit -m "chore: [Arbitrator] increment attempts for stale task $task_id"
+            # git push origin {{BASE_BRANCH}}
+            
+            # 最後刪除該死鎖分支 (Force delete)
+            # git push origin --delete $branch
+          done
+          
+    # [!] 注意：本腳本為邏輯範本，實際運作建議配合 jq 處理 JSON。

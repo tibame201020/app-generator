@@ -17,11 +17,7 @@
                         "path/to/module/*",
                         "tests/to/module/*"
                     ],
-                    "spec_ref": "specs/phase_1.yml",
-                    "lease": {
-                        "holder": null,
-                        "expires_at": null
-                    }
+                    "spec_ref": "specs/phase_1.yml"
                 }
             ]
         }
