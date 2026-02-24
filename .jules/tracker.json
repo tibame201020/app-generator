@@ -59,7 +59,7 @@
           "id": "task_1_2_1",
           "phase": "phase_1",
           "title": "加入 Spring AI OpenAI 依賴與基礎配置",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_1_1_1"
           ],
