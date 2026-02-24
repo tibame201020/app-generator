@@ -10,7 +10,7 @@
           "id": "task_1_1_1",
           "phase": "phase_1",
           "title": "初始化 Spring Boot 3 專案骨架與 Maven 設定",
-          "status": "in_progress",
+          "status": "completed",
           "depends_on": [],
           "spec_ref": "specs/phase_1_setup.yml#task-111-初始化-spring-boot-3-專案骨架與-maven-設定"
         },
