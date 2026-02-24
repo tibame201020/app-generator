@@ -33,6 +33,7 @@ groups:
         acceptance_criteria:
           - "於 pom.xml 加入 spring-boot-starter-data-jpa 與 h2 依賴。"
           - "於 application.yml 加入 jdbc:h2:mem:julesdb 配置。"
+          - "必須加入 spring.jpa.hibernate.ddl-auto=update 以確保 H2 記憶體模式下能自動建表，避免 SQL 錯誤。"
           - "開啟 H2 Console，路徑設為 /h2-console，帳號 sa，密碼空白。"
           - "專案可正常啟動，無 DataSource 連線錯誤。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
@@ -51,7 +52,7 @@ groups:
         objective: "導入 S3 兼容的物件儲存能力。"
         acceptance_criteria:
           - "於 backend/pom.xml 加入 minio 依賴。"
-          - "於 application.yml 配置 minio.url, minio.access.key, minio.secret.key (從環境變數讀取)。"
+          - "於 application.yml 配置 minio.url (預設 http://localhost:9000，確保 IDE 能跑), minio.access.key, minio.secret.key (從環境變數讀取)。"
           - "建立 MinioConfig.java 產生 MinioClient Bean。"
           - "在應用程式啟動時 (或在 Config 中) 確保預設 Bucket 存在，並設定 Bucket Policy 為 public-read 且允許 CORS 跨域讀取 (極重要，否則前端無法 fetch)。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
@@ -79,22 +80,24 @@ groups:
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
       - id: "task_1_2_3"
-        title: "加入 Spring Cloud Stream 依賴與 in-memory MQ 設定"
-        objective: "建立異步訊息基礎。"
+        title: "實作 in-memory MQ 事件基礎 (ApplicationEvent)"
+        objective: "建立單機版異步訊息基礎。"
         acceptance_criteria:
-          - "於 pom.xml 加入 Spring Cloud Stream。"
-          - "決定並配置輕量化綁定器 (如 RabbitMQ 或測試用的 in-memory binder)。"
+          - "不使用 RabbitMQ 或 Spring Cloud Stream，以避免 MVP 過度設計與依賴衝突。"
+          - "建立標準的 SystemEvent (或類似命名) 物件作為全域廣播的基礎 payload。"
+          - "確保專案結構預留 EventPublisher 的介面，為未來 Event-Driven 架構鋪路。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
   - id: "1.3"
     name: "Frontend Foundation"
     tasks:
       - id: "task_1_3_1"
-        title: "使用 Vite 初始化 React + TypeScript 專案"
+        title: "使用 Vite 初始化 React + TypeScript 專案 與 Router"
         objective: "建立前端骨架與代理設定。"
         acceptance_criteria:
           - "在根目錄執行 npm create vite@latest frontend -- --template react-ts 建立專案夾。"
           - "在 frontend 內執行 npm install (嚴禁用 yarn 或 pnpm 以免鎖檔衝突)。"
+          - "安裝 react-router-dom 作為專案的切換核心。"
           - "修改 vite.config.ts 指定 port: 5173，並配置 server.proxy 將 /api 代理至 http://localhost:8080，將 /ws 代理至 WebSocket (ws: true)。"
           - "移除預設的冗餘檔案與 css (App.css 等)。"
           - "進入 frontend 執行 npm run build 成功。"
@@ -142,8 +145,9 @@ groups:
         title: "建立 Dockerfile (Frontend)"
         objective: "將 React 專案打包。"
         acceptance_criteria:
-          - "建立 frontend/Dockerfile (若開發模式可直接 run dev，或 build 後用 Caddy/Nginx 服務)。"
-          - "暴露對應 Port (默認 5173 或 80)。"
+          - "建立 frontend/Dockerfile。"
+          - "為了支援開發熱更新 (Hot-Reload)，容器必須使用 CMD [\"npm\", \"run\", \"dev\", \"--\", \"--host\"] 起行，而非打包進 Nginx。"
+          - "暴露對應 Port (默認 5173)。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
       - id: "task_1_4_3"
@@ -152,6 +156,7 @@ groups:
         acceptance_criteria:
           - "建立根目錄 docker-compose.yml，定義 backend 與 frontend 服務。"
           - "加入 minio 服務（指定 console 與 api ports），並設定預設 bucket 與帳密。"
-          - "設定 frontend 或相關執行容器能向 Host Mount 一個 /workspace 路徑，模擬生成的專案寫出行為。"
+          - "設定 frontend 容器對向 Host Mount 專案目錄，支援程式碼熱更新。"
+          - "設定 backend 容器的 environment，覆寫 MINIO_URL=http://minio:9000，確保容器互聯路徑正確。"
           - "docker-compose up -d 啟動成功不重啟。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"

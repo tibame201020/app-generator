@@ -43,6 +43,8 @@ groups:
         title: "實作 StateMachineEngine 介面與 BaseContext"
         objective: "設計狀態機的控制反轉 (IoC) 介面。"
         acceptance_criteria:
+          - "嚴禁使用官方 Spring State Machine 等過於龐大的框架。必須使用原生的 Strategy Pattern 或 Switch-Case 來管理狀態轉移，維持 MVP 輕量化。"
+          - "嚴禁在 processEvent() 或任何會呼叫 LLM (Spring AI) 的長耗時方法上標註 @Transactional！這會導致 HikariCP 資料庫連線池瞬間枯竭 (Connection Pool Exhaustion)。資料庫存檔動作必須獨立且短暫。"
           - "定義 StateMachineEngine interface 包含 processEvent()。"
           - "定義 StateContext record，封裝傳入各節點的 Payload (Project ID, Current Messages)。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"

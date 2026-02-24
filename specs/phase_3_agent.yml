@@ -47,10 +47,13 @@ groups:
     name: "Agent Communication"
     tasks:
       - id: "task_3_2_1"
-        title: "實作 in-memory Agent 廣播機制"
+        title: "實作 in-memory Agent 廣播與原生 WebSocket Endpoint"
         objective: "讓前端能即時得知 Agent 的內部狀態 (MVP 階段)。"
         acceptance_criteria:
           - "建立 Message Event (包含 agentRole, action, message)。"
           - "在 StateMachineEngine 每次切換 state 或呼叫 LLM 前後，發送 Message。"
-          - "在此 MVP 階段，使用 Spring 內建的 ApplicationEventPublisher (in-memory broker) 進行發送與監聽，暫不依賴外部 RabbitMQ container。"
+          - "在此 MVP 階段，使用 Spring 內建的 ApplicationEventPublisher (in-memory broker) 進行發送與監聽。"
+          - "後端實作一組原生的 TextWebSocketHandler 掛載於 /ws/agents/{project_id} 供前端連線。"
+          - "在實作 WebSocketConfigurer 註冊 Handler 時，強制作為防護線，必須加上 .setAllowedOrigins(\"*\")，以防止 Vite 代理時遭到 403 Origin Forbidden 攔截。"
+          - "嚴禁引入 @EnableWebSocketMessageBroker 與 STOMP/SockJS，避免前後端連線協定不對等而失敗。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
