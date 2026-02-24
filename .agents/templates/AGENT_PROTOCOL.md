@@ -14,10 +14,14 @@
 - **重要：讀取 `docs/doc-categories.md` 知識庫索引**，並根據即將修改的模組，導航至 `docs/` 對應的子文件閱讀。
 - 將該 task 的 `status` 更新為 `in_progress` 並 commit。
 
-## Step 3: Implement
+## Step 3: Implement & Cognitive Load Limit (認知上限守則)
 - 依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。
 - 實作必須包含：功能程式碼 + 對應的單元測試／整合測試。
 - 若有架構或 Schema 變更，必須同步更新 `docs/` 內的對應文件與 `CHANGELOG.md`。
+- 🧠 **認知上限守則 (Cognitive Load Limit)**：身為 AI，您的上下文記憶有限。
+  1. **檔案長度控制**：新建立或修改的檔案，長度應盡量保持在 200~300 行以內。
+  2. **單一職責與反義大利麵程式碼**：如果一個功能需要追溯超過 3 個不同的方法或檔案才能看懂邏輯，代表拆得太碎或耦合太深。遇到此情形，您**必須主動進行重構 (Refactor)**，保持模組的「高內聚、低耦合」。
+  3. **壞了就換 (Disposable Components)**：如果舊有的小型模組充滿 Bug 難以修復，請果斷刪除並重寫，不要疊床架屋。
 
 ## Step 4: Self-Healing & Autonomy (自我修復與自治)
 - 雖然需嚴格遵守 Spec，但身為高階 Agent，**您被授權進行邏輯上的自我修復與環境適應**。
