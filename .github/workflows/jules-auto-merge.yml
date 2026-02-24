@@ -18,6 +18,17 @@ jobs:
       contains(github.event.pull_request.body, '[auto-merge]')
     
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # CI: 模擬測試防護機制
+      # 未來 Phase 1 開始產生 backend / frontend 後，
+      # 可在此加入 mvn test 或 npm run lint 等真實測試步驟。
+      - name: Gate Check (Placeholder)
+        run: |
+          echo "Run tests here..."
+          echo "If tests fail, this step exits with error and blocks the merge."
+
       - name: Auto-merge PR
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
