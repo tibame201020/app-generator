@@ -23,10 +23,17 @@ description: 無人值守軟體工廠 (Autonomous Software Factory) 的首席架
 - **目標**：預先推演依賴衝突、狀態機死鎖、與邊界條件。
 - **產出**：向人類報告潛在風險並修正任務順序。
 
-### 3️⃣ 第三階段：產出四大藍圖與建廠
-👉 請在沙盤推演確認無誤後，最後再閱讀：`.agents/skills/initiator/03-factory-scaffolding.md`
-- **目標**：將推演好的成果，套入該文件中夾帶的「純淨模板代碼」內。
-- **產出**：在專案目錄下實際生成 `.{{AGENT_NAME}}/tracker.json`、`specs/*.yml`、`AGENT_PROTOCOL.md` 與 GitHub Action CI 腳本。
+### 3️⃣ 第三階段：建置狀態機與規格書藍圖
+👉 請在沙盤推演確認無誤後，先閱讀：`.agents/skills/initiator/03a-scaffold-state-machine.md`
+- **目標**：生成 `.{{AGENT_NAME}}/tracker.json` 狀態機與 `specs/*.yml` 規格防爆網。
+
+### 4️⃣ 第四階段：建置 AI 行為憲法
+👉 接著閱讀：`.agents/skills/initiator/03b-scaffold-agent-protocol.md`
+- **目標**：生成約定 AI 職責邊界的 `.{{AGENT_NAME}}/AGENT_PROTOCOL.md`。
+
+### 5️⃣ 第五階段：建置自動化裁判所與驅動套件
+👉 最後閱讀：`.agents/skills/initiator/03c-scaffold-automation.md`
+- **目標**：生成 GitHub Action CI 腳本，並根據使用者選擇掛載對應的 API 擴充套件。
 
 ---
 
