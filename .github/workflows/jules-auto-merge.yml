@@ -21,13 +21,27 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # CI: 模擬測試防護機制
-      # 未來 Phase 1 開始產生 backend / frontend 後，
-      # 可在此加入 mvn test 或 npm run lint 等真實測試步驟。
-      - name: Gate Check (Placeholder)
+      # CI: 動態偵測防護機制
+      # 當 Phase 1 建出 backend 與 frontend 後，這些測試將自動硬性生效
+      - name: Backend Tests (Maven)
         run: |
-          echo "Run tests here..."
-          echo "If tests fail, this step exits with error and blocks the merge."
+          if [ -f "./pom.xml" ]; then
+            ./mvnw clean test
+          elif [ -f "backend/pom.xml" ]; then
+            cd backend && ./mvnw clean test
+          else
+            echo "Backend not initialized yet. Skipping tests."
+          fi
+
+      - name: Frontend Checks (NPM)
+        run: |
+          if [ -f "./package.json" ]; then
+            npm install && npm run build
+          elif [ -f "frontend/package.json" ]; then
+            cd frontend && npm install && npm run build
+          else
+            echo "Frontend not initialized yet. Skipping checks."
+          fi
 
       - name: Auto-merge PR
         uses: peter-evans/enable-pull-request-automerge@v3
