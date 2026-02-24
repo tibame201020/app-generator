@@ -17,7 +17,7 @@
                         "path/to/module/*",
                         "tests/to/module/*"
                     ],
-                    "spec_ref": "specs/phase_1.yml"
+                    "spec_ref": "specs/tasks/task_1.yml"
                 }
             ]
         }

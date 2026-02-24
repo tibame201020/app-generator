@@ -9,7 +9,7 @@
 - 讀取 `../assets/templates/AGENT_PROTOCOL.md`，替換變數後存為 `.{{AGENT_NAME}}/AGENT_PROTOCOL.md`。
 
 ### 2. 初始化核心文件與知識庫
-- **建立目錄**：若不存在，則建立 `docs/` 與 `docs/ADR/`。
+- **建立目錄**：若不存在，則建立 `docs/`、`docs/ADR/` 與 `specs/tasks/`。
 - **部署規則庫**：將 `skills/factory-initiator/rules/*` 內容複製至目標專案的 `.agents/rules/`。
   - **重要**：必須對 `git-workflow.md` 等包含變數的檔案執行與協議相同的變數替換（如 `{{AGENT_NAME}}`, `{{BASE_BRANCH}}`），確保規範完全符合當前專案環境。
 - **初始化索引**：將 `../assets/templates/doc-categories.md` 複製至 `docs/doc-categories.md`。

@@ -31,6 +31,7 @@ jobs:
           branches=$(git branch -r | grep "origin/{{AGENT_NAME}}/task-" | sed 's/origin\///')
           
           NEED_PUSH=false
+          BRANCHES_TO_DELETE=()
           for branch in $branches; do
             task_id=$(echo $branch | sed 's/{{AGENT_NAME}}\/task-//')
             echo "🕵️ Analyzing branch: $branch (Task: $task_id)"
@@ -41,29 +42,45 @@ jobs:
             
             # [裁判所規則]：
             # 情境 A：PR 已被 CLOSED (且主線 tracker 仍為 pending) -> 代表失敗
-            # 情境 B：分支存在超過 1 小時但「完全沒有 PR」 -> 代表 Worker 崩潰
+            # 情境 B：分支存在超過 2 小時但「完全沒有 PR」 -> 代表 Worker 崩潰
             
             SHOULD_CLEANUP=false
             if [[ "$pr_status" == "CLOSED" ]]; then
               echo "⚠️ Task $task_id: Found CLOSED PR. Incrementing attempts."
               SHOULD_CLEANUP=true
             elif [[ -z "$pr_status" ]]; then
-              echo "⚠️ Task $task_id: Phantom branch detected (No PR). Incrementing attempts."
-              SHOULD_CLEANUP=true
+              last_commit_time=$(git log -1 --format="%ct" "origin/$branch")
+              current_time=$(date +%s)
+              diff_hours=$(( (current_time - last_commit_time) / 3600 ))
+              if [[ $diff_hours -ge 2 ]]; then
+                echo "⚠️ Task $task_id: Phantom branch detected (No PR, age >= 2h). Incrementing attempts."
+                SHOULD_CLEANUP=true
+              else
+                echo "ℹ️ Task $task_id: Phantom branch is recent (${diff_hours}h < 2h). Waiting."
+              fi
             fi
 
             if [[ "$SHOULD_CLEANUP" == "true" ]]; then
               jq --arg id "$task_id" '(.phases[].tasks[] | select(.id == $id)).attempts += 1' .{{AGENT_NAME}}/tracker.json > tmp.json && mv tmp.json .{{AGENT_NAME}}/tracker.json
               git add .{{AGENT_NAME}}/tracker.json
               git commit -m "chore: [Arbitrator] task $task_id failed (attempts +1)"
-              git push origin --delete "$branch"
+              BRANCHES_TO_DELETE+=("$branch")
               NEED_PUSH=true
             fi
           done
 
           if [[ "$NEED_PUSH" == "true" ]]; then
-            git push origin {{BASE_BRANCH}}
-            echo "✅ Main tracker updated and stale branches purged."
+            echo "🔄 Attempting to push updated tracker to {{BASE_BRANCH}}..."
+            if git push origin {{BASE_BRANCH}}; then
+              echo "✅ Main tracker updated successfully."
+              for b in "${BRANCHES_TO_DELETE[@]}"; do
+                git push origin --delete "$b" || echo "Failed to delete $b"
+              done
+              echo "✅ Stale branches purged."
+            else
+              echo "❌ Failed to push to main tracker. Branches will not be deleted to ensure consistency."
+              exit 1
+            fi
           fi
           
     # [!] 注意：本腳本為邏輯範本，實際運作建議配合 jq 處理 JSON。
