@@ -45,8 +45,11 @@ description: 無人值守軟體工廠 (Autonomous Software Factory) 的首席架
 ### 階段四：產出四大藍圖 (Scaffolding the Factory)
 推演無誤且人類同意後，請使用本機端 `.agents/templates/` 目錄下的範本，為專案生成完整的工廠啟動包 (使用 File Generation Tools)。
 
+### 階段四：產出四大藍圖 (Scaffolding the Factory)
+推演無誤且人類同意後，請使用本機端 `.agents/templates/` 目錄下的範本，為專案生成完整的工廠啟動包 (使用 File Generation Tools)。
+
 1. **`.jules/tracker.json` (狀態機)**：參考 `.agents/templates/jules/tracker.json`，將所有任務寫入並預設為 `pending`。
-2. **`specs/phase_X.yml` (規格防爆網)**：參考模板，為每個階段建立真實的 YAML 藍圖。
+2. **`specs/phase_X.yml` (規格防爆網)**：建立 `specs/` 目錄，並參考 `.agents/templates/specs/template.yml` 藍圖，為每個階段建立真實的 YAML 規格。
 3. **`.jules/AGENT_PROTOCOL.md` (行為憲法)**：將 `.agents/templates/jules/AGENT_PROTOCOL.md` 原封不動地複製到 `.jules/` 目錄下。
 4. **`.github/workflows/jules-auto-merge.yml` (CI 裁判所)**：將 `.agents/templates/workflows/jules-auto-merge.yml` 複製到對應的 GitHub Action 目錄下。
 
