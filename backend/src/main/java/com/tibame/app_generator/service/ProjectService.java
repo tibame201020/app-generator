@@ -92,4 +92,12 @@ public class ProjectService {
         Project project = getProjectById(projectId);
         return gitService.readFileContent(project.getUser().getId(), projectId, filePath);
     }
+
+    /**
+     * 儲存專案中指定檔案的內容。
+     */
+    public void saveFileContent(UUID projectId, String filePath, String content) throws IOException, GitAPIException {
+        Project project = getProjectById(projectId);
+        gitService.updateFileContent(project.getUser().getId(), projectId, filePath, content);
+    }
 }

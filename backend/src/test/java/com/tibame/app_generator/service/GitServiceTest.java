@@ -167,4 +167,28 @@ class GitServiceTest {
         assertThrows(java.io.IOException.class,
                 () -> gitService.readFileContent(testUserId, testProjectId, "nonexistent.txt"));
     }
+
+    @Test
+    @DisplayName("應能直接更新 Bare Repo 中的檔案內容")
+    void testUpdateFileContent() throws Exception {
+        // Init repo
+        gitService.initBareRepository(testUserId, testProjectId);
+
+        // Update file
+        String filePath = "src/main.txt";
+        String content = "Hello World";
+        gitService.updateFileContent(testUserId, testProjectId, filePath, content);
+
+        // Read file
+        String readContent = gitService.readFileContent(testUserId, testProjectId, filePath);
+        assertEquals(content, readContent);
+
+        // Update again
+        String newContent = "Hello World V2";
+        gitService.updateFileContent(testUserId, testProjectId, filePath, newContent);
+
+        // Read again
+        String readContent2 = gitService.readFileContent(testUserId, testProjectId, filePath);
+        assertEquals(newContent, readContent2);
+    }
 }
