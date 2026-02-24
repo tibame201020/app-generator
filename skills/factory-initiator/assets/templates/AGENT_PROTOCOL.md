@@ -66,6 +66,7 @@
 - {{AGENT_NAME}} 每次執行任務時，必須從 `{{BASE_BRANCH}}` 切出新分支：`{{AGENT_NAME}}/task-{task_id}`。
 - **重要狀態轉移 (Transaction)**：
   - 在您確認所有測試通過、且 `git diff` 符合路徑約束後，**您必須在 Feature Branch 分支上將 `.{{AGENT_NAME}}/tracker.json` 中該任務的 status 改為 `completed` 並 commit**。
+  - **Phase 自動推進 (Issue D Fix)**：若本任務是當前 Phase 的最後一個任務，您**必須同時將 `current_phase` 更新為下一個階段**（參考 `tracker.json` 的階段順序）。
   - 這代表了本次任務的「交易提交」。只有 PR 被合併後，主分支的狀態才會同步更新。
 - 提交 PR 時，目標分支 (Base Branch) 必須設定為 `{{BASE_BRANCH}}`。
 - PR Title 格式：`[{{AGENT_NAME}}] {task_title}`

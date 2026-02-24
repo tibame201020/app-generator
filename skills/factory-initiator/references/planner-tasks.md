@@ -12,8 +12,9 @@
 - **Success Criteria**：定義明確的量化驗證指標。
 - **Negative Scenarios**：指明必須涵蓋的失敗測試情境。
 
-### 2. DAG 依賴排列
+### 2. DAG 依賴排列與進程自動化 (Issue D Fix)
 - 確保 `depends_on` 順序符合邏輯。
+- **重要**：每個 Phase 的最後一個任務，必須在其 Acceptance Criteria 中明確要求 Worker 更新 `tracker.json` 的 `current_phase` 欄位。
 
 ---
 > 🛑 **暫停點**：清單完成後，請閱讀 `mental-simulation.md` 進行安全預演。

@@ -30,30 +30,24 @@ jobs:
           # 2. 取得遠端分支列表
           branches=$(git branch -r | grep "origin/{{AGENT_NAME}}/task-" | sed 's/origin\///')
           
-          NEED_PUSH=false
-          BRANCHES_TO_DELETE=()
           for branch in $branches; do
             task_id=$(echo $branch | sed 's/{{AGENT_NAME}}\/task-//')
             echo "🕵️ Analyzing branch: $branch (Task: $task_id)"
             
-            # 取得 PR 狀態（如果存在）
-            pr_data=$(gh pr list --head "$branch" --state all --json state,updatedAt --jq '.[0]' 2>/dev/null)
+            # 取得 PR 狀態
+            pr_data=$(gh pr list --head "$branch" --state all --json state --jq '.[0]' 2>/dev/null)
             pr_status=$(echo "$pr_data" | jq -r '.state // empty')
-            
-            # [裁判所規則]：
-            # 情境 A：PR 已被 CLOSED (且主線 tracker 仍為 pending) -> 代表失敗
-            # 情境 B：分支存在超過 2 小時但「完全沒有 PR」 -> 代表 Worker 崩潰
             
             SHOULD_CLEANUP=false
             if [[ "$pr_status" == "CLOSED" ]]; then
-              echo "⚠️ Task $task_id: Found CLOSED PR. Incrementing attempts."
+              echo "⚠️ Task $task_id: Found CLOSED PR."
               SHOULD_CLEANUP=true
             elif [[ -z "$pr_status" ]]; then
               last_commit_time=$(git log -1 --format="%ct" "origin/$branch")
               current_time=$(date +%s)
               diff_hours=$(( (current_time - last_commit_time) / 3600 ))
               if [[ $diff_hours -ge 2 ]]; then
-                echo "⚠️ Task $task_id: Phantom branch detected (No PR, age >= 2h). Incrementing attempts."
+                echo "⚠️ Task $task_id: Phantom branch detected (age >= 2h)."
                 SHOULD_CLEANUP=true
               else
                 echo "ℹ️ Task $task_id: Phantom branch is recent (${diff_hours}h < 2h). Waiting."
@@ -61,25 +55,28 @@ jobs:
             fi
 
             if [[ "$SHOULD_CLEANUP" == "true" ]]; then
+              # 先將 ID 加入待處裡清單，不立刻 commit
               jq --arg id "$task_id" '(.phases[].tasks[] | select(.id == $id)).attempts += 1' .{{AGENT_NAME}}/tracker.json > tmp.json && mv tmp.json .{{AGENT_NAME}}/tracker.json
-              git add .{{AGENT_NAME}}/tracker.json
-              git commit -m "chore: [Arbitrator] task $task_id failed (attempts +1)"
               BRANCHES_TO_DELETE+=("$branch")
               NEED_PUSH=true
             fi
           done
 
           if [[ "$NEED_PUSH" == "true" ]]; then
-            echo "🔄 Attempting to push updated tracker to {{BASE_BRANCH}}..."
+            echo "🔄 Attempting Transaction: Push tracker & purge branches..."
+            git add .{{AGENT_NAME}}/tracker.json
+            git commit -m "chore(arbitrator): cleanup stale tasks and synchronize attempts"
+
             # 使用 force-with-lease 避免覆蓋 main 分支的併發合併
             if git push origin {{BASE_BRANCH}} --force-with-lease; then
-              echo "✅ Main tracker updated successfully."
+              echo "✅ Tracker updated on main branch. Purging branches..."
               for b in "${BRANCHES_TO_DELETE[@]}"; do
-                git push origin --delete "$b" || echo "Failed to delete $b (already gone?)"
+                git push origin --delete "$b" || echo "⚠️ Failed to delete $b (might be manually deleted)"
               done
-              echo "✅ Stale branches purged."
+              echo "✅ All stale tasks handled successfully."
             else
-              echo "❌ Failed to push to main tracker. Race condition detected. Branches will not be deleted to ensure consistency. Will retry next hour."
+              echo "❌ Race Condition: Push failed. Status will NOT be updated. Retrying next cycle."
+              # 不執行分支刪除，保持狀態一致性，下次 hourly 會重新讀取最新 Tracker 並重試
               exit 1
             fi
           fi

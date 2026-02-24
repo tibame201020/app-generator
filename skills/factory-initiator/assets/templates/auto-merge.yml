@@ -1,5 +1,9 @@
 name: {{AGENT_NAME}} Auto-Merge
 
+# ⚠️ TECH-STACK-PLACEHOLDER: 以下 CI 步驟預設為 Java/Maven + NPM。
+# Initiator 必須根據專案選型替換 "Backend Tests" 與 "Frontend Checks" 中的內容。
+# 若未進行指令替換即部署，非 Java 專案在 Phase 2 起將因找不到 pom.xml 而全線失敗。
+
 on:
   pull_request:
     types: [labeled, synchronize, reopened, ready_for_review]
