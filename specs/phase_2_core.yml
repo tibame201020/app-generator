@@ -8,12 +8,13 @@ groups:
     name: "Domain Entities & Database"
     tasks:
       - id: "task_2_1_1"
-        title: "建立 Project 與 Conversation JPA Entities"
-        objective: "建立核心領域模型。"
+        title: "建立 Project 與 Conversation JPA Entities (含 Snowflake ID & MinIO)"
+        objective: "建立核心領域模型，分離關聯資料與龐大檔案。"
         acceptance_criteria:
-          - "建立 Project entity (id, name, status, created_at)。"
-          - "建立 Conversation entity (id, project_id, role, content, timestamp)。"
-          - "Entities 之間設計正確的 @OneToMany 關聯。"
+          - "實作 Snowflake 演算法的 ID Generator (或引入相關套件)。"
+          - "建立 Project entity，ID 採用 Snowflake 生成的 Long/String 模擬 UUID。"
+          - "建立 Conversation entity，ID 亦採用 Snowflake 演算法。"
+          - "Conversation 欄位設計：包含 content_text (String, 放 Agent 對話) 與 content_file_url (String, 放 MinIO S3 檔案連結)，徹底移除耗費效能的 LONGTEXT 設計。"
           - "執行測試確認 Hibernate schema 自動生成至 H2。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
@@ -23,6 +24,7 @@ groups:
         acceptance_criteria:
           - "建立 ProjectRepository 介面繼承 JpaRepository。"
           - "建立 ConversationRepository 介面，並實作 findByProjectIdOrderByTimestampAsc。"
+          - "確保 Repository 能正確處理 Snowflake ID 型別。"
           - "撰寫 @DataJpaTest 驗證 Repository 讀寫。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
@@ -49,16 +51,18 @@ groups:
         title: "實作 PM 狀態轉移邏輯 (PMState)"
         objective: "實作 PM 階段的處理邏輯。"
         acceptance_criteria:
-          - "建立 PMStateHandler 實作處理邏輯（先印 Log 取代真實 LLM 呼叫）。"
+          - "建立 PMStateHandler 實作處理邏輯。"
           - "決定下一個狀態是待在 REQUIREMENT_GATHERING 或前往 ARCHITECTURE_DESIGN。"
+          - "每次狀態推進後，必須立刻呼叫 Repository 的 save() 方法將狀態落入資料庫，確保 Docker 重啟後能接續開發。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
       - id: "task_2_2_4"
         title: "實作 SA 狀態轉移邏輯 (SAState)"
         objective: "實作 SA 階段的處理邏輯。"
         acceptance_criteria:
-          - "建立 SAStateHandler 實作處理邏輯（先印 Log）。"
+          - "建立 SAStateHandler 實作處理邏輯。"
           - "確定架構能生成 Dummy JSON 結構取代真實規劃。"
+          - "與 PMState 相同，狀態改變時必須立刻 save() 落資料庫。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
       - id: "task_2_2_5"

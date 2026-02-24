@@ -46,6 +46,16 @@
           "spec_ref": "specs/phase_1_setup.yml#task-114-建立-apihealth-測試端點"
         },
         {
+          "id": "task_1_1_5",
+          "phase": "phase_1",
+          "title": "加入 MinIO S3 Client 依賴與設定",
+          "status": "pending",
+          "depends_on": [
+            "task_1_1_1"
+          ],
+          "spec_ref": "specs/phase_1_setup.yml#task-115-加入-minio-s3-client-依賴與設定"
+        },
+        {
           "id": "task_1_2_1",
           "phase": "phase_1",
           "title": "加入 Spring AI OpenAI 依賴與基礎配置",

@@ -21,18 +21,19 @@ groups:
         objective: "讓前端能即時接收後端 Agent 的推播。"
         acceptance_criteria:
           - "實作 useAgentStream (或類似名稱) 的 React Hook。"
-          - "建立與 Spring Boot 的 WebSocket (或 Server-Sent Events) 連線。"
+          - "建立與 Spring Boot 的 WebSocket 連線，連線 Endpoint 必須包含專案識別 (例如：/ws/agents/{project_id})。"
           - "能夠將接收到的訊息存入 React State (Redux/Zustand 或 Context API)。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
       - id: "task_4_1_3"
-        title: "實作 ChatMessage 元件 (User vs Agent)"
-        objective: "區分不同角色的對話氣泡。"
+        title: "實作 ChatMessage 元件 (User vs Agent) 與語法高亮"
+        objective: "區分不同角色的對話氣泡並支援程式碼展示。"
         acceptance_criteria:
           - "實作 ChatMessage 元件。"
           - "若發言者是 USER，顯示在右側 (DaisyUI chat-end)。"
           - "若發言者是 PM, SA, PG, UIUX，顯示在左側 (DaisyUI chat-start)，並附帶對應角色的頭像或 Badge。"
-          - "支援渲染 Markdown 內容 (可引入 react-markdown)。"
+          - "支援渲染 Markdown 內容 (引入 react-markdown)。"
+          - "必須安裝並整合 react-syntax-highlighter，確保 AI 產出的程式碼區塊具有良好的閱讀體驗。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
       - id: "task_4_1_4"
@@ -51,5 +52,5 @@ groups:
         objective: "履行前端文件承諾。"
         acceptance_criteria:
           - "將 docs/frontend/theme_and_styling.md 中的 Placeholder 替換為正式的手冊內容。"
-          - "必須包含實際配置的主題名稱，與 Navbar/Sidebar 使用的元件類別範例。"
+          - "必須寫明全站預設主題為 dracula (深色駭客風)，並提供 Navbar/Sidebar 使用的元件類別範例。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"

@@ -11,8 +11,9 @@ groups:
         title: "初始化 Spring Boot 3 專案骨架與 Maven 設定"
         objective: "建立 Spring Boot 基礎結構 (pom.xml, Application.java)。"
         acceptance_criteria:
-          - "產生包含 spring-boot-starter-web 的 pom.xml。"
-          - "建立 JulesApplication.java 進入點。"
+          - "建立 backend 目錄作為後端根目錄。"
+          - "產生包含 spring-boot-starter-web 的 pom.xml，將 java.version 設為 21。"
+          - "建立 com.jules.factory.JulesApplication.java 進入點。"
           - "執行 mvn clean install (或 ./mvnw) 成功編譯。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
@@ -20,7 +21,8 @@ groups:
         title: "設定 application.yml 並啟用 Java 21 虛擬執行緒"
         objective: "建立配置檔並宣告 Virtual Threads。"
         acceptance_criteria:
-          - "建立 src/main/resources/application.yml。"
+          - "建立 backend/src/main/resources/application.yml。"
+          - "設定 server.port=8080。"
           - "寫入 spring.threads.virtual.enabled: true。"
           - "撰寫 @SpringBootTest 測試啟動無誤。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
@@ -30,7 +32,8 @@ groups:
         objective: "讓後端能連線至測試資料庫。"
         acceptance_criteria:
           - "於 pom.xml 加入 spring-boot-starter-data-jpa 與 h2 依賴。"
-          - "於 application.yml 加入 jdbc:h2:mem:julesdb 配置，並啟用 H2 Console。"
+          - "於 application.yml 加入 jdbc:h2:mem:julesdb 配置。"
+          - "開啟 H2 Console，路徑設為 /h2-console，帳號 sa，密碼空白。"
           - "專案可正常啟動，無 DataSource 連線錯誤。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
@@ -43,6 +46,15 @@ groups:
           - "撰寫 MockMvc 測試確認 HTTP 200。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
+      - id: "task_1_1_5"
+        title: "加入 MinIO S3 Client 依賴與設定"
+        objective: "導入 S3 兼容的物件儲存能力。"
+        acceptance_criteria:
+          - "於 backend/pom.xml 加入 minio 依賴。"
+          - "於 application.yml 配置 minio.url, minio.access.key, minio.secret.key (從環境變數讀取)。"
+          - "建立 MinioConfig.java 產生 MinioClient Bean。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
   - id: "1.2"
     name: "LLM & Messaging Setup"
     tasks:
@@ -50,8 +62,10 @@ groups:
         title: "加入 Spring AI OpenAI 依賴與基礎配置"
         objective: "載入 Spring AI。"
         acceptance_criteria:
-          - "於 pom.xml 加入 Spring AI BOM 與 spring-ai-openai-spring-boot-starter。"
+          - "於 backend/pom.xml 加入 Spring AI BOM (指定版本 1.0.0-M1)。"
+          - "加入 spring-ai-openai-spring-boot-starter 依賴。"
           - "於 application.yml 配置 ${SPRING_AI_OPENAI_API_KEY} 變數位置。"
+          - "設定預設呼叫模型為 gpt-4o。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
       - id: "task_1_2_2"
@@ -78,9 +92,11 @@ groups:
         title: "使用 Vite 初始化 React + TypeScript 專案"
         objective: "建立前端骨架。"
         acceptance_criteria:
-          - "透過 npm create vite@latest frontend -- --template react-ts 建立專案夾。"
+          - "在根目錄執行 npm create vite@latest frontend -- --template react-ts 建立專案夾。"
+          - "在 frontend 內執行 npm install (嚴禁用 yarn 或 pnpm 以免鎖檔衝突)。"
+          - "修改 vite.config.ts 指定 port: 5173。"
           - "移除預設的冗餘檔案與 css (App.css 等)。"
-          - "執行 npm run build 成功。"
+          - "進入 frontend 執行 npm run build 成功。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
       - id: "task_1_3_2"
@@ -130,10 +146,11 @@ groups:
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
       - id: "task_1_4_3"
-        title: "撰寫 docker-compose.yml 並設定 Volume 掛載"
-        objective: "一鍵啟動並支持 Workspace。"
+        title: "撰寫 docker-compose.yml 並設定 Volume 與 MinIO"
+        objective: "一鍵啟動包含 Storage 的所有環境。"
         acceptance_criteria:
           - "建立根目錄 docker-compose.yml，定義 backend 與 frontend 服務。"
+          - "加入 minio 服務（指定 console 與 api ports），並設定預設 bucket 與帳密。"
           - "設定 frontend 或相關執行容器能向 Host Mount 一個 /workspace 路徑，模擬生成的專案寫出行為。"
           - "docker-compose up -d 啟動成功不重啟。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
