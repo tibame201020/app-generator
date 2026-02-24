@@ -1,4 +1,3 @@
-```yaml
 id: "phase_X"
 name: "Phase X: Description"
 description: "在此填寫階段描述，例如：建置底層架構與核心模組"
@@ -20,5 +19,3 @@ modules:
           - "定義明確的量化指標"
         negative_test_cases:
           - "描述應被阻擋或妥善處理的異常輸入情境"
-
-```
