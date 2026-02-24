@@ -1,0 +1,139 @@
+phase: "Phase 1: Foundation & Specs"
+description: >
+  本文件定義 Jules Software Factory 第一階段的基礎建設細節。
+  本階段已拆解為極細粒度 (Highly Granular) 的單一職責任務，確保 Agent 能在短週期的 Schedule 中精準執行與除錯。
+
+groups:
+  - id: "1.1"
+    name: "Backend Foundation"
+    tasks:
+      - id: "task_1_1_1"
+        title: "初始化 Spring Boot 3 專案骨架與 Maven 設定"
+        objective: "建立 Spring Boot 基礎結構 (pom.xml, Application.java)。"
+        acceptance_criteria:
+          - "產生包含 spring-boot-starter-web 的 pom.xml。"
+          - "建立 JulesApplication.java 進入點。"
+          - "執行 mvn clean install (或 ./mvnw) 成功編譯。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_1_1_2"
+        title: "設定 application.yml 並啟用 Java 21 虛擬執行緒"
+        objective: "建立配置檔並宣告 Virtual Threads。"
+        acceptance_criteria:
+          - "建立 src/main/resources/application.yml。"
+          - "寫入 spring.threads.virtual.enabled: true。"
+          - "撰寫 @SpringBootTest 測試啟動無誤。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_1_1_3"
+        title: "設定 H2 Database Memory 模式與 JPA 依賴"
+        objective: "讓後端能連線至測試資料庫。"
+        acceptance_criteria:
+          - "於 pom.xml 加入 spring-boot-starter-data-jpa 與 h2 依賴。"
+          - "於 application.yml 加入 jdbc:h2:mem:julesdb 配置，並啟用 H2 Console。"
+          - "專案可正常啟動，無 DataSource 連線錯誤。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_1_1_4"
+        title: "建立 /api/health 測試端點"
+        objective: "提供基礎健康檢查 API。"
+        acceptance_criteria:
+          - "建立 HealthController.java，提供 GET /api/health。"
+          - "回傳 JSON 格式 {\"status\": \"ok\"}。"
+          - "撰寫 MockMvc 測試確認 HTTP 200。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+  - id: "1.2"
+    name: "LLM & Messaging Setup"
+    tasks:
+      - id: "task_1_2_1"
+        title: "加入 Spring AI OpenAI 依賴與基礎配置"
+        objective: "載入 Spring AI。"
+        acceptance_criteria:
+          - "於 pom.xml 加入 Spring AI BOM 與 spring-ai-openai-spring-boot-starter。"
+          - "於 application.yml 配置 ${SPRING_AI_OPENAI_API_KEY} 變數位置。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_1_2_2"
+        title: "建立 /api/test-ai 端點測試 LLM 連線"
+        objective: "驗證 Spring AI ChatModel 注入正常。"
+        acceptance_criteria:
+          - "建立 AiTestController.java 注入 ChatModel (或 ChatClient)。"
+          - "提供 GET /api/test-ai?msg=hello 取得回應。"
+          - "撰寫 @AutoConfigureMockMvc 整合測試（可用 Mock 隔離真實呼叫）。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_1_2_3"
+        title: "加入 Spring Cloud Stream 依賴與 in-memory MQ 設定"
+        objective: "建立異步訊息基礎。"
+        acceptance_criteria:
+          - "於 pom.xml 加入 Spring Cloud Stream。"
+          - "決定並配置輕量化綁定器 (如 RabbitMQ 或測試用的 in-memory binder)。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+  - id: "1.3"
+    name: "Frontend Foundation"
+    tasks:
+      - id: "task_1_3_1"
+        title: "使用 Vite 初始化 React + TypeScript 專案"
+        objective: "建立前端骨架。"
+        acceptance_criteria:
+          - "透過 npm create vite@latest frontend -- --template react-ts 建立專案夾。"
+          - "移除預設的冗餘檔案與 css (App.css 等)。"
+          - "執行 npm run build 成功。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_1_3_2"
+        title: "安裝 Tailwind CSS 與 PostCSS 並完成配置"
+        objective: "導入 Tailwind 引擎。"
+        acceptance_criteria:
+          - "安裝 tailwindcss, postcss, autoprefixer。"
+          - "產生 tailwind.config.ts 與 postcss.config.js。"
+          - "在 index.css 寫入 @tailwind base; @tailwind components; @tailwind utilities;。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_1_3_3"
+        title: "安裝 DaisyUI Plugin 並設定主題"
+        objective: "導入 UI 元件庫。"
+        acceptance_criteria:
+          - "安裝 daisyui。"
+          - "於 tailwind.config.ts 的 plugins 陣列加入 DaisyUI。"
+          - "在 config 中指定 themes (如 [\"light\", \"dark\"])。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_1_3_4"
+        title: "建立首頁並渲染 DaisyUI 測試元件"
+        objective: "驗證 CSS 與 DaisyUI 成功運作。"
+        acceptance_criteria:
+          - "修改 App.tsx，放入一個 DaisyUI <button className=\"btn btn-primary\">Test</button>。"
+          - "執行 npm run dev 無主控台報錯。"
+          - "確保留下 docs/frontend/theme_and_styling.md 實體檔案滿足文件規範。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+  - id: "1.4"
+    name: "Docker Integration"
+    tasks:
+      - id: "task_1_4_1"
+        title: "建立 Dockerfile (Backend)"
+        objective: "將 Spring Boot 打包成映像檔。"
+        acceptance_criteria:
+          - "建立 backend/Dockerfile (Multi-stage build，先 maven package 再 JRE run)。"
+          - "暴露對應 API Port (默認 8080)。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_1_4_2"
+        title: "建立 Dockerfile (Frontend)"
+        objective: "將 React 專案打包。"
+        acceptance_criteria:
+          - "建立 frontend/Dockerfile (若開發模式可直接 run dev，或 build 後用 Caddy/Nginx 服務)。"
+          - "暴露對應 Port (默認 5173 或 80)。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_1_4_3"
+        title: "撰寫 docker-compose.yml 並設定 Volume 掛載"
+        objective: "一鍵啟動並支持 Workspace。"
+        acceptance_criteria:
+          - "建立根目錄 docker-compose.yml，定義 backend 與 frontend 服務。"
+          - "設定 frontend 或相關執行容器能向 Host Mount 一個 /workspace 路徑，模擬生成的專案寫出行為。"
+          - "docker-compose up -d 啟動成功不重啟。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"

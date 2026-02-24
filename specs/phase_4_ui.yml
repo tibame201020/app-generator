@@ -1,0 +1,55 @@
+phase: "Phase 4: Frontend UI & Interactive Chat"
+description: >
+  本階段是 Jules Software Factory 的最後一哩路。
+  我們將實作讓使用者能夠即時看見 Agent 討論過程的 UI 介面，並整合前幾個階段的成果。
+
+groups:
+  - id: "4.1"
+    name: "UI Components & Layout"
+    tasks:
+      - id: "task_4_1_1"
+        title: "實作 Layout (Navbar, Sidebar)"
+        objective: "建立應用程式的基礎版面。"
+        acceptance_criteria:
+          - "實作頂部 Navbar，包含專案名稱與狀態顯示 (例如：Phase 2: SA 規劃中)。"
+          - "實作側邊欄 Sidebar，列出目前的任務清單 (對接 Phase 1 中的 tracker JSON 概念)。"
+          - "全程使用 Tailwind CSS 與 DaisyUI 類別。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_4_1_2"
+        title: "實作 WebSocket Client Hook"
+        objective: "讓前端能即時接收後端 Agent 的推播。"
+        acceptance_criteria:
+          - "實作 useAgentStream (或類似名稱) 的 React Hook。"
+          - "建立與 Spring Boot 的 WebSocket (或 Server-Sent Events) 連線。"
+          - "能夠將接收到的訊息存入 React State (Redux/Zustand 或 Context API)。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_4_1_3"
+        title: "實作 ChatMessage 元件 (User vs Agent)"
+        objective: "區分不同角色的對話氣泡。"
+        acceptance_criteria:
+          - "實作 ChatMessage 元件。"
+          - "若發言者是 USER，顯示在右側 (DaisyUI chat-end)。"
+          - "若發言者是 PM, SA, PG, UIUX，顯示在左側 (DaisyUI chat-start)，並附帶對應角色的頭像或 Badge。"
+          - "支援渲染 Markdown 內容 (可引入 react-markdown)。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_4_1_4"
+        title: "實作 Agent 內部討論視窗 (Internal Team Chat)"
+        objective: "展現「虛擬工作室」的黑盒子過程。"
+        acceptance_criteria:
+          - "在主畫面實作一個可以展開/收合的側邊欄或底部面板，專門顯示 Agent 之間的 Debug 與決策過程 (System Logs)。"
+          - "確保主對話框僅顯示需要 User 關注的內容。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+  - id: "4.2"
+    name: "Documentation"
+    tasks:
+      - id: "task_4_2_1"
+        title: "撰寫 docs/frontend/theme_and_styling.md 文件"
+        objective: "履行前端文件承諾。"
+        acceptance_criteria:
+          - "將 docs/frontend/theme_and_styling.md 中的 Placeholder 替換為正式的手冊內容。"
+          - "必須包含實際配置的主題名稱，與 Navbar/Sidebar 使用的元件類別範例。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"

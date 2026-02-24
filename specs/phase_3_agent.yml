@@ -1,0 +1,55 @@
+phase: "Phase 3: LLM Integration & Workflow"
+description: >
+  本階段將把 Phase 1 準備好的 Spring AI 與 Message Queue 整合進 Phase 2 的狀態引擎中，
+  讓整個虛擬工作室「活起來」。
+
+groups:
+  - id: "3.1"
+    name: "LLM Integration"
+    tasks:
+      - id: "task_3_1_1"
+        title: "實作 LLMPromptTemplateBuilder"
+        objective: "集中管理 System Prompts。"
+        acceptance_criteria:
+          - "建立 PromptTemplateBuilder class。"
+          - "定義 PM 與 SA 的預設 System Prompt。"
+          - "能夠將 User Message 結合進歷史對話陣列。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_3_1_2"
+        title: "整合 Spring AI 呼叫至 PM 節點"
+        objective: "讓 PM 接上智商。"
+        acceptance_criteria:
+          - "修改 PMStateHandler，注入 ChatModel。"
+          - "實際向 LLM 發送 Payload，並將結果存入 Conversation entity 寫入 H2。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_3_1_3"
+        title: "整合 Spring AI 呼叫至 SA 節點"
+        objective: "讓 SA 接上智商。"
+        acceptance_criteria:
+          - "修改 SAStateHandler，注入 ChatModel。"
+          - "設定 SA 特化的 Prompt（產出架構 JSON 或 Markdown）。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+      - id: "task_3_1_4"
+        title: "實作 PG 產生程式碼的 File I/O 服務"
+        objective: "讓 Agent 能寫入 Host 工作區。"
+        acceptance_criteria:
+          - "建立 WorkspaceFileService。"
+          - "解析 LLM 傳回的程式碼區塊 (Markdown 或 JSON 結構)。"
+          - "將檔案實際寫入專案掛載的 /workspace 路徑下。"
+          - "撰寫單元測試驗證 File I/O 安全性 (防止 Path Traversal)。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+  - id: "3.2"
+    name: "Agent Communication"
+    tasks:
+      - id: "task_3_2_1"
+        title: "使用 Spring Cloud Stream 實作 Agent 廣播機制"
+        objective: "讓前端能即時得知 Agent 的內部狀態。"
+        acceptance_criteria:
+          - "建立 Message Event (包含 agentRole, action, message)。"
+          - "在 StateMachineEngine 每次切換 state 或呼叫 LLM 前後，發送 Message。"
+          - "配置對應的 Producer/Binding。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
