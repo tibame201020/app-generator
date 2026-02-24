@@ -33,4 +33,7 @@ description: 無人值守軟體工廠的首席架構與規劃核心，負責將�
 確認上述資訊後，閱讀 **[Architect Decisions](references/architect-decisions.md)** 開始規畫技術法律。
 
 > [!IMPORTANT]
-> **交付物完整性**：在階段 4 的建廠流程結尾，您必須根據 `factory-scaffolding.md` 的指引提供「手動配置清單」。**未完成此提醒前，本技能不算執行結束。**
+> **交付物完整性與技術棧靈活性 (Issue 3 Fix)**：
+> 1. 在階段 4 的建廠流程結尾，您必須提供「手動配置清單」。
+> 2. **CI 模板警告**：內建的 `auto-merge.yml` 預設為 **Java/Maven + NPM**。身為 Architect，您必須根據專案選型修正建廠腳本中的 CI 指令，嚴禁無效套用。
+> **未完成上述完整規畫前，本技能不算執行結束。**

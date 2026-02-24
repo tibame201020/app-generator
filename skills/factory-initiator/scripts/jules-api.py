@@ -143,7 +143,8 @@ def cmd_cycle(args):
     pr_urls = _extract_pr_urls(latest) if latest else []
 
     if args.merge == "yes" and pr_urls:
-        # Merge at most one PR per cycle (minimal-step policy)
+        # Merge at most one PR per cycle (minimal-step policy). 
+        # This is intentional to ensure each change is fully verified by subsequent cycles.
         merge_result = _merge_pr(pr_urls[0], method=args.merge_method)
         status["merged"].append({"pr": pr_urls[0], **merge_result})
     elif args.merge == "yes":

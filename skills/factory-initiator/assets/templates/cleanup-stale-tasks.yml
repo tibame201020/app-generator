@@ -71,14 +71,15 @@ jobs:
 
           if [[ "$NEED_PUSH" == "true" ]]; then
             echo "🔄 Attempting to push updated tracker to {{BASE_BRANCH}}..."
-            if git push origin {{BASE_BRANCH}}; then
+            # 使用 force-with-lease 避免覆蓋 main 分支的併發合併
+            if git push origin {{BASE_BRANCH}} --force-with-lease; then
               echo "✅ Main tracker updated successfully."
               for b in "${BRANCHES_TO_DELETE[@]}"; do
-                git push origin --delete "$b" || echo "Failed to delete $b"
+                git push origin --delete "$b" || echo "Failed to delete $b (already gone?)"
               done
               echo "✅ Stale branches purged."
             else
-              echo "❌ Failed to push to main tracker. Branches will not be deleted to ensure consistency."
+              echo "❌ Failed to push to main tracker. Race condition detected. Branches will not be deleted to ensure consistency. Will retry next hour."
               exit 1
             fi
           fi

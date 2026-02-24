@@ -10,8 +10,8 @@
 
 ### 2. 初始化核心文件與知識庫
 - **建立目錄**：若不存在，則建立 `docs/`、`docs/ADR/` 與 `specs/tasks/`。
-- **部署規則庫**：將 `skills/factory-initiator/rules/*` 內容複製至目標專案的 `.agents/rules/`。
-  - **重要**：必須對 `git-workflow.md` 等包含變數的檔案執行與協議相同的變數替換（如 `{{AGENT_NAME}}`, `{{BASE_BRANCH}}`），確保規範完全符合當前專案環境。
+- **部署規則庫 (Issue 5 Fix)**：由 Initiator (LLM) 根據 `skills/factory-initiator/rules/*` 的內容，直接將其「生成」至目標專案的 `.agents/rules/`。
+  - **重要**：這不是 OS 層級的 `cp` 命令，而是 LLM 的內容寫入行為。必須對 `git-workflow.md` 等包含變數的檔案執行與協議相同的變數替換（如 `{{AGENT_NAME}}`, `{{BASE_BRANCH}}`），確保規範完全符合當前專案環境。
 - **初始化索引**：將 `../assets/templates/doc-categories.md` 複製至 `docs/doc-categories.md`。
 - **產出占位文件**：根據 Architect 在階段 1 的規劃，建立對應檔案。
   - **重要**：必須生成 `docs/doc-categories.md` 骨架，防止 Worker 卡死。
@@ -19,6 +19,7 @@
 
 ### 3. 部署自動化裁判所
 - 從 `skills/factory-initiator/assets/templates/auto-merge.yml` 複製並生成 `.github/workflows/{{AGENT_NAME}}-auto-merge.yml`。
+  - ⚠️ **技術棧提醒 (Issue 3 Fix)**：CI 模板預設為 **Java/Maven + NPM**。Initiator 必須根據 Architect 決定的技術棧（如 Python/Go/Node），動態替換 YAML 中的 build 與 test 指令，嚴禁無腦套用。
 - 從 `skills/factory-initiator/assets/templates/cleanup-stale-tasks.yml` 複製並生成 `.github/workflows/{{AGENT_NAME}}-cleanup.yml`。
 
 ### 4. 手動配置清單 (Manual Action Required)
