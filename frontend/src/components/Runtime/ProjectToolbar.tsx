@@ -1,17 +1,21 @@
 import React, { useEffect } from 'react';
-import { Play, Square, RefreshCw } from 'lucide-react';
+import { Play, Square, RefreshCw, LayoutTemplate, Code } from 'lucide-react';
 import { useRuntimeStore } from '../../stores/useRuntimeStore';
 
 interface ProjectToolbarProps {
   projectId: string;
   onTogglePreview: () => void;
   isPreviewVisible: boolean;
+  viewMode: 'code' | 'workflow';
+  onViewModeChange: (mode: 'code' | 'workflow') => void;
 }
 
 export const ProjectToolbar: React.FC<ProjectToolbarProps> = ({
   projectId,
   onTogglePreview,
-  isPreviewVisible
+  isPreviewVisible,
+  viewMode,
+  onViewModeChange
 }) => {
   const {
     status,
@@ -59,6 +63,32 @@ export const ProjectToolbar: React.FC<ProjectToolbarProps> = ({
       <div className="flex items-center space-x-2 text-sm px-2">
         <div className={`w-2 h-2 rounded-full ${getStatusColor()}`} />
         <span className="text-gray-300 font-medium">{getStatusText()}</span>
+      </div>
+
+      <div className="h-4 w-px bg-gray-700" />
+
+      {/* View Switcher */}
+      <div className="flex bg-gray-800 rounded p-0.5 border border-gray-700">
+          <button
+            onClick={() => onViewModeChange('code')}
+            className={`px-2 py-1 rounded flex items-center gap-1 text-xs font-medium transition-colors ${
+              viewMode === 'code' ? 'bg-gray-700 text-white shadow-sm' : 'text-gray-400 hover:text-white'
+            }`}
+            title="Code View"
+          >
+            <Code size={14} />
+            <span>Code</span>
+          </button>
+          <button
+            onClick={() => onViewModeChange('workflow')}
+            className={`px-2 py-1 rounded flex items-center gap-1 text-xs font-medium transition-colors ${
+              viewMode === 'workflow' ? 'bg-gray-700 text-white shadow-sm' : 'text-gray-400 hover:text-white'
+            }`}
+            title="Workflow Canvas"
+          >
+            <LayoutTemplate size={14} />
+            <span>Workflow</span>
+          </button>
       </div>
 
       <div className="h-4 w-px bg-gray-700" />

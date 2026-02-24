@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.8.0] - 2026-02-24
+
+### Added
+- **Workflow Canvas**:
+  - Implement visual workflow editor using React Flow in `WorkflowCanvas` component.
+  - Support custom Agent nodes (PM, SA, PG, QA) with role-specific styling.
+  - Add `WorkflowService` and `WorkflowController` to persist graph data.
+  - Implement sequential execution simulation triggered from the canvas ("Run Workflow").
+  - Validate graph integrity (check for required agent roles) before execution.
+  - Add view switcher in `ProjectToolbar` to toggle between Code Editor and Workflow Canvas.
+- **Testing**:
+  - Add backend unit/integration tests for `WorkflowService` and `WorkflowController`.
+  - Add frontend unit tests for `useWorkflowStore`.
+
 ## [0.7.0] - 2026-02-24
 
 ### Added

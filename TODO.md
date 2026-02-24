@@ -39,9 +39,9 @@
 - [x] 配置 WebSocket (STOMP):
     - [x] 後端消息推送頻道 (`/topic/project/{id}`)
     - [x] 前端訂閱並即時反應 Agent 任務狀態
-- [ ] 實作 `Workflow Canvas`:
-    - [ ] React Flow 自定義 Agent 節點 (PM, SA, PG)
-    - [ ] 手動編輯 Workflow 之雙向綁定 (Code <-> Flow)
+- [x] 實作 `Workflow Canvas`:
+    - [x] React Flow 自定義 Agent 節點 (PM, SA, PG, QA)
+    - [x] Workflow 資料持久化與執行 (Backend Integration)
 - [ ] 整合 LLM (LangChain4j):
     - [ ] 實作 `PM Agent` 功能定義 Prompt
     - [ ] 實作 `PG Agent` 代碼生成與修改 Prompt

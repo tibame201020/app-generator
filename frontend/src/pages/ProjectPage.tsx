@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { MainLayout } from '../components/Layout/MainLayout';
 import { FileTree } from '../components/FileExplorer/FileTree';
 import { CodeEditor } from '../components/Editor/CodeEditor';
+import { WorkflowCanvas } from '../components/Workflow/WorkflowCanvas';
 import { StatusBar } from '../components/Status/StatusBar';
 import { ProjectToolbar } from '../components/Runtime/ProjectToolbar';
 import { PreviewPane } from '../components/Runtime/PreviewPane';
@@ -26,6 +27,7 @@ const ProjectPage: React.FC = () => {
 
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [isTaskPanelVisible] = useState(true);
+  const [viewMode, setViewMode] = useState<'code' | 'workflow'>('code');
 
   useEffect(() => {
     if (projectId) {
@@ -50,13 +52,19 @@ const ProjectPage: React.FC = () => {
           projectId={projectId}
           onTogglePreview={() => setIsPreviewVisible(!isPreviewVisible)}
           isPreviewVisible={isPreviewVisible}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
         />
       }
     >
       <div className="flex flex-1 overflow-hidden h-full">
         <div className="flex-1 flex flex-col overflow-hidden relative">
-          <div className="flex-1 overflow-hidden">
-            <CodeEditor projectId={projectId} />
+          <div className="flex-1 overflow-hidden h-full relative">
+            {viewMode === 'code' ? (
+                <CodeEditor projectId={projectId} />
+            ) : (
+                <WorkflowCanvas />
+            )}
           </div>
 
           {isTaskPanelVisible && (
