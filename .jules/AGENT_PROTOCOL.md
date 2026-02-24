@@ -24,13 +24,16 @@
 - 若任何一條未通過，回到 Step 3 修正，不得帶著失敗的測試提 PR。
 
 ## Step 5: Submit PR
-- Branch 命名規則：`jules/task-{task_id}`
+- 專案的主開發分支為 `feature/jules-factory`。
+- Jules 每次執行任務時，必須從 `feature/jules-factory` 切出新分支：`jules/task-{task_id}`。
+- 提交 PR 時，目標分支 (Base Branch) 必須設定為 `feature/jules-factory`。
 - PR Title 格式：`[Jules] {task_title}`
 - PR Description 必須包含：
   - 對應 Task ID。
   - 已完成的 Acceptance Criteria 列表（逐條勾選）。
   - 測試覆蓋摘要。
   - 所影響的文件或 `CHANGELOG.md` 變更說明。
+  - **必須在結尾標註 `[auto-merge]` 標籤**，以便觸發 GitHub Actions 的自動合併機制。
 
 ## Step 6: Update State
 - 將 `.jules/tracker.json` 中該 task 的 `status` 更新為 `completed`。
