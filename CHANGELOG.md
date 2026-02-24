@@ -9,3 +9,4 @@ All notable changes to this project will be documented in this file.
 - Task 1.1.3: Configured H2 Database Memory mode and JPA dependencies.
 - Task 1.1.4: Created /api/health endpoint for basic system health check.
 - Task 1.1.5: Added MinIO S3 Client dependency and configuration with auto-bucket creation logic.
+- Task 1.2.1: Added Spring AI OpenAI dependency and basic configuration.
