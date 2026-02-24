@@ -43,7 +43,8 @@ jobs:
               git config user.name "github-actions"
               git config user.email "github-actions@github.com"
               git add .{{AGENT_NAME}}/tracker.json
-              git commit -m "chore: [Arbitrator] task $task_id failed (attempts +1)"
+              git commit -m "chore: [Arbitrator] task $task_id failed (attempts +1)" || echo "No changes to commit"
+              git pull --rebase origin {{BASE_BRANCH}}
               git push origin {{BASE_BRANCH}}
               
               # 物理清理死鎖分支

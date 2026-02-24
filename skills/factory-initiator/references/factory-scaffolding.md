@@ -16,6 +16,7 @@
 - **產出占位文件**：根據 Architect 在階段 1 的規劃，建立對應檔案。
   - **內容規範**：占位文件不得為空，必須包含 `# [文件名]` 標題、`## Status: Pending` 狀態，以及一段說明「本文件由 Initiator 置放，等待后續任務填充詳情」。
 
+### 3. 部署自動化裁判所
 - 從 `skills/factory-initiator/assets/templates/auto-merge.yml` 複製並生成 `.github/workflows/{{AGENT_NAME}}-auto-merge.yml`。
 - 從 `skills/factory-initiator/assets/templates/cleanup-stale-tasks.yml` 複製並生成 `.github/workflows/{{AGENT_NAME}}-cleanup.yml`。
 - 🛑 **重要！手動配置清單 (Manual Action Required)**：
@@ -37,10 +38,11 @@
 > ⚠️ **重要：在啟動工人之前，請手動完成以下安全配置，否則生產線將因權限不足而卡死 (Silent Failure)：**
 > 
 > 1.  **[ ] 開啟自動合併**：`Repo Settings` -> `General` -> 勾選 `Allow auto-merge`。
-> 2.  **[ ] 配置 PAT_TOKEN**：
+> 2.  **[ ] 建立 Label**：在專案根目錄執行 `gh label create "auto-merge" --color "#0075ca"`（或手動在 Repo 建立同名標籤）。
+> 3.  **[ ] 配置 PAT_TOKEN**：
 >     -   請產生一個具備 `repo (full)` 與 `workflow` 權限的 Personal Access Token。
 >     -   前往 `Repo Settings` -> `Secrets and variables` -> `Actions`。
->     -   點擊 `New repository secret`，名稱填入 `PAT_TOKEN`，值填入剛產出的 Token。
-> 3.  **[ ] 確認 Bot 身分**：確認正在執行的環境變數與 `{{BOT_USERNAME}}` 一致。
+>     -   預設密鑰名稱填入 `PAT_TOKEN`。
+> 4.  **[ ] 確認 Bot 身分**：確認正在執行的環境變數與 `{{BOT_USERNAME}}` 一致。
 > 
 > 只要完成上述步驟，您的無人值守工廠就能正式運轉了！
