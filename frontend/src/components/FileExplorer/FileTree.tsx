@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FileNode } from '../../types';
-import { ChevronRight, ChevronDown, File, Folder } from 'lucide-react';
+import { ChevronRight, ChevronDown, File } from 'lucide-react';
 import { useProjectStore } from '../../stores/useProjectStore';
 
 interface FileTreeItemProps {

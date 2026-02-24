@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ProjectToolbar } from '../ProjectToolbar';
 import { useRuntimeStore } from '../../../stores/useRuntimeStore';

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Play, Square, RefreshCw, ExternalLink, Loader2 } from 'lucide-react';
+import { Play, Square, RefreshCw } from 'lucide-react';
 import { useRuntimeStore } from '../../stores/useRuntimeStore';
 
 interface ProjectToolbarProps {
