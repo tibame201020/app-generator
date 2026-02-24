@@ -90,7 +90,7 @@
           "id": "task_1_3_1",
           "phase": "phase_1",
           "title": "使用 Vite 初始化 React + TypeScript 專案",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [],
           "spec_ref": "specs/phase_1_setup.yml#task-131-使用-vite-初始化-react--typescript-專案"
         },
