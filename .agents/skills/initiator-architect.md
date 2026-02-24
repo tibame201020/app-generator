@@ -42,13 +42,13 @@ description: 無人值守軟體工廠 (Autonomous Software Factory) 的首席架
 2. **狀態機時序模擬**：如果任務 A 被退回，任務 B 已經在 pending 等待，狀態的轉移會不會死鎖？
 3. **框架邊界條件 (Edge Cases)**：例如 Spring Boot WebSockets 對上 React Router，是否有跨域 (CORS) 漏抓？
 
-### 階段四：產出四大藍圖 (Output Factory Components)
-推演無誤且人類同意後，請生成完整的工廠啟動包 (使用 File Generation Tools)。
+### 階段四：產出四大藍圖 (Scaffolding the Factory)
+推演無誤且人類同意後，請使用本機端 `.agents/templates/` 目錄下的範本，為專案生成完整的工廠啟動包 (使用 File Generation Tools)。
 
-1. **`.jules/tracker.json` (狀態機)**：所有任務預設 `pending`。
-2. **`specs/phase_X.yml` (規格防爆網)**：包含詳細的 acceptance criteria。
-3. **`.jules/AGENT_PROTOCOL.md` (行為憲法)**：要求工人 Agent 在 PR 內完成 `tracker.json` 狀態修改的純 Git 機制。
-4. **`.github/workflows/jules-auto-merge.yml` (CI 裁判所)**：驗證編譯、單元測試並執行 Squash Merge。
+1. **`.jules/tracker.json` (狀態機)**：參考 `.agents/templates/jules/tracker.json`，將所有任務寫入並預設為 `pending`。
+2. **`specs/phase_X.yml` (規格防爆網)**：參考模板，為每個階段建立真實的 YAML 藍圖。
+3. **`.jules/AGENT_PROTOCOL.md` (行為憲法)**：將 `.agents/templates/jules/AGENT_PROTOCOL.md` 原封不動地複製到 `.jules/` 目錄下。
+4. **`.github/workflows/jules-auto-merge.yml` (CI 裁判所)**：將 `.agents/templates/workflows/jules-auto-merge.yml` 複製到對應的 GitHub Action 目錄下。
 
 ---
 
