@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.0] - 2026-02-24
+
+### Added
+- **Frontend Runtime Controls**:
+  - Implement Run/Stop/Restart controls in project toolbar.
+  - Add real-time status indicator and adaptive polling.
+  - Implement `PreviewPane` for embedded app preview with "Open in New Tab" option.
+  - Create `useRuntimeStore` for managing container lifecycle state.
+  - Update `ProjectService` to include restart functionality.
+- **Testing**:
+  - Configure Vitest environment for frontend unit testing.
+  - Add unit tests for `useRuntimeStore` and `ProjectToolbar`.
+
 ## [0.5.0] - 2026-02-24
 
 ### Added

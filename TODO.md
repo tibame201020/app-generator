@@ -33,6 +33,7 @@
     - [x] 檔案保存連動 Git Commit
 - [x] 建立 `Zustand` 全域狀態機:
     - [x] 管理當前專案、檔案、Agent 活躍狀態
+- [x] 實作 Runtime Controls (Run/Stop/Restart) & Preview Pane
 
 ## 第四階段：AI 任務編排與畫布互動 (Phase 4: Agent Orchestration & Canvas)
 - [ ] 配置 WebSocket (STOMP):

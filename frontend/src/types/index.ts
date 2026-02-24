@@ -20,7 +20,7 @@ export interface FileContent {
 }
 
 export interface ContainerStatus {
-  status: 'STOPPED' | 'STARTING' | 'RUNNING';
+  status: 'STOPPED' | 'STARTING' | 'RUNNING' | 'EXPIRED';
   previewUrl?: string;
   internalIp?: string;
 }

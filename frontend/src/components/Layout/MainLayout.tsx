@@ -4,14 +4,18 @@ interface MainLayoutProps {
   sidebar?: React.ReactNode;
   children: React.ReactNode;
   statusBar?: React.ReactNode;
+  topBar?: React.ReactNode;
 }
 
-export const MainLayout: React.FC<MainLayoutProps> = ({ sidebar, children, statusBar }) => {
+export const MainLayout: React.FC<MainLayoutProps> = ({ sidebar, children, statusBar, topBar }) => {
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white overflow-hidden">
       {/* Top Bar (Optional, can be just a header or menu) */}
-      <div className="h-10 bg-gray-800 border-b border-gray-700 flex items-center px-4 select-none">
-        <span className="font-semibold text-sm">App Generator</span>
+      <div className="h-10 bg-gray-800 border-b border-gray-700 flex items-center px-4 select-none justify-between">
+         <div className="flex items-center w-full">
+            <span className="font-semibold text-sm mr-6">App Generator</span>
+            {topBar}
+         </div>
       </div>
 
       {/* Main Content Area */}
