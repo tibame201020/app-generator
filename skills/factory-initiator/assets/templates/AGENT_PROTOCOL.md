@@ -11,18 +11,9 @@
      - **鎖定情境**：若 PR 狀態為 `OPEN`，代表任務由其他 Worker 處理中，請立刻跳過。
 - 若找不到可領取任務，輸出「Tasks are currently locked or in CI/CD pipeline. Halting.」並終止。
 
-## Step 2: Acquire Context
-- 讀取 `.{{AGENT_NAME}}/tracker.json`。
-- **重要：讀取 `.agents/rules/*.md` 中的編碼與 Git 規範**。
-- 將該 task 的 `spec_ref` 對應的 spec 文件 (`.yml` 格式) 完整讀取。
-- 讀取所有 `.{{AGENT_NAME}}/skills/*.md` 技術規範 (若存在)。
-- **重要：讀取 `docs/doc-categories.md` 知識庫索引**，導航至對應文件。
-- **狀態與計數遞增 (State Update)**：
-  - 您領取任務後，必須切換至 Feature Branch，並**立刻執行這兩項操作作為初始心跳 (Heartbeat Commit)**，以防止被 Arbitrator 誤殺：
-    1. 產生空提交：`git commit --allow-empty -m "chore: start task_{task_id}"`
-    2. 立刻推送到遠端：`git push origin {{AGENT_NAME}}/task-{task_id}`
-  - 完成後，再將 `attempts` +1 與 `status` 改為 `in_progress` 並 commit。
-  - **注意**：由於此 commit 位於 Feature Branch，主線狀態僅在 PR 合併時更新。此計數用於給 CI 裁判所作合併參考。
+- **狀態標記 (State Marking)**：
+  - 您領取任務後，可將 `status` 改為 `in_progress` 並 commit (於 Feature Branch)。
+  - **語義警告**：此狀態僅供本機與分支視覺化參考。工廠的「真實事實」完全由**主線 tracker 狀態**與**遠端分支存在性**定義。
 
 ## Step 3: Implement & Cognitive Load Limit (認知上限守則)
 - 依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。

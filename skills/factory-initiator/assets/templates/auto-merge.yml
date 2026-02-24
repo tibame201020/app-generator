@@ -42,22 +42,32 @@ jobs:
       # CI: 動態偵測防護機制
       - name: Backend Tests (Maven)
         run: |
+          CURRENT_PHASE=$(jq -r '.current_phase' .{{AGENT_NAME}}/tracker.json)
           if [ -f "./pom.xml" ]; then
             ./mvnw clean test
           elif [ -f "backend/pom.xml" ]; then
             cd backend && ./mvnw clean test
           else
-            echo "Backend not initialized yet. Skipping tests."
+            if [[ "$CURRENT_PHASE" != "Phase 1: Setup" ]]; then
+              echo "Error: Backend missing after Phase 1. Failing CI."
+              exit 1
+            fi
+            echo "Phase 1: Backend not initialized yet. Skipping."
           fi
 
       - name: Frontend Checks (NPM)
         run: |
+          CURRENT_PHASE=$(jq -r '.current_phase' .{{AGENT_NAME}}/tracker.json)
           if [ -f "./package.json" ]; then
-            npm install && npm run build
+            npm ci && npm run build
           elif [ -f "frontend/package.json" ]; then
-            cd frontend && npm install && npm run build
+            cd frontend && npm ci && npm run build
           else
-            echo "Frontend not initialized yet. Skipping checks."
+            if [[ "$CURRENT_PHASE" != "Phase 1: Setup" ]]; then
+              echo "Error: Frontend missing after Phase 1. Failing CI."
+              exit 1
+            fi
+            echo "Phase 1: Frontend not initialized yet. Skipping."
           fi
 
       - name: Auto-merge PR
