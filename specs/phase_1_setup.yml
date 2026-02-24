@@ -52,7 +52,8 @@ groups:
         objective: "導入 S3 兼容的物件儲存能力。"
         acceptance_criteria:
           - "於 backend/pom.xml 加入 minio 依賴。"
-          - "於 application.yml 配置 minio.url (預設 http://localhost:9000，確保 IDE 能跑), minio.access.key, minio.secret.key (從環境變數讀取)。"
+          - "於 application.yml 配置 minio.url, minio.access.key, minio.secret.key。"
+          - "⚠️ 重要：為避免 CI/CD 環境在沒有 Secrets 的情況下啟動失敗，application.yml 內的變數必須給予預設假值 (例如 `${MINIO_ACCESS_KEY:mock_access_key}`)。"
           - "建立 MinioConfig.java 產生 MinioClient Bean。"
           - "在應用程式啟動時 (或在 Config 中) 確保預設 Bucket 存在，並設定 Bucket Policy 為 public-read 且允許 CORS 跨域讀取 (極重要，否則前端無法 fetch)。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
@@ -66,7 +67,8 @@ groups:
         acceptance_criteria:
           - "於 backend/pom.xml 加入 Spring AI BOM (指定版本 1.0.0-M1)。"
           - "加入 spring-ai-openai-spring-boot-starter 依賴。"
-          - "於 application.yml 配置 ${SPRING_AI_OPENAI_API_KEY} 變數位置。"
+          - "於 application.yml 配置 OpenAI 金鑰位置。"
+          - "⚠️ 重要：為避免 CI/CD 未設定 Secrets 導致 Spring Context 啟動崩潰，必須設定為 `${SPRING_AI_OPENAI_API_KEY:mock_key}` 提供預設假值。"
           - "設定預設呼叫模型為 gpt-4o。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 

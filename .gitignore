@@ -59,3 +59,6 @@ logs/
 
 # Platform Data (Crucial: ignore the sandbox data)
 data/
+
+# Documentation
+software-factory.md
