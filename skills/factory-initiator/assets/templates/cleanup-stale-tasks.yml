@@ -27,23 +27,29 @@ jobs:
           
           for branch in $branches; do
             task_id=$(echo $branch | sed 's/{{AGENT_NAME}}\/task-//')
-            echo "Checking stale state for Task ID: $task_id"
+            echo "🕵️ Analyzing task: $task_id"
             
-            # TODO: 這裡可以加入更複雜的檢查，例如：
-            # 1. 檢查 PR 是否已 Close 但分支未刪除
-            # 2. 檢查分支最後提交時間是否超過 24 小時
-            # 3. 如果確定任務卡死（例如 CI 連續失敗），則執行以下邏輯：
+            # 檢查是否存在對應的 Open PR
+            pr_status=$(gh pr list --head "$branch" --json state --jq '.[0].state' 2>/dev/null)
             
-            # 此處為示意邏輯：更新 tracker.json 中的 attempts 並推回主線
-            # 實際執行需要解析 JSON，此處假設使用 jq
-            # jq --arg id "$task_id" '(.phases[].tasks[] | select(.id == $id)).attempts += 1' .{{AGENT_NAME}}/tracker.json > tmp.json && mv tmp.json .{{AGENT_NAME}}/tracker.json
-            
-            # git add .{{AGENT_NAME}}/tracker.json
-            # git commit -m "chore: [Arbitrator] increment attempts for stale task $task_id"
-            # git push origin {{BASE_BRANCH}}
-            
-            # 最後刪除該死鎖分支 (Force delete)
-            # git push origin --delete $branch
+            # [邏輯]：如果 PR 已經 CLOSED/MERGED，或者分支已存在超過 24 小時且無 PR
+            # 此處以「PR 已關閉但分支殘留」作為計數點
+            if [[ "$pr_status" == "CLOSED" ]]; then
+              echo "⚠️ Found stale closed PR for $task_id. Incrementing attempts in main tracker."
+              
+              # 使用 jq 更新主線 tracker.json
+              jq --arg id "$task_id" '(.phases[].tasks[] | select(.id == $id)).attempts += 1' .{{AGENT_NAME}}/tracker.json > tmp.json && mv tmp.json .{{AGENT_NAME}}/tracker.json
+              
+              git config user.name "github-actions"
+              git config user.email "github-actions@github.com"
+              git add .{{AGENT_NAME}}/tracker.json
+              git commit -m "chore: [Arbitrator] task $task_id failed (attempts +1)"
+              git push origin {{BASE_BRANCH}}
+              
+              # 物理清理死鎖分支
+              git push origin --delete "$branch"
+              echo "✅ Task $task_id recovered and branch deleted."
+            fi
           done
           
     # [!] 注意：本腳本為邏輯範本，實際運作建議配合 jq 處理 JSON。

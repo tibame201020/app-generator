@@ -3,11 +3,12 @@
 
 ## Step 1: Read State & Prevent Duplication (防撞車機制)
 - 讀取 `.{{AGENT_NAME}}/tracker.json`。
-- 依照順序找出第一個狀態為 `pending` 且 `depends_on` 中所有 task 均為 `completed` 的 task。
 - 🛡️ **健康檢查 (Attempts Check)**：若該任務的 `attempts` >= 5，視為「持續性死鎖」，您**必須**跳過該任務並提示人類介入。
-- 🛑 **重要！物理互斥鎖 (Branch-as-Lock)**：在領取任務前，您**必須**檢查遠端 (Origin) 是否已存在該任務的分支 `{{AGENT_NAME}}/task-{task_id}` 或 Open PR。
-  - **原則**：**「遠端分支的存在」即代表該任務已被鎖定**。
-  - 若已存在，請立刻放棄此 task，繼續尋找下一個符合條件的任務。
+- 🛑 **重要！物理互斥鎖 (Branch-as-Lock & Self-Healing)**：在領取任務前，您**必須**檢查遠端 (Origin) 是否已存在分支 `{{AGENT_NAME}}/task-{task_id}`：
+  1. **若不存在**：可領取。
+  2. **若已存在**：檢查其 PR 狀態（使用 `gh pr list --head {{AGENT_NAME}}/task-{task_id} --state all --json state`）。
+     - 若 PR 狀態為 `CLOSED` 或 `MERGED` (但主線 tracker 仍為 pending)，代表上次嘗試已失效。您**被授權強制刪除舊分支**並重新領取：`git push origin --delete {{AGENT_NAME}}/task-{task_id}`。
+     - 若 PR 狀態為 `OPEN`，代表任務由其他 Worker 處理中，請立刻跳過。
 - 若找不到可領取任務，輸出「Tasks are currently locked or in CI/CD pipeline. Halting.」並終止。
 
 ## Step 2: Acquire Context
@@ -16,7 +17,9 @@
 - 將該 task 的 `spec_ref` 對應的 spec 文件 (`.yml` 格式) 完整讀取。
 - 讀取所有 `.{{AGENT_NAME}}/skills/*.md` 技術規範 (若存在)。
 - **重要：讀取 `docs/doc-categories.md` 知識庫索引**，導航至對應文件。
-- **狀態管理守則**：由於 GitHub 只有在 PR 合併時才會更新主線狀態，您领取任務時**禁止**嘗試更新主線 Tracker。您只需切換至 Feature Branch 開始工作。
+- **狀態與計數遞增 (State Update)**：
+  - 您領取任務後，必須切換至 Feature Branch，並立刻將 `attempts` +1 與 `status` 改為 `in_progress` 並 commit。
+  - **注意**：由於此 commit 位於 Feature Branch，主線狀態僅在 PR 合併時更新。此計數用於給 CI 裁判所作合併參考。
 
 ## Step 3: Implement & Cognitive Load Limit (認知上限守則)
 - 依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。
