@@ -41,6 +41,8 @@
   - 所影響的文件或 `CHANGELOG.md` 變更說明。
   - **必須在結尾標註 `[auto-merge]` 標籤**，以便觸發 GitHub Actions 的自動合併機制。
 
-## Step 7: Update State
-- 將 `.jules/tracker.json` 中該 task 的 `status` 更新為 `completed`。
-- 將此變更包含在同一個 PR 內（不另開 PR）。
+## Step 7: Wait for CI/CD Auto-Merge
+- **警告：Jules 在提交 PR 後，絕對「不可以」自行將 tracker.json 改為 completed 並提交！**
+- 您提交的 PR 在通過 GitHub Actions 的自動測試後，CI/CD 腳本會自動將其 Squash Merge 至 `feature/jules-factory` 分支。
+- CI/CD 腳本在 Merge 成功後，將會由系統機器人自動去修改 `tracker.json` 的狀態為 `completed`。
+- **Jules 的唯一責任就是在 Step 6 提好乾淨的 PR，接著就可以直接離線**，直到下一次 Schedule 被系統喚醒。
