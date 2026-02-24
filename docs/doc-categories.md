@@ -20,4 +20,8 @@
 - [Agent 狀態機架構指引 (`docs/backend/state_machine.md`)](backend/state_machine.md)
   - 涵蓋 Jules Software Factory 核心的對話節點控制、職責分配（PM, UIUX, SA, PG）與狀態轉移規則。
 
+### 3. 後端儲存服務 (Storage Service)
+- [MinIO 儲存模組 (`docs/backend/storage.md`)](backend/storage.md)
+  - 說明 MinIO S3 Client 的整合配置、初始化邏輯與 Bucket Policy 設定。
+
 *(後續開發 Phase 若有新增文件，請在此處補充。)*

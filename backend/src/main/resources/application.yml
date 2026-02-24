@@ -18,3 +18,9 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+minio:
+  url: ${MINIO_URL:http://localhost:9000}
+  access-key: ${MINIO_ACCESS_KEY:mock_access_key}
+  secret-key: ${MINIO_SECRET_KEY:mock_secret_key}
+  bucket-name: ${MINIO_BUCKET_NAME:jules-bucket}
