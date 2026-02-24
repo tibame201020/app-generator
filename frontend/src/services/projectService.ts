@@ -30,6 +30,10 @@ export const stopProject = async (projectId: string): Promise<void> => {
   await api.post(`/projects/${projectId}/stop`);
 };
 
+export const restartProject = async (projectId: string): Promise<void> => {
+  await api.post(`/projects/${projectId}/restart`);
+};
+
 export const getProjectStatus = async (projectId: string): Promise<any> => {
   const response = await api.get(`/projects/${projectId}/status`);
   return response.data;
