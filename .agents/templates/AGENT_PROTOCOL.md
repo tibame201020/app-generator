@@ -1,10 +1,12 @@
 # {{AGENT_NAME}} Agent Execution Protocol
 > 每次 Schedule 觸發後，{{AGENT_NAME}} 必須依序執行以下步驟，不得跳過。
 
-## Step 1: Read State
+## Step 1: Read State & Prevent Duplication (防撞車機制)
 - 讀取 `.{{AGENT_NAME}}/tracker.json`
-- 找出第一個狀態為 `pending` 且 `depends_on` 中所有 task 均為 `completed` 的 task。
-- 若找不到符合條件的 task，輸出 log「No actionable task found. Halting.」並終止。
+- 依照順序找出第一個狀態為 `pending` 且 `depends_on` 中所有 task 均為 `completed` 的 task。
+- 🛑 **重要！分散式鎖定檢查 (Mutex Lock via Git)**：在開始實作此 task 之前，您**必須**使用 Git 指令檢查遠端 (Origin) 是否已經存在該任務的專屬分支 `{{AGENT_NAME}}/task-{task_id}`，或者是否已有針對該任務的 Open PR。
+  - 若已存在：代表**「此任務已經有其他 Worker 正在處理，或是已提 PR 正在等待 CI 裁判所合併」**。請立刻放棄此 task，繼續尋找下一個符合條件的 `pending` task。
+  - 若找不到任何閒置的 task，輸出 log「所有 pending tasks 皆已在線程中運作或等待 CI。休眠中 (Tasks are currently in CI/CD pipeline. Halting.)」並終止執行。
 
 ## Step 2: Acquire Context
 - 將該 task 的 `spec_ref` 對應的 spec 文件 (`.yml` 格式) 完整讀取。

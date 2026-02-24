@@ -28,7 +28,7 @@ description: 根據前述推演結果與變數，利用本機端的架構模板�
 
 ### 4. (條件觸發) API 串接擴充套件
 - 所有的系統擴充套件皆存放於 `.agents/extensions/`。
-- 若使用者開場選擇了 `jules` 作為 Worker，此專案已內建 `.agents/extensions/jules-api.py`，請直接告知人類已就緒。
+- 若使用者開場選擇了 `jules` 作為 Worker，此專案已內建 `.agents/extensions/jules-api.py`。請直接告知人類腳本已就緒，並**主動提醒人類**：執行該腳本需確保環境中已安裝 `gh` (GitHub CLI) 與執行 `pip install requests`。
 - 若人類選擇了非內建支援的選項，則無須建立 API，並告知人類：「已為您產出詳盡框架，執行機制請參考官方文件自行掛載」。
 
 > 🎉 **恭喜 (Finish)**：建廠完成！請向使用者回報專案已可開始運作，並引導他們啟動對應工人的流程！
