@@ -2,7 +2,9 @@
 > 每次 Schedule 觸發後，{{AGENT_NAME}} 必須依序執行以下步驟，不得跳過。
 
 ## Step 1: Read Rules & State (防撞車機制)
-- **⚖️ 規則預載 (Rules First)**：在執行任何操作（包含領取鎖）前，先讀取 `.agents/rules/*.md`。所有後續的分支刪除或開發行為均受此規約約束。
+- **⚖️ 規則預載 (Rules First)**：在執行任何操作（包含領取鎖）前，先確認 `.agents/rules/` 目錄是否存在且不為空。
+  - **護欄 (Guard)**：若目錄不存在，您**必須**停止執行並回報：「Rules directory missing. Scaffolding may be incomplete. 禁止在無規則約束下執行。」
+  - 讀取所有 `.agents/rules/*.md`。所有後續的分支刪除或開發行為均受此規約約束。
 - 讀取 `.{{AGENT_NAME}}/tracker.json`。
 - 🛡️ **健康檢查 (Attempts Check)**：若該任務的 `attempts` >= 5，視為「持續性死鎖」，您**必須**跳過該任務並提示人類介入。
 - 🛑 **重要！物理互斥鎖 (Branch-as-Lock & Self-Healing)**：在領取任務前，您**必須**檢查遠端 (Origin) 是否已存在分支 `{{AGENT_NAME}}/task-{task_id}`：
@@ -67,8 +69,10 @@
 - {{AGENT_NAME}} 每次執行任務時，必須從 `{{BASE_BRANCH}}` 切出新分支：`{{AGENT_NAME}}/task-{task_id}`。
 - **重要狀態轉移 (Transaction)**：
   - 在您確認所有測試通過、且 `git diff` 符合路徑約束後，**您必須在 Feature Branch 分支上將 `.{{AGENT_NAME}}/tracker.json` 中該任務的 status 改為 `completed` 並 commit**。
-  - **Phase 自動推進 (Issue B/D Fix)**：您必須判定自己是否為該階段的「最後任務」：
-    - **判定準則**：若 `tracker.json` 中同 Phase 的**所有其他任務**狀態皆已為 `completed`，則您為最後一人。
+  - **Phase 自動推進 (Issue A/B/D Fix)**：您必須判定自己是否為該階段的「最後任務」：
+    - **同步 (Sync)**：在判定前，您**必須**先執行 `git fetch origin`。
+    - **遠端讀取 (Remote Read)**：讀取主線最新狀態：`git show origin/{{BASE_BRANCH}}:.{{AGENT_NAME}}/tracker.json > /tmp/latest_tracker.json`。
+    - **判定準則**：以 `/tmp/latest_tracker.json` 為準。若其中同 Phase 的**所有其他任務**狀態皆已為 `completed`，則您確定為最後一人。
     - **動作**：此時您必須同步將頂層的 `current_phase` 更新為下一階段（參考階段順序）。
   - 這代表了本次任務的「交易提交」。只有 PR 被合併後，主分支的狀態才會同步更新。
 - 提交 PR 時，目標分支 (Base Branch) 必須設定為 `{{BASE_BRANCH}}`。
