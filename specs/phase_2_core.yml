@@ -74,9 +74,21 @@ groups:
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
   - id: "2.3"
-    name: "Documentation"
+    name: "API Endpoints"
     tasks:
       - id: "task_2_3_1"
+        title: "實作 ProjectController 與 Chat API"
+        objective: "建立前端觸發狀態機的入口點。"
+        acceptance_criteria:
+          - "建立 ProjectController。"
+          - "提供 POST /api/projects 建立新專案。"
+          - "提供 POST /api/projects/{id}/chat 接收使用者訊息，並於內部呼叫 StateMachineEngine.processEvent() 啟動或推進工作流。"
+          - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
+
+  - id: "2.4"
+    name: "Documentation"
+    tasks:
+      - id: "task_2_4_1"
         title: "撰寫 docs/backend/state_machine.md 文件"
         objective: "履行文件承諾。"
         acceptance_criteria:

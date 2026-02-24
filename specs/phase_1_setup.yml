@@ -53,6 +53,7 @@ groups:
           - "於 backend/pom.xml 加入 minio 依賴。"
           - "於 application.yml 配置 minio.url, minio.access.key, minio.secret.key (從環境變數讀取)。"
           - "建立 MinioConfig.java 產生 MinioClient Bean。"
+          - "在應用程式啟動時 (或在 Config 中) 確保預設 Bucket 存在，並設定 Bucket Policy 為 public-read 且允許 CORS 跨域讀取 (極重要，否則前端無法 fetch)。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"
 
   - id: "1.2"
@@ -90,11 +91,11 @@ groups:
     tasks:
       - id: "task_1_3_1"
         title: "使用 Vite 初始化 React + TypeScript 專案"
-        objective: "建立前端骨架。"
+        objective: "建立前端骨架與代理設定。"
         acceptance_criteria:
           - "在根目錄執行 npm create vite@latest frontend -- --template react-ts 建立專案夾。"
           - "在 frontend 內執行 npm install (嚴禁用 yarn 或 pnpm 以免鎖檔衝突)。"
-          - "修改 vite.config.ts 指定 port: 5173。"
+          - "修改 vite.config.ts 指定 port: 5173，並配置 server.proxy 將 /api 代理至 http://localhost:8080，將 /ws 代理至 WebSocket (ws: true)。"
           - "移除預設的冗餘檔案與 css (App.css 等)。"
           - "進入 frontend 執行 npm run build 成功。"
           - "更新 CHANGELOG.md 並將 .jules/tracker.json 中對應 task 標為 completed。"

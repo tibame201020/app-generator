@@ -235,12 +235,22 @@
         {
           "id": "task_2_3_1",
           "phase": "phase_2",
-          "title": "撰寫 docs/backend/state_machine.md 文件",
+          "title": "實作 ProjectController 與 Chat API",
           "status": "pending",
           "depends_on": [
             "task_2_2_5"
           ],
-          "spec_ref": "specs/phase_2_core.md#task-231-撰寫-docsbackendstate_machinemd-文件"
+          "spec_ref": "specs/phase_2_core.yml#task-231-實作-projectcontroller-與-chat-api"
+        },
+        {
+          "id": "task_2_4_1",
+          "phase": "phase_2",
+          "title": "撰寫 docs/backend/state_machine.md 文件",
+          "status": "pending",
+          "depends_on": [
+            "task_2_3_1"
+          ],
+          "spec_ref": "specs/phase_2_core.yml#task-241-撰寫-docsbackendstate_machinemd-文件"
         }
       ]
     },
