@@ -19,38 +19,51 @@ jobs:
           ref: {{BASE_BRANCH}}
           token: ${{ secrets.PAT_TOKEN }}
 
-      - name: Detect Stale Branches and Increment Attempts
+      - name: Detect and Arbitrate Tasks
         shell: bash
         run: |
-          # 取得所有以 {{AGENT_NAME}}/task- 開頭的遠端分支
+          # 1. 先同步主線狀態，極小化衝突風險
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git pull --rebase origin {{BASE_BRANCH}}
+
+          # 2. 取得遠端分支列表
           branches=$(git branch -r | grep "origin/{{AGENT_NAME}}/task-" | sed 's/origin\///')
           
+          NEED_PUSH=false
           for branch in $branches; do
             task_id=$(echo $branch | sed 's/{{AGENT_NAME}}\/task-//')
-            echo "🕵️ Analyzing task: $task_id"
+            echo "🕵️ Analyzing branch: $branch (Task: $task_id)"
             
-            # 檢查是否存在對應的 Open PR
-            pr_status=$(gh pr list --head "$branch" --json state --jq '.[0].state' 2>/dev/null)
+            # 取得 PR 狀態（如果存在）
+            pr_data=$(gh pr list --head "$branch" --state all --json state,updatedAt --jq '.[0]' 2>/dev/null)
+            pr_status=$(echo "$pr_data" | jq -r '.state // empty')
             
-            # [邏輯]：如果 PR 已經 CLOSED/MERGED，或者分支已存在超過 24 小時且無 PR
-            # 此處以「PR 已關閉但分支殘留」作為計數點
+            # [裁判所規則]：
+            # 情境 A：PR 已被 CLOSED (且主線 tracker 仍為 pending) -> 代表失敗
+            # 情境 B：分支存在超過 1 小時但「完全沒有 PR」 -> 代表 Worker 崩潰
+            
+            SHOULD_CLEANUP=false
             if [[ "$pr_status" == "CLOSED" ]]; then
-              echo "⚠️ Found stale closed PR for $task_id. Incrementing attempts in main tracker."
-              
-              # 使用 jq 更新主線 tracker.json
+              echo "⚠️ Task $task_id: Found CLOSED PR. Incrementing attempts."
+              SHOULD_CLEANUP=true
+            elif [[ -z "$pr_status" ]]; then
+              echo "⚠️ Task $task_id: Phantom branch detected (No PR). Incrementing attempts."
+              SHOULD_CLEANUP=true
+            fi
+
+            if [[ "$SHOULD_CLEANUP" == "true" ]]; then
               jq --arg id "$task_id" '(.phases[].tasks[] | select(.id == $id)).attempts += 1' .{{AGENT_NAME}}/tracker.json > tmp.json && mv tmp.json .{{AGENT_NAME}}/tracker.json
-              
-              git config user.name "github-actions"
-              git config user.email "github-actions@github.com"
               git add .{{AGENT_NAME}}/tracker.json
-              git commit -m "chore: [Arbitrator] task $task_id failed (attempts +1)" || echo "No changes to commit"
-              git pull --rebase origin {{BASE_BRANCH}}
-              git push origin {{BASE_BRANCH}}
-              
-              # 物理清理死鎖分支
+              git commit -m "chore: [Arbitrator] task $task_id failed (attempts +1)"
               git push origin --delete "$branch"
-              echo "✅ Task $task_id recovered and branch deleted."
+              NEED_PUSH=true
             fi
           done
+
+          if [[ "$NEED_PUSH" == "true" ]]; then
+            git push origin {{BASE_BRANCH}}
+            echo "✅ Main tracker updated and stale branches purged."
+          fi
           
     # [!] 注意：本腳本為邏輯範本，實際運作建議配合 jq 處理 JSON。

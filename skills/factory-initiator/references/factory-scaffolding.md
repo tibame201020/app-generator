@@ -24,7 +24,7 @@
     1. **開啟開關**：Repo Settings -> General -> ✅ Allow auto-merge。
     2. **建立 Label**：執行 `gh label create "auto-merge" --color "#0075ca" --description "Trigger for factory auto-merge"`。
     3. **設定 Secret**：Repo Settings -> Secrets -> Actions -> 新增 `PAT_TOKEN`。
-    3. **權限要求**：該 PAT 必須具備 `repo` 與 `workflow` 完整權限。
+    4. **權限要求**：該 PAT 必須具備 `repo` 與 `workflow` 完整權限。
 
 ---
 > 🎉 **完成：發送最終驗收報告**
