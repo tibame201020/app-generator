@@ -36,9 +36,9 @@
 - [x] 實作 Runtime Controls (Run/Stop/Restart) & Preview Pane
 
 ## 第四階段：AI 任務編排與畫布互動 (Phase 4: Agent Orchestration & Canvas)
-- [ ] 配置 WebSocket (STOMP):
-    - [ ] 後端消息推送頻道 (`/topic/project/{id}`)
-    - [ ] 前端訂閱並即時反應檔案/Agent 異動
+- [x] 配置 WebSocket (STOMP):
+    - [x] 後端消息推送頻道 (`/topic/project/{id}`)
+    - [x] 前端訂閱並即時反應 Agent 任務狀態
 - [ ] 實作 `Workflow Canvas`:
     - [ ] React Flow 自定義 Agent 節點 (PM, SA, PG)
     - [ ] 手動編輯 Workflow 之雙向綁定 (Code <-> Flow)

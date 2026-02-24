@@ -14,6 +14,7 @@ A Low-Code/No-Code tool using AI agents for system generation, featuring a VS Co
 - **Git Integration**: Every project is a Git repository.
 - **Web IDE**: VS Code-style editor with file tree and code editing.
 - **Instant Preview**: Run projects in isolated Docker containers with live preview (Run/Stop/Restart controls).
+- **Agent Task Pipeline**: Real-time task execution and monitoring via WebSockets (Queue, Running, Progress, Completion).
 
 ## Getting Started
 

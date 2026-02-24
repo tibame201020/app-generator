@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.7.0] - 2026-02-24
+
+### Added
+- **Real-time Agent Task Pipeline**:
+  - Implement WebSocket (STOMP) support in Backend (`/ws`, `/topic/project/{id}/tasks`).
+  - Create `AgentTaskService` for managing long-running tasks and publishing structured events.
+  - Add `AgentTaskController` to list tasks and simulate execution for testing.
+  - Create `TaskEventDTO` and `TaskEventType` for standardized event schema.
+- **Frontend Task Integration**:
+  - Add `useTaskWebSocket` hook for real-time connection handling.
+  - Implement `TaskPanel` component to display task timeline, status, and logs.
+  - Integrate `TaskPanel` into `ProjectPage` layout.
+  - Add "Simulate Task" feature for end-to-end verification.
+- **Testing**:
+  - Add unit tests for `AgentTaskService`.
+
 ## [0.6.0] - 2026-02-24
 
 ### Added
