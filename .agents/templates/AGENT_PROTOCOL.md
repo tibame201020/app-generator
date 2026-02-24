@@ -1,22 +1,3 @@
----
-name: Initiator - Step 3b (Scaffold Agent Protocol)
-description: 將行為憲法寫入，強制規範 Worker Agent 的執行邏輯與狀態轉移邊界。
----
-
-# 🏭 Initiator 階段 3b：建置行為憲法
-
-根據先前的變數 (`{{AGENT_NAME}}`, `{{BASE_BRANCH}}`)，請將下方的 `AGENT_PROTOCOL.md` 內容「一字不漏」地建立至目標路徑，並替換其中的變數。
-
-3. **`.{{AGENT_NAME}}/AGENT_PROTOCOL.md` (行為憲法)**：將下方的內容建立至專案中。
-
-> 🛑 **暫停點 (Checkpoint)**：生成完此憲法後，請自主切換並閱讀 `.agents/skills/initiator/03c-scaffold-automation.md` 以進行最後一步。
-
----
-
-## 🏗️ 核心架構範本
-
-### 3. `.{{AGENT_NAME}}/AGENT_PROTOCOL.md` 必須內文 (請完整複製並替換變數)
-```markdown
 # {{AGENT_NAME}} Agent Execution Protocol
 > 每次 Schedule 觸發後，{{AGENT_NAME}} 必須依序執行以下步驟，不得跳過。
 
@@ -66,4 +47,3 @@ description: 將行為憲法寫入，強制規範 Worker Agent 的執行邏輯�
 - **因為您已經在 PR 中將 tracker 改成了 completed**，只要 PR 測試通過且順利被 Merge，主分支的 tracker 就會自然成為 completed 狀態。
 - 若 PR 測試失敗遭到 CI 阻擋，該 PR 就不會 Merge，主分支的狀態仍會保持 pending/in_progress。下次您醒來時，就會發現任務依舊尚未完成，從而繼續修復它。
 - **{{AGENT_NAME}} 的唯一責任就是在 Step 6 提好包含 completed 狀態的乾淨 PR，接著就可以直接離線**，直到下一次 Schedule 被系統喚醒。
-```

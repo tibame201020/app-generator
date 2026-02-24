@@ -1,87 +1,3 @@
----
-name: Initiator - Step 3c (Scaffold Automation & Extensions)
-description: 將 CI/CD 裁判所設定檔寫入，並依據使用者設定附加自動化驅動擴充套件。
----
-
-# 🏭 Initiator 階段 3c：建置自動化裁判所與擴充套件
-
-根據先前的變數 (`{{AGENT_NAME}}`, `{{BASE_BRANCH}}`, `{{BOT_USERNAME}}`)，請進行最後的藍圖產出：
-
-4. **`.github/workflows/{{AGENT_NAME}}-auto-merge.yml` (CI 裁判所)**：將下方的 YAML 內容建立至目標路徑，並替換變數。
-5. **(條件觸發) API 串接擴充套件**：若使用者開場選擇了 `jules` 作為 Worker，請將最下方的 `jules-api.py` Python 腳本完整建立於 `.agents/extensions/jules-api.py` 中。若非支援選項，則無須建立此檔，並告知人類：「已為您產出詳盡框架，執行機制請由外部手動觸發」。
-
-> 🎉 **恭喜 (Finish)**：建廠完成！請向使用者回報專案可以開始運作！
-
----
-
-## 🏗️ 核心架構範本
-
-### 4. `.github/workflows/{{AGENT_NAME}}-auto-merge.yml` 必須內文 (請替換變數)
-```yaml
-name: {{AGENT_NAME}} Auto-Merge
-
-on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review, closed]
-    branches:
-      - '{{BASE_BRANCH}}'
-
-permissions:
-  contents: write
-  pull-requests: write
-
-jobs:
-  auto-merge:
-    runs-on: ubuntu-latest
-    if: |
-      github.event.action != 'closed' &&
-      (github.event.pull_request.user.login == '{{BOT_USERNAME}}' || 
-      contains(github.event.pull_request.body, '[auto-merge]'))
-    
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v3
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
-      # CI: 動態偵測防護機制
-      # 當 Phase 1 建出 backend 與 frontend 後，這些測試將自動硬性生效
-      - name: Backend Tests (Maven)
-        run: |
-          if [ -f "./pom.xml" ]; then
-            ./mvnw clean test
-          elif [ -f "backend/pom.xml" ]; then
-            cd backend && ./mvnw clean test
-          else
-            echo "Backend not initialized yet. Skipping tests."
-          fi
-
-      - name: Frontend Checks (NPM)
-        run: |
-          if [ -f "./package.json" ]; then
-            npm install && npm run build
-          elif [ -f "frontend/package.json" ]; then
-            cd frontend && npm install && npm run build
-          else
-            echo "Frontend not initialized yet. Skipping checks."
-          fi
-
-      - name: Auto-merge PR
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          pull-request-number: ${{ github.event.pull_request.number }}
-          merge-method: squash
-          token: ${{ secrets.GITHUB_TOKEN }}
-```
-
-### 5. `.agents/extensions/jules-api.py` (僅限 Jules 使用)
-> 如果人類選擇配置 `jules`，請完整建立以下檔案以啟用其自動化 API 控制。
-
-```python
 #!/usr/bin/env python3
 import argparse
 import json
@@ -97,29 +13,24 @@ import requests
 API_BASE = "https://jules.googleapis.com/v1alpha"
 STATE_PATH = Path(__file__).resolve().parent.parent / "state" / "jules_state.json"
 
-
 def _api_key(args):
     key = args.api_key or os.getenv("JULES_API_KEY")
     if not key:
         raise SystemExit("Missing API key: set --api-key or JULES_API_KEY")
     return key
 
-
 def _headers(key):
     return {"x-goog-api-key": key, "Content-Type": "application/json"}
-
 
 def _get(key, path, params=None):
     r = requests.get(f"{API_BASE}{path}", headers=_headers(key), params=params, timeout=60)
     r.raise_for_status()
     return r.json() if r.text.strip() else {}
 
-
 def _post(key, path, payload=None):
     r = requests.post(f"{API_BASE}{path}", headers=_headers(key), json=(payload or {}), timeout=60)
     r.raise_for_status()
     return r.json() if r.text.strip() else {}
-
 
 def _save_state(data):
     STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -133,7 +44,6 @@ def _save_state(data):
     old.update(data)
     STATE_PATH.write_text(json.dumps(old, ensure_ascii=False, indent=2), encoding="utf-8")
 
-
 def _load_state():
     if not STATE_PATH.exists():
         return {}
@@ -142,7 +52,6 @@ def _load_state():
     except Exception:
         return {}
 
-
 def cmd_list_sources(args):
     key = _api_key(args)
     data = _get(key, "/sources")
@@ -150,7 +59,6 @@ def cmd_list_sources(args):
     if args.filter:
         sources = [s for s in sources if args.filter.lower() in s.get("name", "").lower()]
     print(json.dumps({"sources": sources}, ensure_ascii=False, indent=2))
-
 
 def _create_session(key, source, prompt, title, branch, automation_mode="AUTO_CREATE_PR"):
     payload = {
@@ -164,22 +72,18 @@ def _create_session(key, source, prompt, title, branch, automation_mode="AUTO_CR
     }
     return _post(key, "/sessions", payload)
 
-
 def cmd_trigger(args):
     key = _api_key(args)
     sess = _create_session(key, args.source, args.prompt, args.title, args.branch, args.automation_mode)
     _save_state({"lastSession": sess.get("name"), "source": args.source})
     print(json.dumps(sess, ensure_ascii=False, indent=2))
 
-
 def _list_sessions(key, page_size=50):
     data = _get(key, "/sessions", {"pageSize": page_size})
     return data.get("sessions", [])
 
-
 def _session_source_name(s):
     return ((s.get("sourceContext") or {}).get("source") or "")
-
 
 def _extract_pr_urls(session):
     urls = []
@@ -190,7 +94,6 @@ def _extract_pr_urls(session):
             urls.append(url)
     return urls
 
-
 def _latest_for_source(key, source):
     sessions = _list_sessions(key)
     filtered = [s for s in sessions if _session_source_name(s) == source]
@@ -198,7 +101,6 @@ def _latest_for_source(key, source):
         return None
     # API usually returns desc; keep first as latest
     return filtered[0]
-
 
 def cmd_latest(args):
     key = _api_key(args)
@@ -217,7 +119,6 @@ def cmd_latest(args):
     }
     print(json.dumps(out, ensure_ascii=False, indent=2))
 
-
 def _merge_pr(pr_url, method="squash"):
     cmd = ["gh", "pr", "merge", pr_url, f"--{method}", "--delete-branch"]
     r = subprocess.run(cmd, capture_output=True, text=True)
@@ -227,7 +128,6 @@ def _merge_pr(pr_url, method="squash"):
         "stdout": r.stdout.strip(),
         "stderr": r.stderr.strip(),
     }
-
 
 def cmd_cycle(args):
     key = _api_key(args)
@@ -257,7 +157,6 @@ def cmd_cycle(args):
         _save_state({"lastSession": created.get("name"), "source": args.source})
 
     print(json.dumps(status, ensure_ascii=False, indent=2))
-
 
 def build_parser():
     p = argparse.ArgumentParser(description="Jules API helper for async trigger/check/merge cycle")
@@ -296,7 +195,6 @@ def build_parser():
 
     return p
 
-
 def main():
     parser = build_parser()
     args = parser.parse_args()
@@ -307,7 +205,5 @@ def main():
         print(json.dumps({"error": "http_error", "status": e.response.status_code if e.response is not None else None, "body": body}, ensure_ascii=False, indent=2))
         sys.exit(1)
 
-
 if __name__ == "__main__":
     main()
-```

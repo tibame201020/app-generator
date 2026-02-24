@@ -1,0 +1,11 @@
+{
+    "project": "YOUR_PROJECT_NAME",
+    "current_phase": "Phase 1: Setup",
+    "phases": [
+        {
+            "phase_id": "phase_1",
+            "name": "Phase 1: Setup",
+            "tasks": []
+        }
+    ]
+}
