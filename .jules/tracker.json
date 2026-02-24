@@ -38,7 +38,7 @@
           "id": "task_1_1_4",
           "phase": "phase_1",
           "title": "建立 /api/health 測試端點",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_1_1_2",
             "task_1_1_3"
