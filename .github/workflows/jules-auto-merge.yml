@@ -2,7 +2,7 @@ name: Jules Auto-Merge
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, closed]
     branches:
       - 'feature/jules-factory'
 
@@ -14,8 +14,9 @@ jobs:
   auto-merge:
     runs-on: ubuntu-latest
     if: |
-      github.event.pull_request.user.login == 'your-jules-bot-username' || 
-      contains(github.event.pull_request.body, '[auto-merge]')
+      github.event.action != 'closed' &&
+      (github.event.pull_request.user.login == 'your-jules-bot-username' || 
+      contains(github.event.pull_request.body, '[auto-merge]'))
     
     steps:
       - name: Checkout Repository
@@ -58,7 +59,6 @@ jobs:
           
   update-tracker-post-merge:
     name: Update Tracker to Completed
-    needs: auto-merge
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
