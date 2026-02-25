@@ -108,7 +108,7 @@
           "id": "task_1_3_3",
           "phase": "phase_1",
           "title": "安裝 DaisyUI Plugin 並設定主題",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_1_3_2"
           ],
