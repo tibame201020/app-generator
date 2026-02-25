@@ -1,11 +1,6 @@
 ---
 title: "🏭 Factory Workflow Blueprint"
 subtitle: "The Literate State Machine of Software Production"
-format:
-  html:
-    toc: true
-    mermaid:
-      theme: forest
 ---
 
 # 🏭 Autonomous Software Factory Workflow
@@ -16,85 +11,12 @@ format:
 
 The factory is composed of five specialized autonomous components orchestrated by a central brain.
 
-```{dot}
-digraph G {
-    fontname="Helvetica,Arial,sans-serif"
-    node [fontname="Helvetica,Arial,sans-serif", shape=box, style=filled, fillcolor="#f9f9f9", color="#333333"]
-    edge [fontname="Helvetica,Arial,sans-serif", color="#666666"]
-    
-    label="🏭 Autonomous Software Factory Workflow"
-    labelloc="t"
-    fontsize=20
+::: {.callout-important}
+### 🔍 視覺化地圖
+由於產線流程較為複雜，我已將「完整決策藍圖」移至獨立頁面以獲得最佳顯示效果。
 
-    User [shape=circle, label="👩‍💻 Human", fillcolor="#e1f5fe"]
-    
-    subgraph cluster_0 {
-        label = "Phase 1: Discovery";
-        color = "#e8f5e9";
-        style = filled;
-        fillcolor = "#f1f8e9";
-        
-        Orchestrator [label="🏁 Factory Orchestrator", fillcolor="#fff9c4"]
-        ReqAnalyst [label="📝 Requirements Analyst"]
-        VisualDesigner [label="🎨 Visual Designer", style=dashed]
-        
-        Decision_UI [shape=diamond, label="Needs UI?", fillcolor="#ffffff"]
-    }
-    
-    subgraph cluster_1 {
-        label = "Phase 2: Technical Design";
-        color = "#fff3e0";
-        style = filled;
-        fillcolor = "#fff8e1";
-        
-        Architect [label="🏛️ Architect Reviewer"]
-        Simulation [label="🧠 Mental Simulation", shape=ellipse]
-    }
-    
-    subgraph cluster_2 {
-        label = "Phase 3: Execution";
-        color = "#f3e5f5";
-        style = filled;
-        fillcolor = "#f3e5f5";
-        
-        Iterator [label="🏭 Factory Iterator"]
-        Tracker [label="🗄️ tracker.json", shape=note]
-        Workers [label="👷 Worker Agents"]
-    }
-
-    subgraph cluster_3 {
-        label = "Phase 4: Validation";
-        color = "#ffebee";
-        style = filled;
-        fillcolor = "#fffde7";
-
-        CI [label="🤖 CI Checker\n(Gatekeeper)", shape=diamond]
-        Repair [label="🩹 Self-Healing", fillcolor="#ffccbc"]
-        Merge [label="✅ Merge & Advance", fillcolor="#c8e6c9"]
-    }
-
-    // Connections
-    User -> Orchestrator
-    Orchestrator -> ReqAnalyst
-    ReqAnalyst -> Decision_UI
-    
-    Decision_UI -> VisualDesigner [label="Yes"]
-    Decision_UI -> Architect [label="No"]
-    
-    VisualDesigner -> Architect
-    Architect -> Simulation
-    Simulation -> Iterator
-    
-    Iterator -> Tracker
-    Tracker -> Workers
-    
-    Workers -> CI [label="PR"]
-    
-    CI -> Merge [label="Pass"]
-    CI -> Repair [label="Fail"]
-    Repair -> Workers
-}
-```
+[➡️ 點此開啟「全螢幕流程藍圖」](workflow-diagram.qmd){.btn .btn-primary .btn-lg role="button"}
+:::
 
 ## 📊 Live Factory Status (Experimental)
 
@@ -144,4 +66,4 @@ Generates the `tracker.json` and micro-task specs for workers.
 
 ------------------------------------------------------------------------
 
-> \[!TIP\] **Literate Strategy**: By using `.qmd`, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint to be visible to the Orchestrator.
+> \[!TIP\] **Literate Strategy**: By using `.qmd`, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint to be visible to the Orchestrator. :::: :::::

@@ -9,22 +9,25 @@ website:
         text: "🏠 首頁"
       - href: docs/FACTORY_WORKFLOW.qmd
         text: "🔄 流程藍圖"
+    right:
+      - icon: github
+        href: https://github.com/tibame201020/app-generator
+  
+  sidebar:
+    style: "floating"
+    contents:
       - section: "📖 技術手冊"
         contents:
           - docs/FACTORY_WORKFLOW.qmd
+          - docs/workflow-diagram.qmd
           - docs/principles.qmd
           - docs/worker-protocol.qmd
           - docs/extensions.qmd
-
-  sidebar:
-    style: "floating"
 
 format:
   html:
     theme: cosmo
     toc: true
     code-fold: true
-    mermaid:
-      theme: forest
 
 editor: visual

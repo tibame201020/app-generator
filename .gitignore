@@ -125,3 +125,6 @@ software-factory.md
 _site/
 *_files/
 *.html
+
+/.quarto/
+**/*.quarto_ipynb
