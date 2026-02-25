@@ -69,6 +69,18 @@ public class AgentTaskService {
     }
 
     @Transactional
+    public void updateContext(UUID taskId, Map<String, Object> contextUpdate) {
+        AgentTask task = getTask(taskId);
+        Map<String, Object> context = task.getContextData();
+        if (context == null) {
+            context = new java.util.HashMap<>();
+        }
+        context.putAll(contextUpdate);
+        task.setContextData(context);
+        agentTaskRepository.save(task);
+    }
+
+    @Transactional
     public void completeTask(UUID taskId, String resultMessage) {
         AgentTask task = getTask(taskId);
         task.setStatus(TaskStatus.SUCCESS);

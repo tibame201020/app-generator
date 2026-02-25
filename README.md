@@ -26,9 +26,24 @@ A Low-Code/No-Code tool using AI agents for system generation, featuring a VS Co
 - Docker
 - Maven
 
+### LLM Configuration
+
+Configure your LLM provider in `backend/src/main/resources/application.yml` or via environment variables:
+
+```yaml
+platform:
+  llm:
+    provider: openai
+    api-key: ${OPENAI_API_KEY} # Required
+    model-name: gpt-4o
+    timeout: 60
+    max-retries: 3
+```
+
 ### Running the Backend
 
 ```bash
+export OPENAI_API_KEY=your_key_here
 cd backend
 mvn spring-boot:run
 ```

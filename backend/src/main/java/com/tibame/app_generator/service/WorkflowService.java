@@ -7,6 +7,7 @@ import com.tibame.app_generator.model.Project;
 import com.tibame.app_generator.model.Workflow;
 import com.tibame.app_generator.repository.ProjectRepository;
 import com.tibame.app_generator.repository.WorkflowRepository;
+import com.tibame.app_generator.service.llm.LlmAgentExecutionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -25,6 +26,7 @@ public class WorkflowService {
     private final ProjectRepository projectRepository;
     private final AgentTaskService agentTaskService;
     private final ObjectMapper objectMapper;
+    private final LlmAgentExecutionService llmAgentExecutionService;
 
     @Transactional
     public Workflow saveWorkflow(UUID projectId, Map<String, Object> graphData) {
@@ -84,6 +86,15 @@ public class WorkflowService {
             throw new IllegalStateException("Workflow validation failed: " + validationErrors);
         }
 
+        // Initialize execution context with Project Description
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectId));
+
+        Map<String, Object> executionContext = new HashMap<>();
+        if (project.getDescription() != null) {
+            executionContext.put("description", project.getDescription());
+        }
+
         List<Map<String, Object>> nodes = (List<Map<String, Object>>) workflow.getGraphData().get("nodes");
         List<Map<String, Object>> edges = (List<Map<String, Object>>) workflow.getGraphData().get("edges");
         if (edges == null) edges = new ArrayList<>();
@@ -109,30 +120,20 @@ public class WorkflowService {
              AgentTask task = agentTaskService.createTask(projectId, agentType, label != null ? label : agentType.name() + " Task", data);
 
              // Run Task (Synchronously inside this Async method)
-             runTaskSimulation(task);
-        }
-    }
+             // We pass the accumulated context (previous outputs) as input to the current task
+             try {
+                 Map<String, Object> result = llmAgentExecutionService.executeTask(task, executionContext);
 
-    private void runTaskSimulation(AgentTask task) {
-         try {
-            log.info("Starting task execution for {}", task.getId());
-            agentTaskService.startTask(task.getId());
-
-            // Simulate steps
-            int steps = 5;
-            for (int i = 1; i <= steps; i++) {
-                TimeUnit.SECONDS.sleep(1);
-                int progress = i * 20;
-                agentTaskService.updateProgress(task.getId(), progress, "Processing step " + i + "...");
-            }
-
-            agentTaskService.completeTask(task.getId(), "Task completed successfully.");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            agentTaskService.failTask(task.getId(), "Task interrupted.");
-        } catch (Exception e) {
-            log.error("Task execution failed", e);
-            agentTaskService.failTask(task.getId(), "Task failed: " + e.getMessage());
+                 // Update context for next steps
+                 if (result != null) {
+                     executionContext.putAll(result);
+                 }
+             } catch (Exception e) {
+                 log.error("Execution failed for task: {}", task.getId(), e);
+                 // Stop workflow execution on failure?
+                 // Yes, usually. The task itself is already marked failed by executeTask.
+                 break;
+             }
         }
     }
 

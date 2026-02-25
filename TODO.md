@@ -42,9 +42,9 @@
 - [x] 實作 `Workflow Canvas`:
     - [x] React Flow 自定義 Agent 節點 (PM, SA, PG, QA)
     - [x] Workflow 資料持久化與執行 (Backend Integration)
-- [ ] 整合 LLM (LangChain4j):
-    - [ ] 實作 `PM Agent` 功能定義 Prompt
-    - [ ] 實作 `PG Agent` 代碼生成與修改 Prompt
+- [x] 整合 LLM (LangChain4j):
+    - [x] 實作 `PM Agent` 功能定義 Prompt
+    - [x] 實作 `PG Agent` 代碼生成與修改 Prompt (基礎版本)
 
 ## 第五階段：既有專案匯入與 AST 分析 (Phase 5: Import & AST Analysis)
 - [ ] 實作 `ASTAnalyzer`:
