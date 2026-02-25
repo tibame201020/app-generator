@@ -29,9 +29,20 @@ description: 軟體工廠的總指揮，負責管理 6 個 Skills 之間的切�
 - CI/CD 結果收割與 Phase 推進。
 - 迭代循環直至專案完工。
 
-### 6. 狀態接力 (Relay)
-- 確保上一個 Skill 的產出物（如 `RFP.md`、`design_system.md`、`ADR/*.md`）能被下一個 Skill 正確讀取。
-- 管理 `Create / Continue / Maintain` 三種模式的跳轉邏輯。
+### 6. 模式感知接力 (Mode-Aware Relay)
+
+> **核心問題**：不是每次都從 Step 1 走到 Step 5。根據 Requirements Analyst 判定的模式，Orchestrator 必須知道「從哪裡接入、跳過什麼」。
+
+| 模式 | 既有產出物 | Orchestrator 路由 |
+|:---|:---|:---|
+| **🟢 CREATE** | 無 | 完整走 Step 1 → 2 → 3 → 4 → 5（全部執行） |
+| **🟡 CONTINUE** | 已有 `RFP.md`、`tracker.json`、部分 `specs/` | Step 1 (Analyst 以 CONTINUE 模式讀取既有 RFP) → Step 2 (若涉及新 UI) → Step 3 (Architect 產出 Integration Report) → Step 4 (Iterator 追加新任務至既有 tracker) → Step 5 |
+| **🔴 MAINTAIN** | 全套產出物已存在 | Step 1 (Analyst 以 MAINTAIN 模式限縮修改範圍) → 跳過 Step 2 → Step 3 (Architect 診斷式審查) → Step 4 (Iterator 產出修復任務) → Step 5 |
+
+**接力交接規則：**
+- 在呼叫每一個 Skill 前，Orchestrator **必須先偵測**該 Skill 的產出物是否已存在（`docs/RFP.md`、`docs/design_system.md`、`docs/ADR/*.md`、`tracker.json`）。
+- 若產出物已存在，**必須**將其路徑與模式標籤 (CREATE/CONTINUE/MAINTAIN) 一併傳遞給下游 Skill，讓其知道「讀取既有的、而非從零開始」。
+- **禁止**在 CONTINUE/MAINTAIN 模式下讓任何 Skill 執行 CREATE 邏輯。
 
 ## 🛠️ 使用準則
 - **元件化思維 (Component Thinking)**：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。

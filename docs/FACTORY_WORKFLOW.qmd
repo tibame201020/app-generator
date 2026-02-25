@@ -118,6 +118,8 @@ else:
     print("> ⚠️ No active tracker found. Factory is currently idle.")
 ```
 
+> \[!NOTE\] **初次部署說明**：若您剛建立專案且尚未執行 Factory Iterator 的建廠流程 (Scaffolding)，上方顯示「No active tracker found」是正常現象。待 `tracker.json` 被 commit 進倉庫後，此區塊將自動顯示即時進度。
+
 ------------------------------------------------------------------------
 
 ## 🛠️ 角色定義 (6-Role Pipeline)
