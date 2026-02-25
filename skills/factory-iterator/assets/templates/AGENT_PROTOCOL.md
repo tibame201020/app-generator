@@ -35,7 +35,8 @@
 ## Step 3: Implement & Cognitive Load Limit (認知上限守則)
 - 依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。
 - 實作必須包含：功能程式碼 + 對應的單元測試／整合測試。
-- 若有架構或 Schema 變更，必須同步更新 `docs/` 內的對應文件與 `CHANGELOG.md`。
+- 若有架構或 Skill 邏輯變更，**必須**同步更新 `FACTORY_WORKFLOW.qmd` 與 `docs/*.qmd` 內的對應文件與 `CHANGELOG.md`。確保「文學化編程 (Literate Programming)」之同步性。
+
 - 🧠 **認知上限與架構守則 (Cognitive Load & Architecture Limit)**：
   1. **檔案長度控制**：新建立或修改的檔案，長度應盡量保持在 200~300 行以內。
   2. **反模式禁令 (Anti-Patterns Ban)**：絕對禁止寫出「全能上帝物件 (God Object)」或「大泥球 (Big Ball of Mud)」。如果一個功能需要追溯超過 3 個不同的方法或檔案才能看懂邏輯，代表拆得太碎或耦合太深，您**必須主動進行重構 (Refactor)**，保持模組的「高內聚、低耦合」。
