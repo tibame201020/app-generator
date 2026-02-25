@@ -18,6 +18,7 @@ description: 純粹的「任務規格產出器」。負責建廠部署、任務�
 - 從模板產生 `.{{AGENT_NAME}}/tracker.json` 與 `AGENT_PROTOCOL.md`。
 - **視覺規範注入**：將 `RFP.md` 內的 Design Tokens 寫入任務規格中。
 - **規則目錄初始化**：確保 `.agents/rules/` 目錄存在且包含基本編碼守則。
+- **文檔骨架建立**：若 `docs/FACTORY_WORKFLOW.qmd` 不存在，從模板產生初始版本，確保 Worker 執行時此文件已存在。
 
 ### Step 2: 任務拆解與模組化 (Intent-Aware Modular Micro-Tasking)
 - **共通規範**：拆解為符合「單檔 300 行內」的微型任務。

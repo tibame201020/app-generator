@@ -7,6 +7,9 @@ visual_requirements:
   design_tokens_ref: "docs/design_system.md" # 引用全域設計規範
   layout_spec: "例如：左側導航、中央主表、右側抽屜"
   mockup_description: "描述該畫面應有的視覺動態、間距感（如：緊湊或呼吸感）"
+  wireframe_refs:   # 📎 視覺產出物路徑參照（由 Visual Designer 產出，Worker 必須參考）
+    - "docs/wireframes/dashboard_L1.png"
+    # - "docs/wireframes/dashboard_L2.png"
 
 acceptance_criteria:
   - "建立 OOO 或實作 XXX"
@@ -18,4 +21,3 @@ success_criteria:
   - "定義量化指標 (如：Lighthouse 效能 > 90)"
 negative_test_cases:
   - "描述應被阻擋或妥善處理的異常輸入情境"
-

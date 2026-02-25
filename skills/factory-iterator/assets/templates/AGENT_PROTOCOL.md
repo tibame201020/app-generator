@@ -47,7 +47,7 @@ task_package:
 ## Step 3: 實作功能 (Implement)
 - 依照 Spec 實作功能，嚴格遵守 Rules 文件中的程式碼風格。
 - 實作必須包含：功能程式碼 + 對應的單元測試／整合測試。
-- 若有架構或 Skill 邏輯變更，**必須**同步更新 `FACTORY_WORKFLOW.qmd` 與 `docs/*.qmd`。
+- 若有架構或 Skill 邏輯變更，**應在 PR Description 中標註**建議更新 `FACTORY_WORKFLOW.qmd` 的內容，由 Orchestrator 統一維護。Worker **不得直接修改** `FACTORY_WORKFLOW.qmd`。
 
 - 🧠 **認知上限與架構守則 (Cognitive Load & Architecture Limit)**：
   1. **檔案長度控制**：新建立或修改的檔案，長度應盡量保持在 200~300 行以內。

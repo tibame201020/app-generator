@@ -42,6 +42,22 @@ jobs:
           fi
           echo "Factory structure verified."
 
+      # 🛡️ Task Status Guard: 防止 Worker 漏更新 tracker 就提 PR
+      - name: Verify Task Completion in Tracker
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          TASK_ID=$(echo "$BRANCH_NAME" | grep -oP 'task-\K.*' || echo "")
+          if [ -z "$TASK_ID" ]; then
+            echo "Warning: Could not extract task ID from branch '$BRANCH_NAME'. Skipping check."
+          else
+            TASK_STATUS=$(jq -r --arg tid "task_${TASK_ID}" '.phases[].tasks[] | select(.id == $tid) | .status' .{{AGENT_NAME}}/tracker.json 2>/dev/null || echo "not_found")
+            if [ "$TASK_STATUS" != "completed" ]; then
+              echo "Error: Task '${TASK_ID}' status is '${TASK_STATUS}', expected 'completed'. Worker must update tracker before PR can merge."
+              exit 1
+            fi
+            echo "Task '${TASK_ID}' status verified as 'completed'."
+          fi
+
       # CI: 動態偵測防護機制
       - name: Backend Tests (Maven)
         run: |
