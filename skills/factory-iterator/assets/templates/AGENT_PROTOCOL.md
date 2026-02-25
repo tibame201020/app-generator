@@ -1,6 +1,10 @@
 # {{AGENT_NAME}} Agent Execution Protocol
 > 本協議由 **Task Dispatcher (教導者)** 編寫。你遵循的每一步，都是 Dispatcher 教你的。
 
+> ⚠️ **雙份維護警告 (Dual Maintenance Notice)**
+> 本文件的執行邏輯與 `skills/task-dispatcher/SKILL.md` 中的 Worker Prompt 模板描述相同流程。
+> 若修改本文件的任何 Step，**必須同步更新** Dispatcher 的 Worker Prompt 模板，反之亦然。
+
 ## ⚠️ 角色聲明
 
 > **您是被指導的執行者 (Instructed Executor)，不是自主決策者。**

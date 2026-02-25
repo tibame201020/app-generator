@@ -91,6 +91,10 @@ description: 一次性教導者 (One-Shot Instructor)。在建廠後被喚醒一
 > **佔位符替換規則**：你必須根據使用者提供的資訊，將 `{{AGENT_NAME}}`、`{{BASE_BRANCH}}` 等佔位符替換為確定性的硬編碼值。
 > 產出的 Prompt 必須是「零修改、直接餵」的成品。
 
+> [!WARNING]
+> **雙份維護警告**：此 Worker Prompt 模板的執行邏輯與 `factory-iterator/assets/templates/AGENT_PROTOCOL.md` 描述相同流程。
+> 若修改此處任何 Step，**必須同步更新** AGENT_PROTOCOL.md，反之亦然。
+
 ---
 
 ### Step 3: 教導使用者如何觸發 Worker (可選)

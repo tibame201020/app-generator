@@ -32,8 +32,10 @@ jobs:
           echo "Current Phase: $CURRENT_PHASE"
 
           # 檢查當前 Phase 是否所有任務皆已 completed
+          # ⚠️ jq 的 `all` 對空陣列回傳 true，必須先檢查 length > 0
           ALL_DONE=$(jq -r --arg cp "$CURRENT_PHASE" '
-            .phases[] | select(.name == $cp) | .tasks | map(.status == "completed") | all
+            .phases[] | select(.name == $cp) | .tasks |
+            if length > 0 then map(.status == "completed") | all else false end
           ' $TRACKER)
 
           if [ "$ALL_DONE" == "true" ]; then
