@@ -25,9 +25,10 @@ description: 軟體工廠的總指揮，負責管理 6 個 Skills 之間的切�
 
 ### 5. 任務調度教導 (One-Shot Instruction)
 引導 **[Task Dispatcher](../task-dispatcher/SKILL.md)** 執行**一次性**教導：
-- 產出 `dispatcher.py` 自動化腳本（供 Cron 排程使用）。
-- 產出**可重複使用的 Worker Prompt**（使用者只需反覆餵給 Worker 即可持續推進任務）。
-- Dispatcher 完成教導後即退場。後續由「自動化腳本 + Worker + CI/CD」自動循環運作至完工。
+- 產出**可重複使用的 Worker Prompt**——使用者只需反覆餵給 Worker Agent 即可持續推進任務。
+- Worker 怎麼觸發由使用者決定（Web GUI、API、Cron、n8n 等皆可）。
+- 若使用者需要自動化觸發，Dispatcher 可協助封裝對應 Worker 的 API 腳本。
+- Dispatcher 完成教導後即退場。後續由「Worker + CI/CD」自動循環運作至完工。
 
 ### 6. 模式感知接力 (Mode-Aware Relay)
 
