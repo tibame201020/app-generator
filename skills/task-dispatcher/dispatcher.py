@@ -27,8 +27,15 @@ def get_next_task(tracker_path):
         data = json.load(f)
     
     current_phase_name = data.get("current_phase")
-    agent_name = data.get("agent_name", "worker")
-    base_branch = "main" # 預設主分支
+    
+    # 動態獲取 Agent Name (通常在建廠時寫入)
+    agent_name = data.get("agent_name", "jules")
+    
+    # 動態獲取 Base Branch (不寫死 main，改由 git 偵測)
+    base_branch = run_cmd("git rev-parse --abbrev-ref HEAD", check=False)
+    if not base_branch or base_branch.startswith("jules/"):
+        # 若當前在 detached HEAD 或 feature branch，嘗試取得預設分支
+        base_branch = run_cmd("git config --get init.defaultBranch", check=False) or "main"
 
     for phase in data.get("phases", []):
         if phase.get("name") == current_phase_name:
