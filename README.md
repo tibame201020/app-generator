@@ -15,6 +15,7 @@ A Low-Code/No-Code tool using AI agents for system generation, featuring a VS Co
 - **Web IDE**: VS Code-style editor with file tree and code editing.
 - **Instant Preview**: Run projects in isolated Docker containers with live preview (Run/Stop/Restart controls).
 - **Agent Task Pipeline**: Real-time task execution and monitoring via WebSockets (Queue, Running, Progress, Completion).
+- **Workflow Canvas**: Visual editor for defining and executing AI agent workflows (PM -> SA -> PG -> QA).
 
 ## Getting Started
 
