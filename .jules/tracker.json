@@ -175,7 +175,7 @@
           "id": "task_2_1_2",
           "phase": "phase_2",
           "title": "建立對應的 Spring Data JPA Repositories",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_2_1_1"
           ],
