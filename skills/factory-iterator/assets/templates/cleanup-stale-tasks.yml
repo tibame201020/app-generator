@@ -36,14 +36,27 @@ jobs:
             task_id=$(echo $branch | sed 's/{{AGENT_NAME}}\/task-//')
             echo "🕵️ Analyzing branch: $branch (Task: $task_id)"
             
-            # 取得 PR 狀態
-            pr_data=$(gh pr list --head "$branch" --state all --json state --jq '.[0]' 2>/dev/null)
+            # 取得 PR 狀態（含 CI check 結果）
+            pr_data=$(gh pr list --head "$branch" --state all --json state,statusCheckRollup --jq '.[0]' 2>/dev/null)
             pr_status=$(echo "$pr_data" | jq -r '.state // empty')
             
             SHOULD_CLEANUP=false
+
             if [[ "$pr_status" == "CLOSED" ]]; then
               echo "⚠️ Task $task_id: Found CLOSED PR."
               SHOULD_CLEANUP=true
+            elif [[ "$pr_status" == "OPEN" ]]; then
+              # 偵測 CI 失敗的 OPEN PR（Worker 可能已關閉 PR 並刪除分支，也可能尚未處理）
+              ci_failed=$(echo "$pr_data" | jq -r '
+                [.statusCheckRollup[]? | select(.conclusion == "FAILURE" or .conclusion == "ERROR")] | length > 0
+              ')
+              if [[ "$ci_failed" == "true" ]]; then
+                echo "⚠️ Task $task_id: Found OPEN PR with CI failure. Closing and cleaning up."
+                gh pr close "$branch" --comment "🤖 Arbitrator: CI failed. Closing for retry." || true
+                SHOULD_CLEANUP=true
+              else
+                echo "ℹ️ Task $task_id: OPEN PR with CI passing or pending. Skipping."
+              fi
             elif [[ -z "$pr_status" ]]; then
               last_commit_time=$(git log -1 --format="%ct" "origin/$branch")
               current_time=$(date +%s)

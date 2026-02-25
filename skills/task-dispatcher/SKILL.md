@@ -61,9 +61,8 @@ description: 一次性教導者 (One-Shot Instructor)。在建廠後被喚醒一
   - OPEN + CI **失敗** → 執行恢復流程：
     1. 關閉失敗的 PR：`gh pr close {{AGENT_NAME}}/task-{task_id}`
     2. 刪除遠端分支：`git push origin --delete {{AGENT_NAME}}/task-{task_id}`
-    3. 在 tracker.json 中遞增該任務的 `attempts` (+1)
-    4. 若 attempts >= 5 → 停止，回報人類
-    5. 若 attempts < 5 → 重新領取此任務
+    3. 跳過此任務，嘗試下一個 pending 任務
+    - _(attempts 遞增由 cleanup-stale-tasks.yml Arbitrator 統一負責，Worker 不得修改 main 上的 tracker.json)_
 
 ### 3. 建立工作環境
 - `git fetch origin && git checkout {{BASE_BRANCH}} && git pull`

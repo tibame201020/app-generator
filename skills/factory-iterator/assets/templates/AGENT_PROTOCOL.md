@@ -39,10 +39,12 @@
 ```
 1. 關閉失敗的 PR：gh pr close {{AGENT_NAME}}/task-{task_id}
 2. 刪除遠端分支：git push origin --delete {{AGENT_NAME}}/task-{task_id}
-3. 遞增 tracker.json 中該任務的 attempts（+1）
-4. 若 attempts >= 5 → 停止，回報人類：「任務 {task_id} 已連續失敗 5 次，需要人工介入。」
-5. 若 attempts < 5 → 重新領取此任務（回到本步驟的「不存在 → 可領取」路徑）
+3. 跳過此任務，嘗試下一個 pending 任務
 ```
+
+> ⚠️ **attempts 遞增由 `cleanup-stale-tasks.yml` (Arbitrator) 統一負責。**
+> Worker 無權直接 push 至 `{{BASE_BRANCH}}`，因此不得自行修改 tracker.json 的 attempts。
+> Arbitrator 每小時掃描後自動遞增 attempts 並推送至 main，確保「單一寫入點 (Single Writer)」。
 
 2. 領取任務後：
    ```
