@@ -32,17 +32,11 @@ description: 負責確認需求細節、探測使用者背景、並定調 UI/UX 
 - **重點**：嚴格限制修改範圍。重點在於穩定性與對既有架構的尊重。
 - **進入**：診斷式需求分析。
 
-### Step 3: 視覺風格定調 (UI/UX Focus - 僅限 Create / Continue)
-- 如果涉及介面，您**必須**詢問顏色偏好、佈局習慣、以及是否需要 Dark Mode。
-- 產出 **Design System Tokens**。
-
+### Step 3: 微型任務大綱 (Feature Breakdown)
+- 列出 High-Level 的功能點與模組大綱。
 
 ## 🛠️ 產出物
-- **`docs/RFP.md`**: 包含商業目標、使用者流程圖 (Mermaid) 以及視覺風格定義。
-
-> [!IMPORTANT]
-> **視覺感即是生產力**：無論是新案還是維護，若沒有視覺基準，Worker 將會產出雜亂的 UI。請確保產出的文件中包含明確的視覺樣式指南。
-
+- **`docs/RFP.md`**: 包含商業目標、使用者流程圖 (Mermaid) 以及意圖標籤。
 
 ---
-> 🛑 **暫停點**：需求與視覺定調獲得確認後，請玩家開啟 **[architect-reviewer](file:///skills/architect-reviewer/SKILL.md)**。
+> 🛑 **暫停點**：需求與意圖確認後，請玩家回報 **[factory-orchestrator](file:///skills/factory-orchestrator/SKILL.md)** 決定是否需要進入視覺設計或直接進入架構評估。
