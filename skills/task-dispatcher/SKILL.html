@@ -240,7 +240,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>❌ 運行時調度員：每次排程都需要 LLM 判斷 → 成本高、延遲大
 ❌ 本機調度腳本：依賴使用者的 local repo 定時 pull → 工廠不該在地面
 ✅ 編譯時教導者：LLM 只被喚醒一次，產出「教材 (Prompt)」讓 Worker 用到底</code></pre>
-<p><strong>工廠是建在空中閣樓的。</strong> 使用者不需要在本機維護 repo、不需要定時 pull、不需要跑任何腳本。 他只需要一種方式觸發 Worker（Web GUI、API、Cron、n8n…隨便他），然後把你產出的 Prompt 餵進去。</p>
+<p><strong>建廠階段需要 local repo</strong>（specs、tracker 等必須 commit 進 repo）。 <strong>但執行階段不需要</strong>——使用者不必在本機持續 pull repo 來追蹤狀態。Worker 直接操作遠端 repo。 他只需要一種方式觸發 Worker（Web GUI、API、Cron、n8n…隨便他），然後把你產出的 Prompt 餵進去。</p>
 <hr>
 </section>
 <section id="執行流程僅執行一次" class="level2">
