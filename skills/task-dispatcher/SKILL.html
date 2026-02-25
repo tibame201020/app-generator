@@ -307,6 +307,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <blockquote class="blockquote">
 <p>[!IMPORTANT] <strong>佔位符替換規則</strong>：你必須根據使用者提供的資訊，將 <code>{AGENT_NAME}</code>、<code>{BASE_BRANCH}</code> 等佔位符替換為確定性的硬編碼值。 產出的 Prompt 必須是「零修改、直接餵」的成品。</p>
 </blockquote>
+<blockquote class="blockquote">
+<p>[!WARNING] <strong>雙份維護警告</strong>：此 Worker Prompt 模板的執行邏輯與 <code>factory-iterator/assets/templates/AGENT_PROTOCOL.md</code> 描述相同流程。 若修改此處任何 Step，<strong>必須同步更新</strong> AGENT_PROTOCOL.md，反之亦然。</p>
+</blockquote>
 <hr>
 </section>
 <section id="step-3-教導使用者如何觸發-worker-可選" class="level3">
