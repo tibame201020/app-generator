@@ -280,31 +280,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>OPEN + CI **失敗** → 執行恢復流程：</span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="ss">    1. </span>關閉失敗的 PR：<span class="in">`gh pr close {{AGENT_NAME}}/task-{task_id}`</span></span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="ss">    2. </span>刪除遠端分支：<span class="in">`git push origin --delete {{AGENT_NAME}}/task-{task_id}`</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ss">    3. </span>在 tracker.json 中遞增該任務的 <span class="in">`attempts`</span> (+1)</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ss">    4. </span>若 attempts &gt;= 5 → 停止，回報人類</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="ss">    5. </span>若 attempts &lt; 5 → 重新領取此任務</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. 建立工作環境</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git fetch origin &amp;&amp; git checkout {{BASE_BRANCH}} &amp;&amp; git pull`</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git checkout -b {{AGENT_NAME}}/task-{task_id}`</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git commit --allow-empty -m "chore: start {task_id}"`</span> (Heartbeat)</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git push origin {{AGENT_NAME}}/task-{task_id}`</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. 規則預載與規格讀取</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取 <span class="in">`.agents/rules/`</span> 中的所有編碼規則。</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取任務對應的 <span class="in">`spec_ref`</span> 檔案（位於 <span class="in">`specs/tasks/`</span> 下）。</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>嚴格依照 Spec 實作，禁止猜測。</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5. 實作與驗證</span></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>依照 Spec 實作功能 + 單元測試。</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>遵守認知上限：檔案 ≤ 300 行，禁止 God Object。</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>路徑審計：<span class="in">`git diff --name-only`</span> 必須全部落在 <span class="in">`allowed_paths`</span> 內。</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>TDD：Phase 1 測試 1-4 項，Phase 2+ 測試 1-8 項。</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6. 提交 PR</span></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>將 tracker.json 中該任務的 status 更新為 <span class="in">`completed`</span>。</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>提交 PR：<span class="in">`gh pr create --title "[{{AGENT_NAME}}] {title}" --body "..." --label "auto-merge"`</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>PR 提交後你的任務結束。CI 與 Phase 推進由自動化處理。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ss">    3. </span>跳過此任務，嘗試下一個 pending 任務</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>_(attempts 遞增由 cleanup-stale-tasks.yml Arbitrator 統一負責，Worker 不得修改 main 上的 tracker.json)_</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. 建立工作環境</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git fetch origin &amp;&amp; git checkout {{BASE_BRANCH}} &amp;&amp; git pull`</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git checkout -b {{AGENT_NAME}}/task-{task_id}`</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git commit --allow-empty -m "chore: start {task_id}"`</span> (Heartbeat)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git push origin {{AGENT_NAME}}/task-{task_id}`</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. 規則預載與規格讀取</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取 <span class="in">`.agents/rules/`</span> 中的所有編碼規則。</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取任務對應的 <span class="in">`spec_ref`</span> 檔案（位於 <span class="in">`specs/tasks/`</span> 下）。</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>嚴格依照 Spec 實作，禁止猜測。</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5. 實作與驗證</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>依照 Spec 實作功能 + 單元測試。</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>遵守認知上限：檔案 ≤ 300 行，禁止 God Object。</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>路徑審計：<span class="in">`git diff --name-only`</span> 必須全部落在 <span class="in">`allowed_paths`</span> 內。</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>TDD：Phase 1 測試 1-4 項，Phase 2+ 測試 1-8 項。</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6. 提交 PR</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>將 tracker.json 中該任務的 status 更新為 <span class="in">`completed`</span>。</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>提交 PR：<span class="in">`gh pr create --title "[{{AGENT_NAME}}] {title}" --body "..." --label "auto-merge"`</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>PR 提交後你的任務結束。CI 與 Phase 推進由自動化處理。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <blockquote class="blockquote">
 <p>[!IMPORTANT] <strong>佔位符替換規則</strong>：你必須根據使用者提供的資訊，將 <code>{AGENT_NAME}</code>、<code>{BASE_BRANCH}</code> 等佔位符替換為確定性的硬編碼值。 產出的 Prompt 必須是「零修改、直接餵」的成品。</p>
 </blockquote>
