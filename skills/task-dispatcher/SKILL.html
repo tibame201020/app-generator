@@ -259,7 +259,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </blockquote>
 <p>腳本必須實現以下確定性邏輯（不需要 LLM）： 1. 讀取 <code>tracker.json</code>，定位 <code>current_phase</code> 中第一個 <code>pending</code> 任務。 2. 執行 <code>git ls-remote</code> 檢查互斥鎖 (Branch-as-Lock)。 3. 若可領取：切出 Feature Branch，推送 Heartbeat Commit。 4. 輸出標準化的 Task Package（JSON 格式）。</p>
 <blockquote class="blockquote">
-<p>[!TIP] 本目錄下已有一份通用的 <a href="./dispatcher.py"><code>dispatcher.py</code></a> 模板。 在大多數情況下，此模板無需任何修改即可直接使用——它會自動從 <code>tracker.json</code> 讀取 <code>agent_name</code>，並透過 <code>git</code> 動態偵測 <code>base_branch</code>。</p>
+<p>[!TIP] 本目錄下已有一份 <a href="./dispatcher.py"><code>dispatcher.py</code></a> <strong>模板</strong>。 模板中使用 <code>{AGENT_NAME}</code>、<code>{BASE_BRANCH}</code> 等佔位符。 你的工作是根據使用者在前面階段提供的資訊（Agent 名稱、主分支名稱等）， <strong>將佔位符替換為硬編碼的值</strong>，產出一份「零配置、拿來就跑」的成品腳本。 禁止使用任何動態偵測邏輯（如 <code>git rev-parse</code>）。所有值必須是確定性的。</p>
 </blockquote>
 </section>
 <section id="step-3-產出可重複使用的-worker-prompt-核心教材" class="level3">
