@@ -358,11 +358,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>🤖 No-LLM Dispatcher Automation
+<span class="screen-reader-only">Note</span>🤖 Dispatcher = 教導者，非調度員
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>為實現低成本的「全自動排程執行 (Cron)」，本階段的「任務調度官」並非大語言模型 (LLM)，而是一支純粹的 Python 腳本 (<code>dispatcher.py</code>)。它負責處理 JSON 解析與 Git 互斥鎖，將高昂的 LLM 算力完全保留給 Worker 的程式碼實作。Phase 的推進則由 CI/CD (GitHub Actions) 自動判定。</p>
+<p>Task Dispatcher 是一次性的教導者 (<code>mode: instructor</code>)。他被喚醒一次，產出一段「可重複使用的 Worker Prompt」後即退場。使用者只需反覆將此 Prompt 餵給 Worker Agent（透過 Web GUI、API、Cron 等任何方式），Worker 就會自動讀取 tracker、領取任務、實作、提 PR。CI/CD 負責驗收與 Phase 推進。整個執行階段不消耗額外的 LLM 調度成本。</p>
 </div>
 </div>
 <div class="cell" data-layout-align="default">

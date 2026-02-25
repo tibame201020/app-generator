@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="一次性教導者 (One-Shot Instructor)。在建廠後被喚醒一次，將調度邏輯「編譯」為結構化產出物（自動化腳本 + Worker Prompt），供使用者無限重用。本身不持續存在於運行階段。">
+<meta name="description" content="一次性教導者 (One-Shot Instructor)。在建廠後被喚醒一次，將調度邏輯「編譯」為一段可重複使用的 Worker Prompt，供使用者無限餵給 Worker Agent 執行。">
 
 <title>skill – Autonomous Software Factory</title>
 <style>
@@ -214,11 +214,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#執行流程僅執行一次" id="toc-執行流程僅執行一次" class="nav-link" data-scroll-target="#執行流程僅執行一次">📖 執行流程（僅執行一次）</a>
   <ul class="collapse">
   <li><a href="#step-1-讀取建廠產出物" id="toc-step-1-讀取建廠產出物" class="nav-link" data-scroll-target="#step-1-讀取建廠產出物">Step 1: 讀取建廠產出物</a></li>
-  <li><a href="#step-2-產出自動化調度腳本-dispatcher.py" id="toc-step-2-產出自動化調度腳本-dispatcher.py" class="nav-link" data-scroll-target="#step-2-產出自動化調度腳本-dispatcher.py">Step 2: 產出自動化調度腳本 (<code>dispatcher.py</code>)</a></li>
-  <li><a href="#step-3-產出可重複使用的-worker-prompt-核心教材" id="toc-step-3-產出可重複使用的-worker-prompt-核心教材" class="nav-link" data-scroll-target="#step-3-產出可重複使用的-worker-prompt-核心教材">Step 3: 產出可重複使用的 Worker Prompt (核心教材)</a></li>
+  <li><a href="#step-2-產出可重複使用的-worker-prompt-核心教材" id="toc-step-2-產出可重複使用的-worker-prompt-核心教材" class="nav-link" data-scroll-target="#step-2-產出可重複使用的-worker-prompt-核心教材">Step 2: 產出可重複使用的 Worker Prompt (核心教材)</a></li>
+  <li><a href="#step-3-教導使用者如何觸發-worker-可選" id="toc-step-3-教導使用者如何觸發-worker-可選" class="nav-link" data-scroll-target="#step-3-教導使用者如何觸發-worker-可選">Step 3: 教導使用者如何觸發 Worker (可選)</a></li>
   </ul></li>
   <li><a href="#產出物清單" id="toc-產出物清單" class="nav-link" data-scroll-target="#產出物清單">🛠️ 產出物清單</a></li>
-  <li><a href="#未來擴充從教導者升級為調度員" id="toc-未來擴充從教導者升級為調度員" class="nav-link" data-scroll-target="#未來擴充從教導者升級為調度員">🔮 未來擴充：從教導者升級為調度員</a></li>
+  <li><a href="#未來擴充" id="toc-未來擴充" class="nav-link" data-scroll-target="#未來擴充">🔮 未來擴充</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -232,14 +232,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="task-dispatcher-任務調度教導者" class="level1">
 <h1>🎯 Task Dispatcher (任務調度教導者)</h1>
 <blockquote class="blockquote">
-<p><strong>你不是持續運作的調度員，你是一次性的教導者。</strong> 你被喚醒一次，產出兩份關鍵教材，然後功成身退。</p>
+<p><strong>你不是持續運作的調度員，你是一次性的教導者。</strong> 你被喚醒一次，產出一段「Worker Prompt」，然後功成身退。</p>
 </blockquote>
 <hr>
 <section id="角色定位編譯時教導者-compile-time-instructor" class="level2">
 <h2 class="anchored" data-anchor-id="角色定位編譯時教導者-compile-time-instructor">⚠️ 角色定位：編譯時教導者 (Compile-Time Instructor)</h2>
 <pre><code>❌ 運行時調度員：每次排程都需要 LLM 判斷 → 成本高、延遲大
-✅ 編譯時教導者：LLM 只被喚醒一次，產出「教材」讓 Worker 用到底 → 零 Token 運行</code></pre>
-<p>你的價值不在於「活著調度」，而在於： 1. <strong>將調度邏輯翻譯為確定性腳本</strong>，讓機器可以無腦執行。 2. <strong>將任務執行流程翻譯為可重複的 Prompt</strong>，讓 Worker 只需要被餵同一段話就能持續推進。</p>
+❌ 本機調度腳本：依賴使用者的 local repo 定時 pull → 工廠不該在地面
+✅ 編譯時教導者：LLM 只被喚醒一次，產出「教材 (Prompt)」讓 Worker 用到底</code></pre>
+<p><strong>工廠是建在空中閣樓的。</strong> 使用者不需要在本機維護 repo、不需要定時 pull、不需要跑任何腳本。 他只需要一種方式觸發 Worker（Web GUI、API、Cron、n8n…隨便他），然後把你產出的 Prompt 餵進去。</p>
 <hr>
 </section>
 <section id="執行流程僅執行一次" class="level2">
@@ -250,24 +251,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>確認 <code>tracker.json</code> 已被 Factory Iterator 產出。</li>
 <li>確認 <code>specs/tasks/*.yml</code> 任務規格已就緒。</li>
 <li>確認 <code>.agents/rules/</code> 規則目錄已初始化。</li>
+<li>確認使用者已提供的資訊：<strong>Agent Name</strong>、<strong>Base Branch</strong>、<strong>Repo URL</strong>。</li>
 </ul>
 </section>
-<section id="step-2-產出自動化調度腳本-dispatcher.py" class="level3">
-<h3 class="anchored" data-anchor-id="step-2-產出自動化調度腳本-dispatcher.py">Step 2: 產出自動化調度腳本 (<code>dispatcher.py</code>)</h3>
+<section id="step-2-產出可重複使用的-worker-prompt-核心教材" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-產出可重複使用的-worker-prompt-核心教材">Step 2: 產出可重複使用的 Worker Prompt (核心教材)</h3>
 <blockquote class="blockquote">
-<p><strong>此腳本是給「排程系統 (Cron)」用的，不是給人看的。</strong></p>
+<p><strong>這是你唯一且最重要的交付物。</strong></p>
 </blockquote>
-<p>腳本必須實現以下確定性邏輯（不需要 LLM）： 1. 讀取 <code>tracker.json</code>，定位 <code>current_phase</code> 中第一個 <code>pending</code> 任務。 2. 執行 <code>git ls-remote</code> 檢查互斥鎖 (Branch-as-Lock)。 3. 若可領取：切出 Feature Branch，推送 Heartbeat Commit。 4. 輸出標準化的 Task Package（JSON 格式）。</p>
-<blockquote class="blockquote">
-<p>[!TIP] 本目錄下已有一份 <a href="./dispatcher.py"><code>dispatcher.py</code></a> <strong>模板</strong>。 模板中使用 <code>{AGENT_NAME}</code>、<code>{BASE_BRANCH}</code> 等佔位符。 你的工作是根據使用者在前面階段提供的資訊（Agent 名稱、主分支名稱等）， <strong>將佔位符替換為硬編碼的值</strong>，產出一份「零配置、拿來就跑」的成品腳本。 禁止使用任何動態偵測邏輯（如 <code>git rev-parse</code>）。所有值必須是確定性的。</p>
-</blockquote>
-</section>
-<section id="step-3-產出可重複使用的-worker-prompt-核心教材" class="level3">
-<h3 class="anchored" data-anchor-id="step-3-產出可重複使用的-worker-prompt-核心教材">Step 3: 產出可重複使用的 Worker Prompt (核心教材)</h3>
-<blockquote class="blockquote">
-<p><strong>這是本角色最關鍵的產出物。</strong> 使用者只需要把這段 Prompt 反覆餵給 Worker Agent（例如 Jules），Worker 就會自動推進任務直到完工。</p>
-</blockquote>
-<p>根據專案的具體資訊（<code>agent_name</code>、<code>base_branch</code>、<code>rules_dir</code> 路徑），產出以下格式的 Prompt：</p>
+<p>根據專案的具體資訊，產出以下格式的 Prompt。 <strong>使用者只需要把這段 Prompt 反覆餵給 Worker Agent，Worker 就會自動推進任務直到完工。</strong></p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## 📋 Worker 自動執行 Prompt（可重複使用）</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>你是 {{AGENT_NAME}}，一個軟體工廠的執行工人。請按照以下步驟執行：</span>
@@ -292,8 +284,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git commit --allow-empty -m "chore: start {task_id}"`</span> (Heartbeat)</span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git push origin {{AGENT_NAME}}/task-{task_id}`</span></span>
 <span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. 載入規格</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取 <span class="in">`.agents/rules/`</span> 中的所有規則。</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. 規則預載與規格讀取</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取 <span class="in">`.agents/rules/`</span> 中的所有編碼規則。</span>
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取任務對應的 <span class="in">`spec_ref`</span> 檔案（位於 <span class="in">`specs/tasks/`</span> 下）。</span>
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>嚴格依照 Spec 實作，禁止猜測。</span>
 <span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
@@ -308,55 +300,114 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>提交 PR：<span class="in">`gh pr create --title "[{{AGENT_NAME}}] {title}" --body "..." --label "auto-merge"`</span></span>
 <span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>PR 提交後你的任務結束。CI 與 Phase 推進由自動化處理。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <blockquote class="blockquote">
-<p>[!IMPORTANT] 注意：此 Prompt 會讓 Worker「看起來」自己在做調度（讀 tracker、切 branch）。 但這些行為<strong>不是 Worker 自主決定的</strong>，而是由你（Dispatcher）編寫的指令。 <strong>知識的來源 (Source of Truth) 始終集中在 Dispatcher</strong>。Worker 只是執行者。</p>
+<p>[!IMPORTANT] <strong>佔位符替換規則</strong>：你必須根據使用者提供的資訊，將 <code>{AGENT_NAME}</code>、<code>{BASE_BRANCH}</code> 等佔位符替換為確定性的硬編碼值。 產出的 Prompt 必須是「零修改、直接餵」的成品。</p>
 </blockquote>
 <hr>
+</section>
+<section id="step-3-教導使用者如何觸發-worker-可選" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-教導使用者如何觸發-worker-可選">Step 3: 教導使用者如何觸發 Worker (可選)</h3>
+<blockquote class="blockquote">
+<p><strong>這一步取決於使用者選擇的 Worker 以及觸發方式。</strong></p>
+</blockquote>
+<p>使用者可以透過<strong>任何方式</strong>觸發 Worker：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">觸發方式</th>
+<th style="text-align: left;">說明</th>
+<th style="text-align: left;">複雜度</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Web GUI</strong></td>
+<td style="text-align: left;">直接在 Worker 的網頁介面貼上 Prompt</td>
+<td style="text-align: left;">⭐ 最簡單</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>API 呼叫</strong></td>
+<td style="text-align: left;">透過 Worker 的 REST API 傳送 Prompt</td>
+<td style="text-align: left;">⭐⭐</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Cron + API 腳本</strong></td>
+<td style="text-align: left;">定時自動觸發 Worker API</td>
+<td style="text-align: left;">⭐⭐⭐</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>n8n / Zapier</strong></td>
+<td style="text-align: left;">多步驟自動化（含通知、錯誤處理）</td>
+<td style="text-align: left;">⭐⭐⭐⭐</td>
+</tr>
+</tbody>
+</table>
+<section id="若使用者需要-api-腳本封裝" class="level4">
+<h4 class="anchored" data-anchor-id="若使用者需要-api-腳本封裝">若使用者需要 API 腳本封裝</h4>
+<p>若使用者已知其 Worker 的 API 端點與認證方式，你可以<strong>協助產出</strong>一支專用的觸發腳本。</p>
+<p><strong>範例結構（以 Jules 為例）：</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env python3</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">"""jules_trigger.py - 自動觸發 Jules 執行任務"""</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>JULES_API_URL <span class="op">=</span> <span class="st">"https://api.jules.google/v1/tasks"</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>JULES_API_KEY <span class="op">=</span> <span class="st">"YOUR_API_KEY"</span>  <span class="co"># 從環境變數讀取</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>REPO_URL <span class="op">=</span> <span class="st">"https://github.com/user/repo"</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>WORKER_PROMPT <span class="op">=</span> <span class="st">"""..."""</span>  <span class="co"># 貼入 Step 2 產出的完整 Prompt</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> trigger_jules():</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    resp <span class="op">=</span> requests.post(JULES_API_URL, headers<span class="op">=</span>{</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Authorization"</span>: <span class="ss">f"Bearer </span><span class="sc">{</span>JULES_API_KEY<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    }, json<span class="op">=</span>{</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"repo"</span>: REPO_URL,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"prompt"</span>: WORKER_PROMPT</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Status: </span><span class="sc">{</span>resp<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(resp.json())</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">"__main__"</span>:</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    trigger_jules()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<blockquote class="blockquote">
+<p>[!NOTE] 以上僅為概念範例。實際的 API 格式取決於 Worker 服務商（Jules、Devin、Cursor Agent 等）。 未來若框架內建了某 Worker 的 API 封裝（如 <code>integrations/jules-api.py</code>），你應優先引導使用者使用它。</p>
+</blockquote>
+<hr>
+</section>
 </section>
 </section>
 <section id="產出物清單" class="level2">
 <h2 class="anchored" data-anchor-id="產出物清單">🛠️ 產出物清單</h2>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;">產出物</th>
+<th style="text-align: left;">必要性</th>
 <th style="text-align: left;">用途</th>
-<th style="text-align: left;">使用者</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><code>dispatcher.py</code></td>
-<td style="text-align: left;">Cron 排程腳本，自動切 branch 並輸出 Task Package</td>
-<td style="text-align: left;">排程系統 / 使用者</td>
+<td style="text-align: left;"><strong>Worker Prompt</strong></td>
+<td style="text-align: left;">✅ 必要</td>
+<td style="text-align: left;">使用者反覆餵給 Worker 的標準化執行指令</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><strong>Worker Prompt</strong></td>
-<td style="text-align: left;">可重複餵給 Worker 的標準化執行指令</td>
-<td style="text-align: left;">使用者 → Worker Agent</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>AGENT_PROTOCOL.md</code> (已存在)</td>
-<td style="text-align: left;">Worker 的完整憲法（由 Iterator 產出）</td>
-<td style="text-align: left;">Worker Agent</td>
+<td style="text-align: left;">API 觸發腳本</td>
+<td style="text-align: left;">⚪ 可選</td>
+<td style="text-align: left;">若使用者希望用 Cron 自動觸發 Worker</td>
 </tr>
 </tbody>
 </table>
 <hr>
 </section>
-<section id="未來擴充從教導者升級為調度員" class="level2">
-<h2 class="anchored" data-anchor-id="未來擴充從教導者升級為調度員">🔮 未來擴充：從教導者升級為調度員</h2>
+<section id="未來擴充" class="level2">
+<h2 class="anchored" data-anchor-id="未來擴充">🔮 未來擴充</h2>
 <blockquote class="blockquote">
-<p><strong>當前</strong>：Dispatcher 被喚醒一次，產出教材後退場。Worker 按教材自行運作。 <strong>未來（有資源時）</strong>：Dispatcher 升級為持續性 Agent，每次排程循環都活著、觀察 Worker 結果、動態調整策略。Worker 的 Protocol 完全不用改。</p>
+<p><strong>當前 (<code>mode: instructor</code>)</strong>：被喚醒一次，產出 Prompt 後退場。 <strong>未來 (<code>mode: live</code>)</strong>：升級為持續性 Agent，觀察 Worker 結果、動態調整策略。</p>
 </blockquote>
-<p>這個抽象確保了： - 所有調度邏輯的<strong>設計權</strong>集中在 Dispatcher。 - Worker 的<strong>執行行為</strong>可以被 Dispatcher 隨時重新定義。 - 分散式 Worker 的擴充只需要修改 Dispatcher 的產出邏輯。</p>
+<p><strong>多 Worker 支援</strong>： - 當框架支援 Devin、Cursor Agent 等新 Worker 後，本 Skill 只需在 Step 3 中新增對應的 API 封裝範例。 - Worker Prompt (Step 2) 的格式對所有 Worker 通用，不需要修改。</p>
 <hr>
 <blockquote class="blockquote">
-<p>🎉 <strong>完成</strong>：教材已產出。請將 Worker Prompt 交給使用者，並指引他設定 Cron 排程。</p>
+<p>🎉 <strong>完成</strong>：Worker Prompt 已產出。請將其交給使用者，並引導他選擇觸發方式。</p>
 </blockquote>
 
 

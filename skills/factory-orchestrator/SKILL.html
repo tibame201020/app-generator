@@ -218,7 +218,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="任務調度教導-one-shot-instruction" class="level3">
 <h3 class="anchored" data-anchor-id="任務調度教導-one-shot-instruction">5. 任務調度教導 (One-Shot Instruction)</h3>
-<p>引導 <strong><a href="../../skills/task-dispatcher/SKILL.html">Task Dispatcher</a></strong> 執行<strong>一次性</strong>教導： - 產出 <code>dispatcher.py</code> 自動化腳本（供 Cron 排程使用）。 - 產出<strong>可重複使用的 Worker Prompt</strong>（使用者只需反覆餵給 Worker 即可持續推進任務）。 - Dispatcher 完成教導後即退場。後續由「自動化腳本 + Worker + CI/CD」自動循環運作至完工。</p>
+<p>引導 <strong><a href="../../skills/task-dispatcher/SKILL.html">Task Dispatcher</a></strong> 執行<strong>一次性</strong>教導： - 產出<strong>可重複使用的 Worker Prompt</strong>——使用者只需反覆餵給 Worker Agent 即可持續推進任務。 - Worker 怎麼觸發由使用者決定（Web GUI、API、Cron、n8n 等皆可）。 - 若使用者需要自動化觸發，Dispatcher 可協助封裝對應 Worker 的 API 腳本。 - Dispatcher 完成教導後即退場。後續由「Worker + CI/CD」自動循環運作至完工。</p>
 </section>
 <section id="模式感知接力-mode-aware-relay" class="level3">
 <h3 class="anchored" data-anchor-id="模式感知接力-mode-aware-relay">6. 模式感知接力 (Mode-Aware Relay)</h3>
