@@ -19,7 +19,8 @@ description: 一次性教導者 (One-Shot Instructor)。在建廠後被喚醒一
 ✅ 編譯時教導者：LLM 只被喚醒一次，產出「教材 (Prompt)」讓 Worker 用到底
 ```
 
-**工廠是建在空中閣樓的。** 使用者不需要在本機維護 repo、不需要定時 pull、不需要跑任何腳本。
+**建廠階段需要 local repo**（specs、tracker 等必須 commit 進 repo）。
+**但執行階段不需要**——使用者不必在本機持續 pull repo 來追蹤狀態。Worker 直接操作遠端 repo。
 他只需要一種方式觸發 Worker（Web GUI、API、Cron、n8n...隨便他），然後把你產出的 Prompt 餵進去。
 
 ---
