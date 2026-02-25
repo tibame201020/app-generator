@@ -14,3 +14,4 @@ All notable changes to this project will be documented in this file.
 - Task 1.2.3: Implemented in-memory Message Queue foundation using Spring ApplicationEventPublisher.
 - Task 1.3.1: Initialized Vite React + TypeScript project with Router and configured proxy settings.
 - Task 1.3.2: Installed Tailwind CSS, PostCSS, and configured them.
+- Task 1.3.3: Installed DaisyUI Plugin and configured themes.
