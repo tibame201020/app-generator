@@ -271,23 +271,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若沒有 pending 任務，回報「所有任務已完成或等待 CI」。</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. 互斥鎖檢查</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>檢查遠端是否存在分支 <span class="in">`{AGENT_NAME}/task-{task_id}`</span>。</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>檢查遠端是否存在分支 <span class="in">`{AGENT_NAME}/{{BASE_BRANCH}}/task-{task_id}`</span>。</span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若不存在：領取此任務。</span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若存在：檢查 PR 狀態。</span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>MERGED 但 tracker 仍 pending → 停止，回報 Transaction 不一致。</span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>無 PR 或 CLOSED → 刪除舊分支，重新領取。</span>
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>OPEN + CI 通過或進行中 → 跳過此任務，等待合併。</span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>OPEN + CI **失敗** → 執行恢復流程：</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="ss">    1. </span>關閉失敗的 PR：<span class="in">`gh pr close {{AGENT_NAME}}/task-{task_id}`</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="ss">    2. </span>刪除遠端分支：<span class="in">`git push origin --delete {{AGENT_NAME}}/task-{task_id}`</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="ss">    1. </span>關閉失敗的 PR：<span class="in">`gh pr close {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="ss">    2. </span>刪除遠端分支：<span class="in">`git push origin --delete {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`</span></span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ss">    3. </span>跳過此任務，嘗試下一個 pending 任務</span>
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>_(attempts 遞增由 cleanup-stale-tasks.yml Arbitrator 統一負責，Worker 不得修改 main 上的 tracker.json)_</span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. 建立工作環境</span></span>
 <span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git fetch origin &amp;&amp; git checkout {{BASE_BRANCH}} &amp;&amp; git pull`</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git checkout -b {{AGENT_NAME}}/task-{task_id}`</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git checkout -b {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`</span></span>
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git commit --allow-empty -m "chore: start {task_id}"`</span> (Heartbeat)</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git push origin {{AGENT_NAME}}/task-{task_id}`</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git push origin {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`</span></span>
 <span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. 規則預載與規格讀取</span></span>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取 <span class="in">`.agents/rules/`</span> 中的所有編碼規則。</span>
