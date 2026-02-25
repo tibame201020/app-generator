@@ -9,18 +9,20 @@ description: 負責技術選型、ADR 產出、以及「極限沙盤推演」的
 
 ## 📖 執行流程
 
-### Step 1: 技術選型 (Modern Tech Stack)
-- 根據 `RFP.md` 決定程式語言、資料庫、框架。
-- **維護模式檢查**：如果目標專案已存在代碼，您**必須**先遍歷現有結構，不得隨意更改已有的命名規範或框架。
-- 撰寫 **ADR (Architecture Decision Record)**。
+### Step 1: 技術選型與現況核對 (Tech Selection & Reality Check)
+- **CREATE 模式**：根據意圖產出新專案的 **ADR (Architecture Decision Record)**。決定語言、資料庫、框架。
+- **CONTINUE / MAINTAIN 模式**：
+  - **核心指令**：執行 `view_file` 或 `grep_search` 深度遍歷既有系統。
+  - **產出**：產出 **Integration Report**，說明新需求將如何注入現有架構而不破壞穩定性。
 
 ### Step 2: 知識庫設計 (Knowledge Scaffolding)
 - 定義 `.agents/rules/` 下的編碼守則。
-- 規劃 `docs/` 下的文件索引。
+- **維護模式**：若已有編碼守則，則進行更新而非覆蓋。
 
 ### Step 3: 極限沙盤推演 (Mental Simulation)
-- 模擬 2-3 個「災難情境」（如 API 斷線、併發鎖定衝突）。
-- 提供對應的防禦性設計 (Defensive Design) 建議。
+- **CREATE**：模擬系統從 0 到 1 的主要瓶頸。
+- **CONTINUE / MAINTAIN**：模擬「新舊代碼衝突」、「資料遷移風險」與「回歸測試」的覆蓋範圍。
+
 
 ## 🛠️ 產出物
 - **`docs/ADR/*.md`**: 決策紀錄。

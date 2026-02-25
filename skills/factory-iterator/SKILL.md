@@ -13,10 +13,13 @@ description: 正式產出生產線藍圖，執行任務派發，並支援專案�
 - 從模板產生 `.{{AGENT_NAME}}/tracker.json` 與 `AGENT_PROTOCOL.md`。
 - **視覺規範注入**：將 `RFP.md` 內的 Design Tokens 寫入任務規格中。
 
-### Step 2: 任務拆解 (ECC Micro-Tasking)
-- 將需求拆解為符合「單檔 300 行內」的微型任務。
-- 指定 `allowed_paths` 沙盒權限。
-- 針對既有專案，將「代碼審計 (Audit Existing Code)」列為首個任務。
+### Step 2: 任務拆解 (Intent-Aware Micro-Tasking)
+- **共通規範**：拆解為符合「單檔 300 行內」的微型任務。
+- **🟢 CREATE**：關注環境搭建、初始核心邏輯。
+- **🟡 CONTINUE / 🔴 MAINTAIN**：
+  - **首要任務**：必須先建立「代碼審計 (Maintenance Audit)」任務，要求 Worker 回報對既有代碼的理解。
+  - **細節**：指定 `allowed_paths` 沙盒權限時應更為保守。
+
 
 ### Step 3: 自動化裁判所 (CI/CD)
 - 部署 Github Actions (auto-merge, cleanup)。
