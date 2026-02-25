@@ -6,7 +6,7 @@ format:
     page-layout: full
 ---
 
-::: {.column-screen-inset}
+:::: column-screen-inset
 ::: {#workflow-diagram style="text-align: center; overflow: visible;"}
 ```{dot}
 //| fig-width: 100%
@@ -15,12 +15,11 @@ digraph G {
     graph [
         rankdir=TB,
         nodesep=0.5,
-        ranksep=0.8,
-        splines=curved,      // 使用圓滑曲線
+        ranksep=0.7,
+        splines=curved,      // 保留曲線增加美感
         pad=0.3,
         bgcolor="transparent",
-        center=true,
-        newrank=true
+        center=true
     ]
     
     fontname="Arial"
@@ -47,20 +46,14 @@ digraph G {
         penwidth=1.2
     ]
 
-    // --- 嚴格的相位定位 (由左至右) ---
-    // 建立 4 個不可見的定位點節點，強制它們在同一水平排開
-    { rank=same; Phase1_Mark; Phase2_Mark; Phase3_Mark; Phase4_Mark }
-    Phase1_Mark [shape=none, width=0, height=0, label="", style=invis]
-    Phase2_Mark [shape=none, width=0, height=0, label="", style=invis]
-    Phase3_Mark [shape=none, width=0, height=0, label="", style=invis]
-    Phase4_Mark [shape=none, width=0, height=0, label="", style=invis]
-    
-    // 強制左至右順序並加大間距
-    Phase1_Mark -> Phase2_Mark [style=invis, minlen=4]
-    Phase2_Mark -> Phase3_Mark [style=invis, minlen=4]
-    Phase3_Mark -> Phase4_Mark [style=invis, minlen=4]
+    // --- 簡化的相位對齊系統 (避免 WASM 記憶體溢位) ---
+    // 每個 Phase 的第一個節點強制在同一 Rank
+    { rank=same; Human; Arch; Iter; CI_Gate }
 
-    // --- Phase 1: Discovery (左欄) ---
+    // 主動力導向路徑 (確保左至右順位)
+    Human -> Arch -> Iter -> CI_Gate [style=invis, minlen=3]
+
+    // --- Phase 1: Discovery ---
     subgraph cluster_0 {
         label = "Phase 1: Discovery";
         color = "#e8f5e9";
@@ -68,7 +61,6 @@ digraph G {
         fillcolor = "#f1f8e9";
         
         node [group=g1]
-        { rank=same; Phase1_Mark; Human }
         Human [shape=circle, label="👩‍💻 Human", fillcolor="#e1f5fe", width=1.0, height=1.0]
         Orch [label="🏁 Factory Orchestrator", fillcolor="#fff9c4"]
         ReqA [label="📝 Requirements Analyst"]
@@ -79,7 +71,7 @@ digraph G {
         D_UI -> VisD [label="Yes"]
     }
 
-    // --- Phase 2: Tech Design (中左欄) ---
+    // --- Phase 2: Tech Design ---
     subgraph cluster_1 {
         label = "Phase 2: Tech Design";
         color = "#fff3e0";
@@ -87,14 +79,13 @@ digraph G {
         fillcolor = "#fff8e1";
         
         node [group=g2]
-        { rank=same; Phase2_Mark; Arch }
         Arch [label="🏛️ Architect Reviewer"]
         Sim  [label="🧠 Mental Simulation", shape=ellipse, fillcolor="#ffffff"]
         
         Arch -> Sim
     }
 
-    // --- Phase 3: Execution (中右欄) ---
+    // --- Phase 3: Execution ---
     subgraph cluster_2 {
         label = "Phase 3: Execution";
         color = "#f3e5f5";
@@ -102,7 +93,6 @@ digraph G {
         fillcolor = "#f3e5f5";
         
         node [group=g3]
-        { rank=same; Phase3_Mark; Iter }
         Iter [label="🏭 Factory Iterator"]
         Track [label="🗄️ tracker.json", shape=note, fillcolor="#ffffff"]
         Work [label="👷 Worker Agents"]
@@ -110,7 +100,7 @@ digraph G {
         Iter -> Track -> Work
     }
 
-    // --- Phase 4: Validation (右欄) ---
+    // --- Phase 4: Validation ---
     subgraph cluster_3 {
         label = "Phase 4: Validation";
         color = "#ffebee";
@@ -118,7 +108,6 @@ digraph G {
         fillcolor = "#fffde7";
 
         node [group=g4]
-        { rank=same; Phase4_Mark; CI_Gate }
         CI_Gate [label="🤖 CI Checker", shape=diamond, fillcolor="#ffffff"]
         Rep     [label="🩹 Self-Healing", fillcolor="#ffccbc"]
         Merg    [label="✅ Merge & Advance", fillcolor="#c8e6c9"]
@@ -127,17 +116,18 @@ digraph G {
         CI_Gate -> Rep [label="Fail"]
     }
 
-    // --- 跨 Phase 連接邏輯 (由左至右推進) ---
+    // --- 邏輯連接 (不加約束以維持排版穩定) ---
     edge [constraint=false]
     D_UI -> Arch [label="No"]
     VisD -> Arch
     Sim -> Iter
     Work -> CI_Gate [label="PR Submitted"]
     
-    // 回饋迴路 (曲線)
+    // 回饋路徑
     Rep -> Work [color="#e57373", tailport=w, headport=w]
 }
 ```
 :::
 
-[⬅️ 返回工作流說明](FACTORY_WORKFLOW.qmd)
+[⬅️ 返回工作流說明](FACTORY_WORKFLOW.qmd) \`\`\`
+::::
