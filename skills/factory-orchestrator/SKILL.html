@@ -182,7 +182,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#技術評審與模擬" id="toc-技術評審與模擬" class="nav-link" data-scroll-target="#技術評審與模擬">3. 技術評審與模擬</a></li>
   <li><a href="#任務規格產出" id="toc-任務規格產出" class="nav-link" data-scroll-target="#任務規格產出">4. 任務規格產出</a></li>
   <li><a href="#任務調度與執行" id="toc-任務調度與執行" class="nav-link" data-scroll-target="#任務調度與執行">5. 任務調度與執行</a></li>
-  <li><a href="#狀態接力-relay" id="toc-狀態接力-relay" class="nav-link" data-scroll-target="#狀態接力-relay">6. 狀態接力 (Relay)</a></li>
+  <li><a href="#模式感知接力-mode-aware-relay" id="toc-模式感知接力-mode-aware-relay" class="nav-link" data-scroll-target="#模式感知接力-mode-aware-relay">6. 模式感知接力 (Mode-Aware Relay)</a></li>
   </ul></li>
   <li><a href="#使用準則" id="toc-使用準則" class="nav-link" data-scroll-target="#使用準則">🛠️ 使用準則</a></li>
   </ul></li>
@@ -220,12 +220,43 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="任務調度與執行">5. 任務調度與執行</h3>
 <p>將控制權交給 <strong><a href="../../skills/task-dispatcher/SKILL.html">Task Dispatcher</a></strong>，由其負責： - 任務分配、互斥鎖管理、Worker 啟動。 - CI/CD 結果收割與 Phase 推進。 - 迭代循環直至專案完工。</p>
 </section>
-<section id="狀態接力-relay" class="level3">
-<h3 class="anchored" data-anchor-id="狀態接力-relay">6. 狀態接力 (Relay)</h3>
-<ul>
-<li>確保上一個 Skill 的產出物（如 <code>RFP.md</code>、<code>design_system.md</code>、<code>ADR/*.md</code>）能被下一個 Skill 正確讀取。</li>
-<li>管理 <code>Create / Continue / Maintain</code> 三種模式的跳轉邏輯。</li>
-</ul>
+<section id="模式感知接力-mode-aware-relay" class="level3">
+<h3 class="anchored" data-anchor-id="模式感知接力-mode-aware-relay">6. 模式感知接力 (Mode-Aware Relay)</h3>
+<blockquote class="blockquote">
+<p><strong>核心問題</strong>：不是每次都從 Step 1 走到 Step 5。根據 Requirements Analyst 判定的模式，Orchestrator 必須知道「從哪裡接入、跳過什麼」。</p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">模式</th>
+<th style="text-align: left;">既有產出物</th>
+<th style="text-align: left;">Orchestrator 路由</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>🟢 CREATE</strong></td>
+<td style="text-align: left;">無</td>
+<td style="text-align: left;">完整走 Step 1 → 2 → 3 → 4 → 5（全部執行）</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>🟡 CONTINUE</strong></td>
+<td style="text-align: left;">已有 <code>RFP.md</code>、<code>tracker.json</code>、部分 <code>specs/</code></td>
+<td style="text-align: left;">Step 1 (Analyst 以 CONTINUE 模式讀取既有 RFP) → Step 2 (若涉及新 UI) → Step 3 (Architect 產出 Integration Report) → Step 4 (Iterator 追加新任務至既有 tracker) → Step 5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>🔴 MAINTAIN</strong></td>
+<td style="text-align: left;">全套產出物已存在</td>
+<td style="text-align: left;">Step 1 (Analyst 以 MAINTAIN 模式限縮修改範圍) → 跳過 Step 2 → Step 3 (Architect 診斷式審查) → Step 4 (Iterator 產出修復任務) → Step 5</td>
+</tr>
+</tbody>
+</table>
+<p><strong>接力交接規則：</strong> - 在呼叫每一個 Skill 前，Orchestrator <strong>必須先偵測</strong>該 Skill 的產出物是否已存在（<code>docs/RFP.md</code>、<code>docs/design_system.md</code>、<code>docs/ADR/*.md</code>、<code>tracker.json</code>）。 - 若產出物已存在，<strong>必須</strong>將其路徑與模式標籤 (CREATE/CONTINUE/MAINTAIN) 一併傳遞給下游 Skill，讓其知道「讀取既有的、而非從零開始」。 - <strong>禁止</strong>在 CONTINUE/MAINTAIN 模式下讓任何 Skill 執行 CREATE 邏輯。</p>
 </section>
 </section>
 <section id="使用準則" class="level2">
