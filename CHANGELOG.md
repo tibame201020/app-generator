@@ -22,7 +22,8 @@ All notable changes to this project will be documented in this file.
 - **FACTORY_WORKFLOW.qmd 更新**：新增 Dispatcher 教導者 Callout、初次部署說明、CI 失敗恢復 Mermaid 圖表。
 - **worker-protocol.qmd 更新**：對標 Dispatcher 教導的自服務模式。
 
-### 🔮 Deferred
+### 🔮 Deferred (Future Features)
+- **已存在專案支援 (Continue / Maintain Modes)**：支援開發期與維護期專案。將優先於分散式 Worker 處理，重點在於完善既有邏輯與 Tracker 的無縫轉換。
 - **分散式 Worker 調度**：已抽象至 Task Dispatcher 的 `mode: live` 升級路徑。所有調度邏輯集中在 Dispatcher，未來擴充不影響其他 Skill。
 
 ## [0.1.0] - 2026-02-22

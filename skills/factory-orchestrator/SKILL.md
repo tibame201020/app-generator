@@ -37,8 +37,8 @@ description: 軟體工廠的總指揮，負責管理 6 個 Skills 之間的切�
 | 模式 | 既有產出物 | Orchestrator 路由 |
 |:---|:---|:---|
 | **🟢 CREATE** | 無 | 完整走 Step 1 → 2 → 3 → 4 → 5（全部執行） |
-| **🟡 CONTINUE** | 已有 `RFP.md`、`tracker.json`、部分 `specs/` | Step 1 (Analyst 以 CONTINUE 模式讀取既有 RFP) → Step 2 (若涉及新 UI) → Step 3 (Architect 產出 Integration Report) → Step 4 (Iterator 追加新任務至既有 tracker) → Step 5 |
-| **🔴 MAINTAIN** | 全套產出物已存在 | Step 1 (Analyst 以 MAINTAIN 模式限縮修改範圍) → 跳過 Step 2 → Step 3 (Architect 診斷式審查) → Step 4 (Iterator 產出修復任務) → Step 5 |
+| **🟡 CONTINUE** *(Future Feature)* | 已有 `RFP.md`、`tracker.json`、部分 `specs/` | Step 1 (Analyst 以 CONTINUE 模式讀取既有 RFP) → Step 2 (若涉及新 UI) → Step 3 (Architect 產出 Integration Report) → Step 4 (Iterator 追加新任務至既有 tracker) → Step 5 |
+| **🔴 MAINTAIN** *(Future Feature)* | 全套產出物已存在 | Step 1 (Analyst 以 MAINTAIN 模式限縮修改範圍) → 跳過 Step 2 → Step 3 (Architect 診斷式審查) → Step 4 (Iterator 產出修復任務) → Step 5 |
 
 **接力交接規則：**
 - 在呼叫每一個 Skill 前，Orchestrator **必須先偵測**該 Skill 的產出物是否已存在（`docs/RFP.md`、`docs/design_system.md`、`docs/ADR/*.md`、`tracker.json`）。
