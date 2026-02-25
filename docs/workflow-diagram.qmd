@@ -13,18 +13,18 @@ format:
 //| fig-format: svg
 digraph G {
     graph [
-        rankdir=LR,          // 橫向佈局
-        nodesep=0.4,
-        ranksep=0.6,
+        rankdir=TB,          // 回歸縱向佈局，符合閱讀習慣
+        nodesep=0.6,
+        ranksep=0.8,
         splines=polyline, 
-        pad=0.2,
+        pad=0.3,
         bgcolor="transparent",
-        dpi=150,           // 降低 DPI 避免基準圖過大
+        dpi=150,
         center=true
     ]
     
     fontname="Arial"
-    fontsize=20
+    fontsize=22
     label="Autonomous Software Factory Workflow"
     labelloc="t"
 
@@ -34,8 +34,9 @@ digraph G {
         style="filled,rounded", 
         fillcolor="#f9f9f9", 
         color="#333333",
-        fontsize=12,
-        margin=0.15
+        fontsize=13,
+        margin=0.2,
+        width=2.2
     ]
     
     edge [
