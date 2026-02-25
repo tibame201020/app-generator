@@ -52,23 +52,23 @@ description: 一次性教導者 (One-Shot Instructor)。在建廠後被喚醒一
 - 若沒有 pending 任務，回報「所有任務已完成或等待 CI」。
 
 ### 2. 互斥鎖檢查
-- 檢查遠端是否存在分支 `{{AGENT_NAME}}/task-{task_id}`。
+- 檢查遠端是否存在分支 `{{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`。
 - 若不存在：領取此任務。
 - 若存在：檢查 PR 狀態。
   - MERGED 但 tracker 仍 pending → 停止，回報 Transaction 不一致。
   - 無 PR 或 CLOSED → 刪除舊分支，重新領取。
   - OPEN + CI 通過或進行中 → 跳過此任務，等待合併。
   - OPEN + CI **失敗** → 執行恢復流程：
-    1. 關閉失敗的 PR：`gh pr close {{AGENT_NAME}}/task-{task_id}`
-    2. 刪除遠端分支：`git push origin --delete {{AGENT_NAME}}/task-{task_id}`
+    1. 關閉失敗的 PR：`gh pr close {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`
+    2. 刪除遠端分支：`git push origin --delete {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`
     3. 跳過此任務，嘗試下一個 pending 任務
     - _(attempts 遞增由 cleanup-stale-tasks.yml Arbitrator 統一負責，Worker 不得修改 main 上的 tracker.json)_
 
 ### 3. 建立工作環境
 - `git fetch origin && git checkout {{BASE_BRANCH}} && git pull`
-- `git checkout -b {{AGENT_NAME}}/task-{task_id}`
+- `git checkout -b {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`
 - `git commit --allow-empty -m "chore: start {task_id}"` (Heartbeat)
-- `git push origin {{AGENT_NAME}}/task-{task_id}`
+- `git push origin {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`
 
 ### 4. 規則預載與規格讀取
 - 讀取 `.agents/rules/` 中的所有編碼規則。

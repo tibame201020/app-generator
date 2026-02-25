@@ -24,9 +24,9 @@
 
 > **此步驟由 Dispatcher 教導，Worker 機械性執行。**
 
-1. 檢查遠端是否已存在分支 `{{AGENT_NAME}}/task-{task_id}`：
+1. 檢查遠端是否已存在分支 `{{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`：
    - **不存在** → 可領取。
-   - **已存在** → 檢查 PR 狀態（`gh pr list --head {{AGENT_NAME}}/task-{task_id} --state all --json state,statusCheckRollup`）：
+   - **已存在** → 檢查 PR 狀態（`gh pr list --head {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id} --state all --json state,statusCheckRollup`）：
 
 | PR 狀態 | 判定 | 動作 |
 |:---|:---|:---|
@@ -37,8 +37,8 @@
 
 **CI 失敗恢復流程：**
 ```
-1. 關閉失敗的 PR：gh pr close {{AGENT_NAME}}/task-{task_id}
-2. 刪除遠端分支：git push origin --delete {{AGENT_NAME}}/task-{task_id}
+1. 關閉失敗的 PR：gh pr close {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}
+2. 刪除遠端分支：git push origin --delete {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}
 3. 跳過此任務，嘗試下一個 pending 任務
 ```
 
@@ -50,9 +50,9 @@
    ```
    git fetch origin
    git checkout {{BASE_BRANCH}} && git pull
-   git checkout -b {{AGENT_NAME}}/task-{task_id}
+   git checkout -b {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}
    git commit --allow-empty -m "chore: start {task_id}"
-   git push origin {{AGENT_NAME}}/task-{task_id}
+   git push origin {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}
    ```
 
 ## Step 3: 載入規格與上下文 (Load Spec & Context)

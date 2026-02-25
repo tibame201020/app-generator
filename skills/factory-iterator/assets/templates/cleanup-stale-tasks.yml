@@ -30,10 +30,10 @@ jobs:
           # 2. 取得遠端分支列表
           NEED_PUSH=false
           BRANCHES_TO_DELETE=()
-          branches=$(git branch -r | grep "origin/{{AGENT_NAME}}/task-" | sed 's/origin\///')
+          branches=$(git branch -r | grep "origin/{{AGENT_NAME}}/{{BASE_BRANCH}}/task-" | sed 's/origin\///')
           
           for branch in $branches; do
-            task_id=$(echo $branch | sed 's/{{AGENT_NAME}}\/task-//')
+            task_id=$(echo $branch | sed 's|.*/task-||')
             echo "🕵️ Analyzing branch: $branch (Task: $task_id)"
             
             # 取得 PR 狀態（含 CI check 結果）

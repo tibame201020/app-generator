@@ -17,7 +17,7 @@
 - `perf`: 效能優化
 
 ## 2. 分支策略 (Branching)
-- 每個任務必須在其專屬分支執行：`{{AGENT_NAME}}/task-{id}`。
+- 每個任務必須在其專屬分支執行：`{{AGENT_NAME}}/{{BASE_BRANCH}}/task-{id}`。
 - 禁止直接提交至 `{{BASE_BRANCH}}`。
 
 ## 3. PR 提交規範

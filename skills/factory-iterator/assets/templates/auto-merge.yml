@@ -46,9 +46,9 @@ jobs:
       - name: Verify Task Completion in Tracker
         run: |
           BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
-          # 分支格式: {{AGENT_NAME}}/task-{task_id}
-          # 例如: jules/task-task_1_1_1 → 萃取 task_1_1_1
-          # tracker.json 中的 id 也是 task_1_1_1，所以直接使用，不加前綴
+          # 分支格式: {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}
+          # 例如: jules/main/task-task_1_1_1 → 萃取 task_1_1_1
+          # sed 's|.*/task-||' 使用貪婪匹配，三層路徑也能正確萃取
           TASK_ID=$(echo "$BRANCH_NAME" | sed 's|.*/task-||' || echo "")
           if [ -z "$TASK_ID" ]; then
             echo "Warning: Could not extract task ID from branch '$BRANCH_NAME'. Skipping check."
