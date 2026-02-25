@@ -6,12 +6,15 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Home
+        text: "🏠 首頁"
       - href: FACTORY_WORKFLOW.qmd
-        text: Workflow
-      - section: "Documentation"
+        text: "🔄 流程藍圖"
+      - section: "📖 技術手冊"
         contents:
-          - docs/
+          - docs/principles.qmd
+          - docs/worker-protocol.qmd
+          - docs/extensions.qmd
+
   sidebar:
     style: "floating"
 

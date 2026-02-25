@@ -1,0 +1,31 @@
+---
+title: "👷 工人憲法與行事準則"
+subtitle: "如何確保 AI 產出的代碼具備商業級水準"
+---
+
+## 📜 AGENT_PROTOCOL.md (工人憲法)
+
+任何進入本工廠的 Worker Agent 在每次甦醒時，**必須**首先閱讀這份憲法。
+
+### 三大鐵律
+
+1. **防撞車機制 (Mutex Lock via Git)**
+   在開始實作前，必須檢查遠端是否存在任務分支。這完美解決了分散式開發的死鎖。
+
+2. **八大破壞性邊界測試 (Edge Case Checklist)**
+   我們強制要求 PR 提交前必須涵蓋：
+   - `Null/Undefined` 與空值防呆。
+   - 錯誤路徑恢復 (Timeout, DB Down)。
+   - **併發競爭 (Race Conditions)**。
+
+3. **路徑審計 (Allowed Paths Audit)**
+   所有變更必須精確落在 `allowed_paths` 內，嚴禁單一任務偷偷修改框架底層，防止 **Scope Creep**。
+
+---
+
+### 🧠 認知上限守則 (Cognitive Load Limit)
+
+為了防止 AI 陷入幻覺，憲法下了嚴厲的軍令狀：
+*   **檔案長度控制**：盡量保持在 200~300 行以內。
+*   **反模式禁令**：絕對禁止寫出「全能上帝物件 (God Object)」。
+*   **壞了就換 (Disposable Components)**：如果模組 Bug 難以修補，**直接刪除重寫**，嚴禁疊床架屋。
