@@ -1,0 +1,92 @@
+---
+title: "🏭 Factory Workflow Blueprint"
+subtitle: "The Literate State Machine of Software Production"
+format:
+  html:
+    toc: true
+    mermaid:
+      theme: forest
+---
+
+# 🏭 Autonomous Software Factory Workflow
+
+> [!NOTE]
+> This is an **Executable Document**. It not only describes the workflow but also serves as the real-time monitoring interface for the factory.
+
+## 🏗️ Core Architecture: Decoupling & Orchestration
+
+The factory is composed of five specialized autonomous components orchestrated by a central brain.
+
+```{mermaid}
+graph TD
+    User((👩‍💻 Human)) --> Orchestrator[🏁 Factory Orchestrator]
+    
+    subgraph "Phase 1: Discovery"
+        Orchestrator --> ReqAnalyst[📝 Requirements Analyst]
+        ReqAnalyst --> VisualDesigner{🎨 Needs UI?}
+        VisualDesigner -- Yes --> VisualSkill[🖼️ Visual Designer]
+        VisualDesigner -- No --> Architect
+    end
+    
+    subgraph "Phase 2: Technical Design"
+        VisualSkill --> Architect[🏛️ Architect Reviewer]
+        Architect --> Simulation[🧠 Mental Simulation]
+    end
+    
+    subgraph "Phase 3: Execution"
+        Simulation --> Iterator[🏭 Factory Iterator]
+        Iterator --> Tracker[🗄️ tracker.json]
+        Tracker --> Worker[👷 Worker Agents]
+    end
+
+    Worker --> PR[🚀 Pull Request]
+    PR --> CI{🤖 CI Checker}
+    CI -- Pass --> Merge[✅ Merge & Advance]
+    CI -- Fail --> Repair[🩹 Self-Healing]
+    Repair --> Worker
+```
+
+## 📊 Live Factory Status (Experimental)
+
+This section demonstrates the Power of Quarto: reading the actual `.jules/tracker.json` (if it exists) to show real-time progress.
+
+::: {.callout-tip}
+### How it works
+The following block uses Python to parse the project state and render a progress summary directly into this document.
+:::
+
+```python
+import json
+import os
+
+tracker_path = ".jules/tracker.json"
+if os.path.exists(tracker_path):
+    with open(tracker_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    print(f"**Current Phase:** {data.get('current_phase', 'N/A')}")
+    # Additional logic to render progress bars can go here
+else:
+    print("> ⚠️ No active tracker found. Factory is currently idle.")
+```
+
+## 🛠️ Role Definitions
+
+### 1. [Factory Orchestrator](skills/factory-orchestrator/SKILL.md)
+The central navigator. Manages state transitions and input/output flow between components.
+
+### 2. [Requirements Analyst](skills/requirements-analyst/SKILL.md)
+Specializes in intent classification (`Create`, `Continue`, `Maintain`) and baseline requirement gathering.
+
+### 3. [Visual Designer](skills/visual-designer/SKILL.md)
+**Optional.** Activated only for UI-heavy payloads. Generates Design Tokens and Layout specs.
+
+### 4. [Architect Reviewer](skills/architect-reviewer/SKILL.md)
+Handles ADR generation and defensive simulation.
+
+### 5. [Factory Iterator](skills/factory-iterator/SKILL.md)
+Generates the `tracker.json` and micro-task specs for workers.
+
+---
+
+> [!TIP]
+> **Literate Strategy**: By using `.qmd`, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint to be visible to the Orchestrator.

@@ -1,0 +1,27 @@
+project:
+  type: website
+  title: "Autonomous Software Factory"
+
+website:
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: FACTORY_WORKFLOW.qmd
+        text: Workflow
+      - section: "Documentation"
+        contents:
+          - docs/
+  sidebar:
+    style: "floating"
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    code-fold: true
+    mermaid:
+      theme: forest
+
+editor: visual
