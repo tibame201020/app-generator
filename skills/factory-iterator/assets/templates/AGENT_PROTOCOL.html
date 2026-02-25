@@ -279,7 +279,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><p>依照 Spec 實作功能，嚴格遵守 Rules 文件中的程式碼風格。</p></li>
 <li><p>實作必須包含：功能程式碼 + 對應的單元測試／整合測試。</p></li>
-<li><p>若有架構或 Skill 邏輯變更，<strong>必須</strong>同步更新 <code>FACTORY_WORKFLOW.qmd</code> 與 <code>docs/*.qmd</code>。</p></li>
+<li><p>若有架構或 Skill 邏輯變更，<strong>應在 PR Description 中標註</strong>建議更新 <code>FACTORY_WORKFLOW.qmd</code> 的內容，由 Orchestrator 統一維護。Worker <strong>不得直接修改</strong> <code>FACTORY_WORKFLOW.qmd</code>。</p></li>
 <li><p>🧠 <strong>認知上限與架構守則 (Cognitive Load &amp; Architecture Limit)</strong>：</p>
 <ol type="1">
 <li><strong>檔案長度控制</strong>：新建立或修改的檔案，長度應盡量保持在 200~300 行以內。</li>
