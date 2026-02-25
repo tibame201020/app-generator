@@ -181,7 +181,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#動態路徑管理" id="toc-動態路徑管理" class="nav-link" data-scroll-target="#動態路徑管理">2. 動態路徑管理</a></li>
   <li><a href="#技術評審與模擬" id="toc-技術評審與模擬" class="nav-link" data-scroll-target="#技術評審與模擬">3. 技術評審與模擬</a></li>
   <li><a href="#任務規格產出" id="toc-任務規格產出" class="nav-link" data-scroll-target="#任務規格產出">4. 任務規格產出</a></li>
-  <li><a href="#任務調度與執行" id="toc-任務調度與執行" class="nav-link" data-scroll-target="#任務調度與執行">5. 任務調度與執行</a></li>
+  <li><a href="#任務調度與執行-automated-script" id="toc-任務調度與執行-automated-script" class="nav-link" data-scroll-target="#任務調度與執行-automated-script">5. 任務調度與執行 (Automated Script)</a></li>
   <li><a href="#模式感知接力-mode-aware-relay" id="toc-模式感知接力-mode-aware-relay" class="nav-link" data-scroll-target="#模式感知接力-mode-aware-relay">6. 模式感知接力 (Mode-Aware Relay)</a></li>
   </ul></li>
   <li><a href="#使用準則" id="toc-使用準則" class="nav-link" data-scroll-target="#使用準則">🛠️ 使用準則</a></li>
@@ -216,9 +216,9 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="任務規格產出">4. 任務規格產出</h3>
 <p>引導 <strong><a href="../../skills/factory-iterator/SKILL.html">Factory Iterator</a></strong> 產出模組化的任務規格與 <code>tracker.json</code>。</p>
 </section>
-<section id="任務調度與執行" class="level3">
-<h3 class="anchored" data-anchor-id="任務調度與執行">5. 任務調度與執行</h3>
-<p>將控制權交給 <strong><a href="../../skills/task-dispatcher/SKILL.html">Task Dispatcher</a></strong>，由其負責： - 任務分配、互斥鎖管理、Worker 啟動。 - CI/CD 結果收割與 Phase 推進。 - 迭代循環直至專案完工。</p>
+<section id="任務調度與執行-automated-script" class="level3">
+<h3 class="anchored" data-anchor-id="任務調度與執行-automated-script">5. 任務調度與執行 (Automated Script)</h3>
+<p><strong>注意</strong>：<code>Task Dispatcher</code> 不是一個 LLM Agent，而是一支 Python 工具腳本 (<code>skills/task-dispatcher/dispatcher.py</code>)。您不需要呼叫它。 - 專案建置完成後，使用者可透過 Cron Job 呼叫該腳本。 - 腳本會自動分配任務、發包給 Worker。 - Worker 完成 PR 後，CI (<code>auto-merge.yml</code>) 會幫忙收割結果與推進 Phase。 - 自動化流水線會持續從這階段循環，直至完工。</p>
 </section>
 <section id="模式感知接力-mode-aware-relay" class="level3">
 <h3 class="anchored" data-anchor-id="模式感知接力-mode-aware-relay">6. 模式感知接力 (Mode-Aware Relay)</h3>

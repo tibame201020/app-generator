@@ -109,14 +109,14 @@
     "href": "skills/factory-orchestrator/SKILL.html",
     "title": "🏁 Factory Orchestrator (總指揮官)",
     "section": "",
-    "text": "您是軟體工廠的導航員。您的職責是根據使用者當下的進度與需求類型，指引其使用最合適的 Skill。\n\n\n\n\n初次啟動時，請先呼叫並引導使用者完成 Requirements Analyst。\n\n\n\n根據需求分析的結果，決定下一步： - 若涉及 UI/UX 畫面感：引導前往 Visual Designer。 - 若為純後端/API/CLI：跳過視覺設計，直接前往 Architect Reviewer。\n\n\n\n引導完成 Architect Reviewer 的技術選型與沙盤推演。\n\n\n\n引導 Factory Iterator 產出模組化的任務規格與 tracker.json。\n\n\n\n將控制權交給 Task Dispatcher，由其負責： - 任務分配、互斥鎖管理、Worker 啟動。 - CI/CD 結果收割與 Phase 推進。 - 迭代循環直至專案完工。\n\n\n\n\n核心問題：不是每次都從 Step 1 走到 Step 5。根據 Requirements Analyst 判定的模式，Orchestrator 必須知道「從哪裡接入、跳過什麼」。\n\n\n\n\n\n\n\n\n\n模式\n既有產出物\nOrchestrator 路由\n\n\n\n\n🟢 CREATE\n無\n完整走 Step 1 → 2 → 3 → 4 → 5（全部執行）\n\n\n🟡 CONTINUE\n已有 RFP.md、tracker.json、部分 specs/\nStep 1 (Analyst 以 CONTINUE 模式讀取既有 RFP) → Step 2 (若涉及新 UI) → Step 3 (Architect 產出 Integration Report) → Step 4 (Iterator 追加新任務至既有 tracker) → Step 5\n\n\n🔴 MAINTAIN\n全套產出物已存在\nStep 1 (Analyst 以 MAINTAIN 模式限縮修改範圍) → 跳過 Step 2 → Step 3 (Architect 診斷式審查) → Step 4 (Iterator 產出修復任務) → Step 5\n\n\n\n接力交接規則： - 在呼叫每一個 Skill 前，Orchestrator 必須先偵測該 Skill 的產出物是否已存在（docs/RFP.md、docs/design_system.md、docs/ADR/*.md、tracker.json）。 - 若產出物已存在，必須將其路徑與模式標籤 (CREATE/CONTINUE/MAINTAIN) 一併傳遞給下游 Skill，讓其知道「讀取既有的、而非從零開始」。 - 禁止在 CONTINUE/MAINTAIN 模式下讓任何 Skill 執行 CREATE 邏輯。\n\n\n\n\n\n元件化思維 (Component Thinking)：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。\n禁止反向耦合：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。\n透明化引導：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。\n📚 文學化維護 (Literate Maintenance)：身為總指揮，您是 完全掌握整個文檔門戶 (Quarto Portal) 的唯一擁有者 (Sole Owner)。這包含根目錄的 index.qmd、docs/*.qmd、_quarto.yml 以及所有架構視圖。任何 Skill 邏輯的修改、ADR 的產出，都必須由您（或您指派的 Architect）反映在文件中。Worker 若發現文件與實際程式碼不符，應在 PR 中提出建議，但不得直接修改文檔。\n\n\n\n🚀 開始執行：請先啟動 Requirements Analyst 進行首波需求探測。"
+    "text": "您是軟體工廠的導航員。您的職責是根據使用者當下的進度與需求類型，指引其使用最合適的 Skill。\n\n\n\n\n初次啟動時，請先呼叫並引導使用者完成 Requirements Analyst。\n\n\n\n根據需求分析的結果，決定下一步： - 若涉及 UI/UX 畫面感：引導前往 Visual Designer。 - 若為純後端/API/CLI：跳過視覺設計，直接前往 Architect Reviewer。\n\n\n\n引導完成 Architect Reviewer 的技術選型與沙盤推演。\n\n\n\n引導 Factory Iterator 產出模組化的任務規格與 tracker.json。\n\n\n\n注意：Task Dispatcher 不是一個 LLM Agent，而是一支 Python 工具腳本 (skills/task-dispatcher/dispatcher.py)。您不需要呼叫它。 - 專案建置完成後，使用者可透過 Cron Job 呼叫該腳本。 - 腳本會自動分配任務、發包給 Worker。 - Worker 完成 PR 後，CI (auto-merge.yml) 會幫忙收割結果與推進 Phase。 - 自動化流水線會持續從這階段循環，直至完工。\n\n\n\n\n核心問題：不是每次都從 Step 1 走到 Step 5。根據 Requirements Analyst 判定的模式，Orchestrator 必須知道「從哪裡接入、跳過什麼」。\n\n\n\n\n\n\n\n\n\n模式\n既有產出物\nOrchestrator 路由\n\n\n\n\n🟢 CREATE\n無\n完整走 Step 1 → 2 → 3 → 4 → 5（全部執行）\n\n\n🟡 CONTINUE\n已有 RFP.md、tracker.json、部分 specs/\nStep 1 (Analyst 以 CONTINUE 模式讀取既有 RFP) → Step 2 (若涉及新 UI) → Step 3 (Architect 產出 Integration Report) → Step 4 (Iterator 追加新任務至既有 tracker) → Step 5\n\n\n🔴 MAINTAIN\n全套產出物已存在\nStep 1 (Analyst 以 MAINTAIN 模式限縮修改範圍) → 跳過 Step 2 → Step 3 (Architect 診斷式審查) → Step 4 (Iterator 產出修復任務) → Step 5\n\n\n\n接力交接規則： - 在呼叫每一個 Skill 前，Orchestrator 必須先偵測該 Skill 的產出物是否已存在（docs/RFP.md、docs/design_system.md、docs/ADR/*.md、tracker.json）。 - 若產出物已存在，必須將其路徑與模式標籤 (CREATE/CONTINUE/MAINTAIN) 一併傳遞給下游 Skill，讓其知道「讀取既有的、而非從零開始」。 - 禁止在 CONTINUE/MAINTAIN 模式下讓任何 Skill 執行 CREATE 邏輯。\n\n\n\n\n\n元件化思維 (Component Thinking)：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。\n禁止反向耦合：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。\n透明化引導：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。\n📚 文學化維護 (Literate Maintenance)：身為總指揮，您是 完全掌握整個文檔門戶 (Quarto Portal) 的唯一擁有者 (Sole Owner)。這包含根目錄的 index.qmd、docs/*.qmd、_quarto.yml 以及所有架構視圖。任何 Skill 邏輯的修改、ADR 的產出，都必須由您（或您指派的 Architect）反映在文件中。Worker 若發現文件與實際程式碼不符，應在 PR 中提出建議，但不得直接修改文檔。\n\n\n\n🚀 開始執行：請先啟動 Requirements Analyst 進行首波需求探測。"
   },
   {
     "objectID": "skills/factory-orchestrator/SKILL.html#指令流程",
     "href": "skills/factory-orchestrator/SKILL.html#指令流程",
     "title": "🏁 Factory Orchestrator (總指揮官)",
     "section": "",
-    "text": "初次啟動時，請先呼叫並引導使用者完成 Requirements Analyst。\n\n\n\n根據需求分析的結果，決定下一步： - 若涉及 UI/UX 畫面感：引導前往 Visual Designer。 - 若為純後端/API/CLI：跳過視覺設計，直接前往 Architect Reviewer。\n\n\n\n引導完成 Architect Reviewer 的技術選型與沙盤推演。\n\n\n\n引導 Factory Iterator 產出模組化的任務規格與 tracker.json。\n\n\n\n將控制權交給 Task Dispatcher，由其負責： - 任務分配、互斥鎖管理、Worker 啟動。 - CI/CD 結果收割與 Phase 推進。 - 迭代循環直至專案完工。\n\n\n\n\n核心問題：不是每次都從 Step 1 走到 Step 5。根據 Requirements Analyst 判定的模式，Orchestrator 必須知道「從哪裡接入、跳過什麼」。\n\n\n\n\n\n\n\n\n\n模式\n既有產出物\nOrchestrator 路由\n\n\n\n\n🟢 CREATE\n無\n完整走 Step 1 → 2 → 3 → 4 → 5（全部執行）\n\n\n🟡 CONTINUE\n已有 RFP.md、tracker.json、部分 specs/\nStep 1 (Analyst 以 CONTINUE 模式讀取既有 RFP) → Step 2 (若涉及新 UI) → Step 3 (Architect 產出 Integration Report) → Step 4 (Iterator 追加新任務至既有 tracker) → Step 5\n\n\n🔴 MAINTAIN\n全套產出物已存在\nStep 1 (Analyst 以 MAINTAIN 模式限縮修改範圍) → 跳過 Step 2 → Step 3 (Architect 診斷式審查) → Step 4 (Iterator 產出修復任務) → Step 5\n\n\n\n接力交接規則： - 在呼叫每一個 Skill 前，Orchestrator 必須先偵測該 Skill 的產出物是否已存在（docs/RFP.md、docs/design_system.md、docs/ADR/*.md、tracker.json）。 - 若產出物已存在，必須將其路徑與模式標籤 (CREATE/CONTINUE/MAINTAIN) 一併傳遞給下游 Skill，讓其知道「讀取既有的、而非從零開始」。 - 禁止在 CONTINUE/MAINTAIN 模式下讓任何 Skill 執行 CREATE 邏輯。"
+    "text": "初次啟動時，請先呼叫並引導使用者完成 Requirements Analyst。\n\n\n\n根據需求分析的結果，決定下一步： - 若涉及 UI/UX 畫面感：引導前往 Visual Designer。 - 若為純後端/API/CLI：跳過視覺設計，直接前往 Architect Reviewer。\n\n\n\n引導完成 Architect Reviewer 的技術選型與沙盤推演。\n\n\n\n引導 Factory Iterator 產出模組化的任務規格與 tracker.json。\n\n\n\n注意：Task Dispatcher 不是一個 LLM Agent，而是一支 Python 工具腳本 (skills/task-dispatcher/dispatcher.py)。您不需要呼叫它。 - 專案建置完成後，使用者可透過 Cron Job 呼叫該腳本。 - 腳本會自動分配任務、發包給 Worker。 - Worker 完成 PR 後，CI (auto-merge.yml) 會幫忙收割結果與推進 Phase。 - 自動化流水線會持續從這階段循環，直至完工。\n\n\n\n\n核心問題：不是每次都從 Step 1 走到 Step 5。根據 Requirements Analyst 判定的模式，Orchestrator 必須知道「從哪裡接入、跳過什麼」。\n\n\n\n\n\n\n\n\n\n模式\n既有產出物\nOrchestrator 路由\n\n\n\n\n🟢 CREATE\n無\n完整走 Step 1 → 2 → 3 → 4 → 5（全部執行）\n\n\n🟡 CONTINUE\n已有 RFP.md、tracker.json、部分 specs/\nStep 1 (Analyst 以 CONTINUE 模式讀取既有 RFP) → Step 2 (若涉及新 UI) → Step 3 (Architect 產出 Integration Report) → Step 4 (Iterator 追加新任務至既有 tracker) → Step 5\n\n\n🔴 MAINTAIN\n全套產出物已存在\nStep 1 (Analyst 以 MAINTAIN 模式限縮修改範圍) → 跳過 Step 2 → Step 3 (Architect 診斷式審查) → Step 4 (Iterator 產出修復任務) → Step 5\n\n\n\n接力交接規則： - 在呼叫每一個 Skill 前，Orchestrator 必須先偵測該 Skill 的產出物是否已存在（docs/RFP.md、docs/design_system.md、docs/ADR/*.md、tracker.json）。 - 若產出物已存在，必須將其路徑與模式標籤 (CREATE/CONTINUE/MAINTAIN) 一併傳遞給下游 Skill，讓其知道「讀取既有的、而非從零開始」。 - 禁止在 CONTINUE/MAINTAIN 模式下讓任何 Skill 執行 CREATE 邏輯。"
   },
   {
     "objectID": "skills/factory-orchestrator/SKILL.html#使用準則",
@@ -126,129 +126,64 @@
     "text": "元件化思維 (Component Thinking)：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。\n禁止反向耦合：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。\n透明化引導：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。\n📚 文學化維護 (Literate Maintenance)：身為總指揮，您是 完全掌握整個文檔門戶 (Quarto Portal) 的唯一擁有者 (Sole Owner)。這包含根目錄的 index.qmd、docs/*.qmd、_quarto.yml 以及所有架構視圖。任何 Skill 邏輯的修改、ADR 的產出，都必須由您（或您指派的 Architect）反映在文件中。Worker 若發現文件與實際程式碼不符，應在 PR 中提出建議，但不得直接修改文檔。\n\n\n\n🚀 開始執行：請先啟動 Requirements Analyst 進行首波需求探測。"
   },
   {
-    "objectID": "docs/worker-protocol.html",
-    "href": "docs/worker-protocol.html",
-    "title": "👷 工人憲法與行事準則",
+    "objectID": "docs/FACTORY_WORKFLOW.html",
+    "href": "docs/FACTORY_WORKFLOW.html",
+    "title": "🏭 Factory Workflow Blueprint",
     "section": "",
-    "text": "任何進入本工廠的 Worker Agent 在每次甦醒時，必須首先閱讀這份憲法。\n\n\nWorker 的生命週期極其簡潔：\n\n\n\n\n\ngraph LR\n    Receive[接收任務包] --&gt; Load[載入規格]\n    Load --&gt; Impl[實作功能]\n    Impl --&gt; Validate[驗證品質]\n    Validate --&gt; PR[提交 PR]\n    PR --&gt; Done((結束))\n    \n    style Receive fill:#fff3e0,stroke:#e65100\n    style Done fill:#c8e6c9,stroke:#2e7d32\n\n\n\n\n\n\n\nWorker 不需要： 尋找任務、管理分支鎖、判斷 Phase 推進、等待 CI/CD。 這些全部由 Task Dispatcher 處理。\n\n\n\n\n\n\n路徑審計 (Allowed Paths Audit) 所有變更必須精確落在 allowed_paths 內，嚴禁修改框架底層，防止 Scope Creep。\n八大破壞性邊界測試 (Edge Case Checklist) PR 提交前必須涵蓋：\n\nNull/Undefined 與空值防呆。\n錯誤路徑恢復 (Timeout, DB Down)。\n併發競爭 (Race Conditions)。\n\n自我修復 (Self-Healing) 被授權在不偏離核心功能的前提下，自主修正環境問題，並將紀錄寫入 CHANGELOG.md。\n\n\n\n\n\n為了防止 AI 陷入幻覺，憲法下了嚴厲的軍令狀： * 檔案長度控制：盡量保持在 200~300 行以內。 * 反模式禁令：絕對禁止寫出「全能上帝物件 (God Object)」。 * 壞了就換 (Disposable Components)：如果模組 Bug 難以修補，直接刪除重寫。",
+    "text": "[!NOTE] This is an Executable Document. It not only describes the workflow but also serves as the real-time monitoring interface for the factory.\n\n\n\nThe factory is composed of six specialized autonomous components orchestrated by a central brain.\n\n\n\n旨在呈現 6 個角色間的高階協作與狀態轉移。\n\n\n\n\n\n\ngraph LR\n    User([👩‍💻 人類意圖]) --&gt; P1[[Phase 1: Discovery]]\n    P1 --&gt; P2[[Phase 2: Tech Design]]\n    P2 --&gt; P3[[Phase 3: Task Specification]]\n    P3 --&gt; P4[[Phase 4: Dispatch]]\n    P4 --&gt; P5[[Phase 5: Execution]]\n    P5 --&gt; P6[[Phase 6: Validation]]\n    P6 -- \"反饋/重試\" --&gt; P5\n    P6 -- \"Phase 推進\" --&gt; P4\n    P6 -- \"完成\" --&gt; Done((🚀 發布))\n\n    style P1 fill:#e3f2fd,stroke:#1565c0,color:#0d47a1\n    style P2 fill:#fffde7,stroke:#fbc02d,color:#f57f17\n    style P3 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c\n    style P4 fill:#fff3e0,stroke:#e65100,color:#bf360c\n    style P5 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20\n    style P6 fill:#ffebee,stroke:#c62828,color:#b71c1c\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n將模糊的自然語言轉化為可執行的視覺與功能需求。\n\n\n\n\n\n\ngraph TD\n    Start([人類輸入]) --&gt; Orch{協作編程器}\n    Orch --&gt; ReqA[需求分析師]\n    ReqA --&gt; UI_Check{需要 UI?}\n    UI_Check -- 是 --&gt; VisD[視覺設計師]\n    UI_Check -- 否 --&gt; Arch[架構審查]\n    VisD --&gt; Arch\n\n\n\n\n\n\n\n\n\n\n確保架構內聚後，將需求拆解為模組化微型任務。\n\n\n\n\n\n\ngraph TD\n    In[需求藍圖] --&gt; Arch[架構審查員]\n    Arch --&gt; Sim[大模型腦力模擬]\n    Sim -- 簽署通過 --&gt; Iter[工廠迭代器]\n    Iter --&gt; Specs[(specs/*.yml)]\n    Iter --&gt; Track[(tracker.json)]\n\n    style Sim fill:#fff9c4,stroke:#fbc02d\n    style Specs fill:#f5f5f5,stroke:#9e9e9e\n\n\n\n\n\n\n\n\n\n\nTask Dispatcher 專職調度，Worker 純粹實作，CI/CD 裁決結果。\n\n\n\n\n\n\n\nNote🤖 No-LLM Dispatcher Automation\n\n\n\n為實現低成本的「全自動排程執行 (Cron)」，本階段的「任務調度官」並非大語言模型 (LLM)，而是一支純粹的 Python 腳本 (dispatcher.py)。它負責處理 JSON 解析與 Git 互斥鎖，將高昂的 LLM 算力完全保留給 Worker 的程式碼實作。Phase 的推進則由 CI/CD (GitHub Actions) 自動判定。\n\n\n\n\n\n\n\ngraph TD\n    Disp[任務調度官] --&gt; Lock{互斥鎖檢查}\n    Lock -- 可領取 --&gt; Pack[組裝任務包]\n    Lock -- 已鎖定 --&gt; Skip[跳過]\n    Pack --&gt; Worker[執行工人]\n    Worker -- 提交 PR --&gt; CI{CI 門戶}\n    CI -- 通過 --&gt; Merge[合併]\n    CI -- 失敗 --&gt; Retry{可重試?}\n    Retry -- 是 --&gt; Disp\n    Retry -- 否 --&gt; Human([通知人類])\n    Merge --&gt; Phase{Phase 完成?}\n    Phase -- 是 --&gt; Disp\n    Phase -- 全部完成 --&gt; Done((🚀 發布))\n\n    style Disp fill:#fff3e0,stroke:#e65100\n    style Worker fill:#e8f5e9,stroke:#2e7d32\n    style Merge fill:#c8e6c9,stroke:#2e7d32\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip進度自動化監控\n\n\n\n以下區塊會自動搜尋專案中的 tracker.json 並呈現即時進度。\n\n\nimport json\nimport os\nimport glob\n\ntracker_files = glob.glob(\".*/tracker.json\")\nif tracker_files:\n    tracker_path = tracker_files[0]\n    with open(tracker_path, 'r', encoding='utf-8') as f:\n        data = json.load(f)\n    print(f\"**Current Phase:** {data.get('current_phase', 'N/A')}\")\nelse:\n    print(\"&gt; ⚠️ No active tracker found. Factory is currently idle.\")\n\n[!NOTE] 初次部署說明：若您剛建立專案且尚未執行 Factory Iterator 的建廠流程 (Scaffolding)，上方顯示「No active tracker found」是正常現象。待 tracker.json 被 commit 進倉庫後，此區塊將自動顯示即時進度。\n\n\n\n\n\n\n\n\n#\n角色\n職責\nSkill\n\n\n\n\n1\nRequirements Analyst\n意圖分類與需求收集\nrequirements-analyst\n\n\n2\nVisual Designer\n(可選) 設計系統與視覺規格\nvisual-designer\n\n\n3\nArchitect Reviewer\n技術選型與沙盤推演\narchitect-reviewer\n\n\n4\nFactory Iterator\n任務拆解與規格產出\nfactory-iterator\n\n\n5\nTask Dispatcher\n任務調度、互斥鎖、Phase 推進\ntask-dispatcher\n\n\n6\nWorker (AGENT_PROTOCOL)\n純粹實作、驗證、提交 PR\nco-worker\n\n\n\n\n\n[!TIP] Literate Strategy: By using .qmd, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint.",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "👷 工人憲法與行事準則"
+      "🏭 Factory Workflow Blueprint"
     ]
   },
   {
-    "objectID": "docs/worker-protocol.html#agent_protocol.md-工人憲法",
-    "href": "docs/worker-protocol.html#agent_protocol.md-工人憲法",
-    "title": "👷 工人憲法與行事準則",
+    "objectID": "docs/FACTORY_WORKFLOW.html#core-architecture-6-role-decoupled-pipeline",
+    "href": "docs/FACTORY_WORKFLOW.html#core-architecture-6-role-decoupled-pipeline",
+    "title": "🏭 Factory Workflow Blueprint",
     "section": "",
-    "text": "任何進入本工廠的 Worker Agent 在每次甦醒時，必須首先閱讀這份憲法。\n\n\nWorker 的生命週期極其簡潔：\n\n\n\n\n\ngraph LR\n    Receive[接收任務包] --&gt; Load[載入規格]\n    Load --&gt; Impl[實作功能]\n    Impl --&gt; Validate[驗證品質]\n    Validate --&gt; PR[提交 PR]\n    PR --&gt; Done((結束))\n    \n    style Receive fill:#fff3e0,stroke:#e65100\n    style Done fill:#c8e6c9,stroke:#2e7d32\n\n\n\n\n\n\n\nWorker 不需要： 尋找任務、管理分支鎖、判斷 Phase 推進、等待 CI/CD。 這些全部由 Task Dispatcher 處理。\n\n\n\n\n\n\n路徑審計 (Allowed Paths Audit) 所有變更必須精確落在 allowed_paths 內，嚴禁修改框架底層，防止 Scope Creep。\n八大破壞性邊界測試 (Edge Case Checklist) PR 提交前必須涵蓋：\n\nNull/Undefined 與空值防呆。\n錯誤路徑恢復 (Timeout, DB Down)。\n併發競爭 (Race Conditions)。\n\n自我修復 (Self-Healing) 被授權在不偏離核心功能的前提下，自主修正環境問題，並將紀錄寫入 CHANGELOG.md。\n\n\n\n\n\n為了防止 AI 陷入幻覺，憲法下了嚴厲的軍令狀： * 檔案長度控制：盡量保持在 200~300 行以內。 * 反模式禁令：絕對禁止寫出「全能上帝物件 (God Object)」。 * 壞了就換 (Disposable Components)：如果模組 Bug 難以修補，直接刪除重寫。",
+    "text": "The factory is composed of six specialized autonomous components orchestrated by a central brain.\n\n\n\n旨在呈現 6 個角色間的高階協作與狀態轉移。\n\n\n\n\n\n\ngraph LR\n    User([👩‍💻 人類意圖]) --&gt; P1[[Phase 1: Discovery]]\n    P1 --&gt; P2[[Phase 2: Tech Design]]\n    P2 --&gt; P3[[Phase 3: Task Specification]]\n    P3 --&gt; P4[[Phase 4: Dispatch]]\n    P4 --&gt; P5[[Phase 5: Execution]]\n    P5 --&gt; P6[[Phase 6: Validation]]\n    P6 -- \"反饋/重試\" --&gt; P5\n    P6 -- \"Phase 推進\" --&gt; P4\n    P6 -- \"完成\" --&gt; Done((🚀 發布))\n\n    style P1 fill:#e3f2fd,stroke:#1565c0,color:#0d47a1\n    style P2 fill:#fffde7,stroke:#fbc02d,color:#f57f17\n    style P3 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c\n    style P4 fill:#fff3e0,stroke:#e65100,color:#bf360c\n    style P5 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20\n    style P6 fill:#ffebee,stroke:#c62828,color:#b71c1c",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "👷 工人憲法與行事準則"
+      "🏭 Factory Workflow Blueprint"
     ]
   },
   {
-    "objectID": "docs/extensions.html",
-    "href": "docs/extensions.html",
-    "title": "🔌 擴充與外掛指南",
+    "objectID": "docs/FACTORY_WORKFLOW.html#戰術拆解各階段詳細邏輯",
+    "href": "docs/FACTORY_WORKFLOW.html#戰術拆解各階段詳細邏輯",
+    "title": "🏭 Factory Workflow Blueprint",
     "section": "",
-    "text": "無人值守軟體工廠框架的設計哲學是 「插頭與插座」。架構師只負責把插座 (tracker.json) 做好，至於是哪一個廠牌的機器人插進來，框架並不在意。\n\n\n如果您擁有內部的 LLM 工具（例如 CorpBot），您可以輕鬆將其接入：\n\n建立腳本：在 .agents/extensions/ 中新增膠水腳本 corpbot-trigger.py。\n實作介面邏輯：該腳本只需要做一件事：觸發 CorpBot 的 API 或 CLI。\n動態注入：在 factory-iterator 建廠時，指定工人名稱即可。\n\n這就是 Plug and Play 帶來的強大擴充性，確保框架能適應任何新一代的 Developer Agents。",
+    "text": "將模糊的自然語言轉化為可執行的視覺與功能需求。\n\n\n\n\n\n\ngraph TD\n    Start([人類輸入]) --&gt; Orch{協作編程器}\n    Orch --&gt; ReqA[需求分析師]\n    ReqA --&gt; UI_Check{需要 UI?}\n    UI_Check -- 是 --&gt; VisD[視覺設計師]\n    UI_Check -- 否 --&gt; Arch[架構審查]\n    VisD --&gt; Arch\n\n\n\n\n\n\n\n\n\n\n確保架構內聚後，將需求拆解為模組化微型任務。\n\n\n\n\n\n\ngraph TD\n    In[需求藍圖] --&gt; Arch[架構審查員]\n    Arch --&gt; Sim[大模型腦力模擬]\n    Sim -- 簽署通過 --&gt; Iter[工廠迭代器]\n    Iter --&gt; Specs[(specs/*.yml)]\n    Iter --&gt; Track[(tracker.json)]\n\n    style Sim fill:#fff9c4,stroke:#fbc02d\n    style Specs fill:#f5f5f5,stroke:#9e9e9e\n\n\n\n\n\n\n\n\n\n\nTask Dispatcher 專職調度，Worker 純粹實作，CI/CD 裁決結果。\n\n\n\n\n\n\n\nNote🤖 No-LLM Dispatcher Automation\n\n\n\n為實現低成本的「全自動排程執行 (Cron)」，本階段的「任務調度官」並非大語言模型 (LLM)，而是一支純粹的 Python 腳本 (dispatcher.py)。它負責處理 JSON 解析與 Git 互斥鎖，將高昂的 LLM 算力完全保留給 Worker 的程式碼實作。Phase 的推進則由 CI/CD (GitHub Actions) 自動判定。\n\n\n\n\n\n\n\ngraph TD\n    Disp[任務調度官] --&gt; Lock{互斥鎖檢查}\n    Lock -- 可領取 --&gt; Pack[組裝任務包]\n    Lock -- 已鎖定 --&gt; Skip[跳過]\n    Pack --&gt; Worker[執行工人]\n    Worker -- 提交 PR --&gt; CI{CI 門戶}\n    CI -- 通過 --&gt; Merge[合併]\n    CI -- 失敗 --&gt; Retry{可重試?}\n    Retry -- 是 --&gt; Disp\n    Retry -- 否 --&gt; Human([通知人類])\n    Merge --&gt; Phase{Phase 完成?}\n    Phase -- 是 --&gt; Disp\n    Phase -- 全部完成 --&gt; Done((🚀 發布))\n\n    style Disp fill:#fff3e0,stroke:#e65100\n    style Worker fill:#e8f5e9,stroke:#2e7d32\n    style Merge fill:#c8e6c9,stroke:#2e7d32",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "🔌 擴充與外掛指南"
+      "🏭 Factory Workflow Blueprint"
     ]
   },
   {
-    "objectID": "docs/extensions.html#解耦的藝術.agentsextensions",
-    "href": "docs/extensions.html#解耦的藝術.agentsextensions",
-    "title": "🔌 擴充與外掛指南",
+    "objectID": "docs/FACTORY_WORKFLOW.html#live-factory-status-experimental",
+    "href": "docs/FACTORY_WORKFLOW.html#live-factory-status-experimental",
+    "title": "🏭 Factory Workflow Blueprint",
     "section": "",
-    "text": "無人值守軟體工廠框架的設計哲學是 「插頭與插座」。架構師只負責把插座 (tracker.json) 做好，至於是哪一個廠牌的機器人插進來，框架並不在意。\n\n\n如果您擁有內部的 LLM 工具（例如 CorpBot），您可以輕鬆將其接入：\n\n建立腳本：在 .agents/extensions/ 中新增膠水腳本 corpbot-trigger.py。\n實作介面邏輯：該腳本只需要做一件事：觸發 CorpBot 的 API 或 CLI。\n動態注入：在 factory-iterator 建廠時，指定工人名稱即可。\n\n這就是 Plug and Play 帶來的強大擴充性，確保框架能適應任何新一代的 Developer Agents。",
+    "text": "Tip進度自動化監控\n\n\n\n以下區塊會自動搜尋專案中的 tracker.json 並呈現即時進度。\n\n\nimport json\nimport os\nimport glob\n\ntracker_files = glob.glob(\".*/tracker.json\")\nif tracker_files:\n    tracker_path = tracker_files[0]\n    with open(tracker_path, 'r', encoding='utf-8') as f:\n        data = json.load(f)\n    print(f\"**Current Phase:** {data.get('current_phase', 'N/A')}\")\nelse:\n    print(\"&gt; ⚠️ No active tracker found. Factory is currently idle.\")\n\n[!NOTE] 初次部署說明：若您剛建立專案且尚未執行 Factory Iterator 的建廠流程 (Scaffolding)，上方顯示「No active tracker found」是正常現象。待 tracker.json 被 commit 進倉庫後，此區塊將自動顯示即時進度。",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "🔌 擴充與外掛指南"
+      "🏭 Factory Workflow Blueprint"
     ]
   },
   {
-    "objectID": "docs/ENVIRONMENT_FIX.html",
-    "href": "docs/ENVIRONMENT_FIX.html",
-    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "objectID": "docs/FACTORY_WORKFLOW.html#角色定義-6-role-pipeline",
+    "href": "docs/FACTORY_WORKFLOW.html#角色定義-6-role-pipeline",
+    "title": "🏭 Factory Workflow Blueprint",
     "section": "",
-    "text": "當 Worker Agent 在 Step 4 遇到環境問題時，請優先參考本手冊進行修復。\n\n\n\nError: Connection Refused 或 Timeout。\nFix:\n\n檢查是否忘記啟動 Docker 容器。\n嘗試使用 Mock 模式 (${API_KEY:mock}) 繞過。\n檢查 application.yml 或 env 中的端點設定是否正確。\n\n\n\n\n\n\nError: Address already in use。\nFix:\n\n尋找占用埠號的行程並終止。\n在 application.yml 中動態切換埠號 (例如 ${SERVER_PORT:0})。\n\n\n\n\n\n\nError: Migration checksum failed。\nFix:\n\n嚴禁修改已合併的遷移文件。\n建立新的修正遷移檔案。\n\nError: DB Connection Refused。\nFix:\n\n確認 H2 In-memory 模式是否遺失 Context。\n檢查資料庫密鑰是否存在於環境變數。\n\n\n\n\n\n\nError: Audit failed: Modified files outside allowed_paths。\nFix:\n\n檢查是否無意中修改了不相關檔案。\n若修改是必要的，請在 PR 描述中說明理由，或請求人類更新 tracker.json 的 allowed_paths 分配。\n\nError: Auto-merge failed (403 Forbidden)。\nFix:\n\n確認 PAT_TOKEN 是否已正確設定於 Repo Secrets。\n確認該 Token 具備 repo 與 workflow 讀寫權限。\n檢查 PR 是否具備 auto-merge 標籤 (Label) 而非僅是 Body 文字。"
-  },
-  {
-    "objectID": "docs/ENVIRONMENT_FIX.html#網路與-api-錯誤",
-    "href": "docs/ENVIRONMENT_FIX.html#網路與-api-錯誤",
-    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
-    "section": "",
-    "text": "Error: Connection Refused 或 Timeout。\nFix:\n\n檢查是否忘記啟動 Docker 容器。\n嘗試使用 Mock 模式 (${API_KEY:mock}) 繞過。\n檢查 application.yml 或 env 中的端點設定是否正確。"
-  },
-  {
-    "objectID": "docs/ENVIRONMENT_FIX.html#埠號衝突-port-conflict",
-    "href": "docs/ENVIRONMENT_FIX.html#埠號衝突-port-conflict",
-    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
-    "section": "",
-    "text": "Error: Address already in use。\nFix:\n\n尋找占用埠號的行程並終止。\n在 application.yml 中動態切換埠號 (例如 ${SERVER_PORT:0})。"
-  },
-  {
-    "objectID": "docs/ENVIRONMENT_FIX.html#資料庫與遷移錯誤",
-    "href": "docs/ENVIRONMENT_FIX.html#資料庫與遷移錯誤",
-    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
-    "section": "",
-    "text": "Error: Migration checksum failed。\nFix:\n\n嚴禁修改已合併的遷移文件。\n建立新的修正遷移檔案。\n\nError: DB Connection Refused。\nFix:\n\n確認 H2 In-memory 模式是否遺失 Context。\n檢查資料庫密鑰是否存在於環境變數。"
-  },
-  {
-    "objectID": "docs/ENVIRONMENT_FIX.html#git-工作流與路徑審計-refined",
-    "href": "docs/ENVIRONMENT_FIX.html#git-工作流與路徑審計-refined",
-    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
-    "section": "",
-    "text": "Error: Audit failed: Modified files outside allowed_paths。\nFix:\n\n檢查是否無意中修改了不相關檔案。\n若修改是必要的，請在 PR 描述中說明理由，或請求人類更新 tracker.json 的 allowed_paths 分配。\n\nError: Auto-merge failed (403 Forbidden)。\nFix:\n\n確認 PAT_TOKEN 是否已正確設定於 Repo Secrets。\n確認該 Token 具備 repo 與 workflow 讀寫權限。\n檢查 PR 是否具備 auto-merge 標籤 (Label) 而非僅是 Body 文字。"
-  },
-  {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "Changelog",
-    "section": "",
-    "text": "All notable changes to this project will be documented in this file.\n\n\n\nInitiator 雙腦架構重構：將架構決策 (Architect) 與任務規劃 (Planner) 物理分離。\nClaude Agent Skills 規範化：遷移至官方 skills/ 巢狀包結構，支援漸進式揭露。\nFactory 2.0 機械約束：引入 allowed_paths 路徑審計機制，防止 AI 程式碼漂移。\nCI 安全強化：auto-merge.yml 升級為 PAT_TOKEN 並加入初期 Scaffolding Guard。\n冷啟動自動化：Initiator 現在會自動初始化 docs/ 索引與占位文件。\n環境自愈：建立 docs/ENVIRONMENT_FIX.md 提供常見錯誤修復指引。\n死鎖自愈系統：實作 Branch-as-Lock 互斥鎖，並引進 Cleanup Arbitrator (-cleanup.yml) 統一解決 CI 失敗死鎖與 Phantom Branch。\nSpec 1:1 映射：重新定義 Planner Spec，實作一任務一 YAML 映射 (specs/tasks/)，徹底降低 Worker 代碼漂移風險。\n事務安全 (Transaction Consistency)：強化 Arbitrator Git 容錯 (Pull-before-Commit)，確保 Push 主線成功後才允許清理遠端分支資源。\n\n\n\n\n\nInitiated project boilerplate and AI Agent protocols. …"
-  },
-  {
-    "objectID": "CHANGELOG.html#unreleased",
-    "href": "CHANGELOG.html#unreleased",
-    "title": "Changelog",
-    "section": "",
-    "text": "Initiator 雙腦架構重構：將架構決策 (Architect) 與任務規劃 (Planner) 物理分離。\nClaude Agent Skills 規範化：遷移至官方 skills/ 巢狀包結構，支援漸進式揭露。\nFactory 2.0 機械約束：引入 allowed_paths 路徑審計機制，防止 AI 程式碼漂移。\nCI 安全強化：auto-merge.yml 升級為 PAT_TOKEN 並加入初期 Scaffolding Guard。\n冷啟動自動化：Initiator 現在會自動初始化 docs/ 索引與占位文件。\n環境自愈：建立 docs/ENVIRONMENT_FIX.md 提供常見錯誤修復指引。\n死鎖自愈系統：實作 Branch-as-Lock 互斥鎖，並引進 Cleanup Arbitrator (-cleanup.yml) 統一解決 CI 失敗死鎖與 Phantom Branch。\nSpec 1:1 映射：重新定義 Planner Spec，實作一任務一 YAML 映射 (specs/tasks/)，徹底降低 Worker 代碼漂移風險。\n事務安全 (Transaction Consistency)：強化 Arbitrator Git 容錯 (Pull-before-Commit)，確保 Push 主線成功後才允許清理遠端分支資源。"
-  },
-  {
-    "objectID": "CHANGELOG.html#section",
-    "href": "CHANGELOG.html#section",
-    "title": "Changelog",
-    "section": "",
-    "text": "Initiated project boilerplate and AI Agent protocols. …"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "🏭 Autonomous Software Factory",
-    "section": "",
-    "text": "核心願景：將 LLM 從「一問一答的程式碼生成器」，提升為「遵守標準作業程序 (SOP)、具備自我修復能力、穩健推進千行程式碼專案的企業級自動化產線」。\n\n\n\n為了防止大型 AI 專案常見的幻覺崩潰 (Hallucination) 與 非同步覆寫死鎖 (Race Conditions)，本工廠將職責嚴格拆分為四個獨立組件：\n\n\n\n定義 Agent 甦醒後「只能做的幾件事」。強制循序漸進，授權自我修復 (Self-Healing)。\n\n\n\n透過 tracker.json 與 DAG 依賴，精確控制任務先後順序。Git Merge 才是唯一的真理。\n\n\n\n將模糊的需求轉為強型別的 AC。包含 💣 防爆地雷設計，明令禁止高風險行為。\n\n\n\nGitHub Actions 扮演無情裁判。測試不通過即退回 PR，保護主分支不受汙染。\n\n\n\n\n\n\n閱讀流程藍圖：瞭解 五大技能編排。\n啟動編排器：執行 factory-orchestrator 技能進行探索。\n查看技術細節：深入瞭解 Git 狀態機原理。\n\n\n\n💡 總結：這套架構是一套嚴格限制 LLM 行為的防護罩。透過純粹的狀態分離與 CI 驅動進度，將生成式 AI 馴化為高效的工程師軍隊。"
-  },
-  {
-    "objectID": "index.html#四大支柱-the-4-pillars",
-    "href": "index.html#四大支柱-the-4-pillars",
-    "title": "🏭 Autonomous Software Factory",
-    "section": "",
-    "text": "為了防止大型 AI 專案常見的幻覺崩潰 (Hallucination) 與 非同步覆寫死鎖 (Race Conditions)，本工廠將職責嚴格拆分為四個獨立組件：\n\n\n\n定義 Agent 甦醒後「只能做的幾件事」。強制循序漸進，授權自我修復 (Self-Healing)。\n\n\n\n透過 tracker.json 與 DAG 依賴，精確控制任務先後順序。Git Merge 才是唯一的真理。\n\n\n\n將模糊的需求轉為強型別的 AC。包含 💣 防爆地雷設計，明令禁止高風險行為。\n\n\n\nGitHub Actions 扮演無情裁判。測試不通過即退回 PR，保護主分支不受汙染。"
-  },
-  {
-    "objectID": "index.html#快速開始",
-    "href": "index.html#快速開始",
-    "title": "🏭 Autonomous Software Factory",
-    "section": "",
-    "text": "閱讀流程藍圖：瞭解 五大技能編排。\n啟動編排器：執行 factory-orchestrator 技能進行探索。\n查看技術細節：深入瞭解 Git 狀態機原理。\n\n\n\n💡 總結：這套架構是一套嚴格限制 LLM 行為的防護罩。透過純粹的狀態分離與 CI 驅動進度，將生成式 AI 馴化為高效的工程師軍隊。"
+    "text": "#\n角色\n職責\nSkill\n\n\n\n\n1\nRequirements Analyst\n意圖分類與需求收集\nrequirements-analyst\n\n\n2\nVisual Designer\n(可選) 設計系統與視覺規格\nvisual-designer\n\n\n3\nArchitect Reviewer\n技術選型與沙盤推演\narchitect-reviewer\n\n\n4\nFactory Iterator\n任務拆解與規格產出\nfactory-iterator\n\n\n5\nTask Dispatcher\n任務調度、互斥鎖、Phase 推進\ntask-dispatcher\n\n\n6\nWorker (AGENT_PROTOCOL)\n純粹實作、驗證、提交 PR\nco-worker\n\n\n\n\n\n[!TIP] Literate Strategy: By using .qmd, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint.",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🏭 Factory Workflow Blueprint"
+    ]
   },
   {
     "objectID": "docs/principles.html",
@@ -287,99 +222,129 @@
     ]
   },
   {
-    "objectID": "docs/FACTORY_WORKFLOW.html",
-    "href": "docs/FACTORY_WORKFLOW.html",
-    "title": "🏭 Factory Workflow Blueprint",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "🏭 Autonomous Software Factory",
     "section": "",
-    "text": "[!NOTE] This is an Executable Document. It not only describes the workflow but also serves as the real-time monitoring interface for the factory.\n\n\n\nThe factory is composed of six specialized autonomous components orchestrated by a central brain.\n\n\n\n旨在呈現 6 個角色間的高階協作與狀態轉移。\n\n\n\n\n\n\ngraph LR\n    User([👩‍💻 人類意圖]) --&gt; P1[[Phase 1: Discovery]]\n    P1 --&gt; P2[[Phase 2: Tech Design]]\n    P2 --&gt; P3[[Phase 3: Task Specification]]\n    P3 --&gt; P4[[Phase 4: Dispatch]]\n    P4 --&gt; P5[[Phase 5: Execution]]\n    P5 --&gt; P6[[Phase 6: Validation]]\n    P6 -- \"反饋/重試\" --&gt; P5\n    P6 -- \"Phase 推進\" --&gt; P4\n    P6 -- \"完成\" --&gt; Done((🚀 發布))\n\n    style P1 fill:#e3f2fd,stroke:#1565c0,color:#0d47a1\n    style P2 fill:#fffde7,stroke:#fbc02d,color:#f57f17\n    style P3 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c\n    style P4 fill:#fff3e0,stroke:#e65100,color:#bf360c\n    style P5 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20\n    style P6 fill:#ffebee,stroke:#c62828,color:#b71c1c\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n將模糊的自然語言轉化為可執行的視覺與功能需求。\n\n\n\n\n\n\ngraph TD\n    Start([人類輸入]) --&gt; Orch{協作編程器}\n    Orch --&gt; ReqA[需求分析師]\n    ReqA --&gt; UI_Check{需要 UI?}\n    UI_Check -- 是 --&gt; VisD[視覺設計師]\n    UI_Check -- 否 --&gt; Arch[架構審查]\n    VisD --&gt; Arch\n\n\n\n\n\n\n\n\n\n\n確保架構內聚後，將需求拆解為模組化微型任務。\n\n\n\n\n\n\ngraph TD\n    In[需求藍圖] --&gt; Arch[架構審查員]\n    Arch --&gt; Sim[大模型腦力模擬]\n    Sim -- 簽署通過 --&gt; Iter[工廠迭代器]\n    Iter --&gt; Specs[(specs/*.yml)]\n    Iter --&gt; Track[(tracker.json)]\n\n    style Sim fill:#fff9c4,stroke:#fbc02d\n    style Specs fill:#f5f5f5,stroke:#9e9e9e\n\n\n\n\n\n\n\n\n\n\nTask Dispatcher 專職調度，Worker 純粹實作，CI/CD 裁決結果。\n\n\n\n\n\n\ngraph TD\n    Disp[任務調度官] --&gt; Lock{互斥鎖檢查}\n    Lock -- 可領取 --&gt; Pack[組裝任務包]\n    Lock -- 已鎖定 --&gt; Skip[跳過]\n    Pack --&gt; Worker[執行工人]\n    Worker -- 提交 PR --&gt; CI{CI 門戶}\n    CI -- 通過 --&gt; Merge[合併]\n    CI -- 失敗 --&gt; Retry{可重試?}\n    Retry -- 是 --&gt; Disp\n    Retry -- 否 --&gt; Human([通知人類])\n    Merge --&gt; Phase{Phase 完成?}\n    Phase -- 是 --&gt; Disp\n    Phase -- 全部完成 --&gt; Done((🚀 發布))\n\n    style Disp fill:#fff3e0,stroke:#e65100\n    style Worker fill:#e8f5e9,stroke:#2e7d32\n    style Merge fill:#c8e6c9,stroke:#2e7d32\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip進度自動化監控\n\n\n\n以下區塊會自動搜尋專案中的 tracker.json 並呈現即時進度。\n\n\nimport json\nimport os\nimport glob\n\ntracker_files = glob.glob(\".*/tracker.json\")\nif tracker_files:\n    tracker_path = tracker_files[0]\n    with open(tracker_path, 'r', encoding='utf-8') as f:\n        data = json.load(f)\n    print(f\"**Current Phase:** {data.get('current_phase', 'N/A')}\")\nelse:\n    print(\"&gt; ⚠️ No active tracker found. Factory is currently idle.\")\n\n[!NOTE] 初次部署說明：若您剛建立專案且尚未執行 Factory Iterator 的建廠流程 (Scaffolding)，上方顯示「No active tracker found」是正常現象。待 tracker.json 被 commit 進倉庫後，此區塊將自動顯示即時進度。\n\n\n\n\n\n\n\n\n#\n角色\n職責\nSkill\n\n\n\n\n1\nRequirements Analyst\n意圖分類與需求收集\nrequirements-analyst\n\n\n2\nVisual Designer\n(可選) 設計系統與視覺規格\nvisual-designer\n\n\n3\nArchitect Reviewer\n技術選型與沙盤推演\narchitect-reviewer\n\n\n4\nFactory Iterator\n任務拆解與規格產出\nfactory-iterator\n\n\n5\nTask Dispatcher\n任務調度、互斥鎖、Phase 推進\ntask-dispatcher\n\n\n6\nWorker (AGENT_PROTOCOL)\n純粹實作、驗證、提交 PR\nco-worker\n\n\n\n\n\n[!TIP] Literate Strategy: By using .qmd, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint.",
+    "text": "核心願景：將 LLM 從「一問一答的程式碼生成器」，提升為「遵守標準作業程序 (SOP)、具備自我修復能力、穩健推進千行程式碼專案的企業級自動化產線」。\n\n\n\n為了防止大型 AI 專案常見的幻覺崩潰 (Hallucination) 與 非同步覆寫死鎖 (Race Conditions)，本工廠將職責嚴格拆分為四個獨立組件：\n\n\n\n定義 Agent 甦醒後「只能做的幾件事」。強制循序漸進，授權自我修復 (Self-Healing)。\n\n\n\n透過 tracker.json 與 DAG 依賴，精確控制任務先後順序。Git Merge 才是唯一的真理。\n\n\n\n將模糊的需求轉為強型別的 AC。包含 💣 防爆地雷設計，明令禁止高風險行為。\n\n\n\nGitHub Actions 扮演無情裁判。測試不通過即退回 PR，保護主分支不受汙染。\n\n\n\n\n\n\n閱讀流程藍圖：瞭解 五大技能編排。\n啟動編排器：執行 factory-orchestrator 技能進行探索。\n查看技術細節：深入瞭解 Git 狀態機原理。\n\n\n\n💡 總結：這套架構是一套嚴格限制 LLM 行為的防護罩。透過純粹的狀態分離與 CI 驅動進度，將生成式 AI 馴化為高效的工程師軍隊。"
+  },
+  {
+    "objectID": "index.html#四大支柱-the-4-pillars",
+    "href": "index.html#四大支柱-the-4-pillars",
+    "title": "🏭 Autonomous Software Factory",
+    "section": "",
+    "text": "為了防止大型 AI 專案常見的幻覺崩潰 (Hallucination) 與 非同步覆寫死鎖 (Race Conditions)，本工廠將職責嚴格拆分為四個獨立組件：\n\n\n\n定義 Agent 甦醒後「只能做的幾件事」。強制循序漸進，授權自我修復 (Self-Healing)。\n\n\n\n透過 tracker.json 與 DAG 依賴，精確控制任務先後順序。Git Merge 才是唯一的真理。\n\n\n\n將模糊的需求轉為強型別的 AC。包含 💣 防爆地雷設計，明令禁止高風險行為。\n\n\n\nGitHub Actions 扮演無情裁判。測試不通過即退回 PR，保護主分支不受汙染。"
+  },
+  {
+    "objectID": "index.html#快速開始",
+    "href": "index.html#快速開始",
+    "title": "🏭 Autonomous Software Factory",
+    "section": "",
+    "text": "閱讀流程藍圖：瞭解 五大技能編排。\n啟動編排器：執行 factory-orchestrator 技能進行探索。\n查看技術細節：深入瞭解 Git 狀態機原理。\n\n\n\n💡 總結：這套架構是一套嚴格限制 LLM 行為的防護罩。透過純粹的狀態分離與 CI 驅動進度，將生成式 AI 馴化為高效的工程師軍隊。"
+  },
+  {
+    "objectID": "CHANGELOG.html",
+    "href": "CHANGELOG.html",
+    "title": "Changelog",
+    "section": "",
+    "text": "All notable changes to this project will be documented in this file.\n\n\n\nInitiator 雙腦架構重構：將架構決策 (Architect) 與任務規劃 (Planner) 物理分離。\nClaude Agent Skills 規範化：遷移至官方 skills/ 巢狀包結構，支援漸進式揭露。\nFactory 2.0 機械約束：引入 allowed_paths 路徑審計機制，防止 AI 程式碼漂移。\nCI 安全強化：auto-merge.yml 升級為 PAT_TOKEN 並加入初期 Scaffolding Guard。\n冷啟動自動化：Initiator 現在會自動初始化 docs/ 索引與占位文件。\n環境自愈：建立 docs/ENVIRONMENT_FIX.md 提供常見錯誤修復指引。\n死鎖自愈系統：實作 Branch-as-Lock 互斥鎖，並引進 Cleanup Arbitrator (-cleanup.yml) 統一解決 CI 失敗死鎖與 Phantom Branch。\nSpec 1:1 映射：重新定義 Planner Spec，實作一任務一 YAML 映射 (specs/tasks/)，徹底降低 Worker 代碼漂移風險。\n事務安全 (Transaction Consistency)：強化 Arbitrator Git 容錯 (Pull-before-Commit)，確保 Push 主線成功後才允許清理遠端分支資源。\n\n\n\n\n\nInitiated project boilerplate and AI Agent protocols. …"
+  },
+  {
+    "objectID": "CHANGELOG.html#unreleased",
+    "href": "CHANGELOG.html#unreleased",
+    "title": "Changelog",
+    "section": "",
+    "text": "Initiator 雙腦架構重構：將架構決策 (Architect) 與任務規劃 (Planner) 物理分離。\nClaude Agent Skills 規範化：遷移至官方 skills/ 巢狀包結構，支援漸進式揭露。\nFactory 2.0 機械約束：引入 allowed_paths 路徑審計機制，防止 AI 程式碼漂移。\nCI 安全強化：auto-merge.yml 升級為 PAT_TOKEN 並加入初期 Scaffolding Guard。\n冷啟動自動化：Initiator 現在會自動初始化 docs/ 索引與占位文件。\n環境自愈：建立 docs/ENVIRONMENT_FIX.md 提供常見錯誤修復指引。\n死鎖自愈系統：實作 Branch-as-Lock 互斥鎖，並引進 Cleanup Arbitrator (-cleanup.yml) 統一解決 CI 失敗死鎖與 Phantom Branch。\nSpec 1:1 映射：重新定義 Planner Spec，實作一任務一 YAML 映射 (specs/tasks/)，徹底降低 Worker 代碼漂移風險。\n事務安全 (Transaction Consistency)：強化 Arbitrator Git 容錯 (Pull-before-Commit)，確保 Push 主線成功後才允許清理遠端分支資源。"
+  },
+  {
+    "objectID": "CHANGELOG.html#section",
+    "href": "CHANGELOG.html#section",
+    "title": "Changelog",
+    "section": "",
+    "text": "Initiated project boilerplate and AI Agent protocols. …"
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html",
+    "href": "docs/ENVIRONMENT_FIX.html",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "當 Worker Agent 在 Step 4 遇到環境問題時，請優先參考本手冊進行修復。\n\n\n\nError: Connection Refused 或 Timeout。\nFix:\n\n檢查是否忘記啟動 Docker 容器。\n嘗試使用 Mock 模式 (${API_KEY:mock}) 繞過。\n檢查 application.yml 或 env 中的端點設定是否正確。\n\n\n\n\n\n\nError: Address already in use。\nFix:\n\n尋找占用埠號的行程並終止。\n在 application.yml 中動態切換埠號 (例如 ${SERVER_PORT:0})。\n\n\n\n\n\n\nError: Migration checksum failed。\nFix:\n\n嚴禁修改已合併的遷移文件。\n建立新的修正遷移檔案。\n\nError: DB Connection Refused。\nFix:\n\n確認 H2 In-memory 模式是否遺失 Context。\n檢查資料庫密鑰是否存在於環境變數。\n\n\n\n\n\n\nError: Audit failed: Modified files outside allowed_paths。\nFix:\n\n檢查是否無意中修改了不相關檔案。\n若修改是必要的，請在 PR 描述中說明理由，或請求人類更新 tracker.json 的 allowed_paths 分配。\n\nError: Auto-merge failed (403 Forbidden)。\nFix:\n\n確認 PAT_TOKEN 是否已正確設定於 Repo Secrets。\n確認該 Token 具備 repo 與 workflow 讀寫權限。\n檢查 PR 是否具備 auto-merge 標籤 (Label) 而非僅是 Body 文字。"
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html#網路與-api-錯誤",
+    "href": "docs/ENVIRONMENT_FIX.html#網路與-api-錯誤",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "Error: Connection Refused 或 Timeout。\nFix:\n\n檢查是否忘記啟動 Docker 容器。\n嘗試使用 Mock 模式 (${API_KEY:mock}) 繞過。\n檢查 application.yml 或 env 中的端點設定是否正確。"
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html#埠號衝突-port-conflict",
+    "href": "docs/ENVIRONMENT_FIX.html#埠號衝突-port-conflict",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "Error: Address already in use。\nFix:\n\n尋找占用埠號的行程並終止。\n在 application.yml 中動態切換埠號 (例如 ${SERVER_PORT:0})。"
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html#資料庫與遷移錯誤",
+    "href": "docs/ENVIRONMENT_FIX.html#資料庫與遷移錯誤",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "Error: Migration checksum failed。\nFix:\n\n嚴禁修改已合併的遷移文件。\n建立新的修正遷移檔案。\n\nError: DB Connection Refused。\nFix:\n\n確認 H2 In-memory 模式是否遺失 Context。\n檢查資料庫密鑰是否存在於環境變數。"
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html#git-工作流與路徑審計-refined",
+    "href": "docs/ENVIRONMENT_FIX.html#git-工作流與路徑審計-refined",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "Error: Audit failed: Modified files outside allowed_paths。\nFix:\n\n檢查是否無意中修改了不相關檔案。\n若修改是必要的，請在 PR 描述中說明理由，或請求人類更新 tracker.json 的 allowed_paths 分配。\n\nError: Auto-merge failed (403 Forbidden)。\nFix:\n\n確認 PAT_TOKEN 是否已正確設定於 Repo Secrets。\n確認該 Token 具備 repo 與 workflow 讀寫權限。\n檢查 PR 是否具備 auto-merge 標籤 (Label) 而非僅是 Body 文字。"
+  },
+  {
+    "objectID": "docs/extensions.html",
+    "href": "docs/extensions.html",
+    "title": "🔌 擴充與外掛指南",
+    "section": "",
+    "text": "無人值守軟體工廠框架的設計哲學是 「插頭與插座」。架構師只負責把插座 (tracker.json) 做好，至於是哪一個廠牌的機器人插進來，框架並不在意。\n\n\n如果您擁有內部的 LLM 工具（例如 CorpBot），您可以輕鬆將其接入：\n\n建立腳本：在 .agents/extensions/ 中新增膠水腳本 corpbot-trigger.py。\n實作介面邏輯：該腳本只需要做一件事：觸發 CorpBot 的 API 或 CLI。\n動態注入：在 factory-iterator 建廠時，指定工人名稱即可。\n\n這就是 Plug and Play 帶來的強大擴充性，確保框架能適應任何新一代的 Developer Agents。",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "🏭 Factory Workflow Blueprint"
+      "🔌 擴充與外掛指南"
     ]
   },
   {
-    "objectID": "docs/FACTORY_WORKFLOW.html#core-architecture-6-role-decoupled-pipeline",
-    "href": "docs/FACTORY_WORKFLOW.html#core-architecture-6-role-decoupled-pipeline",
-    "title": "🏭 Factory Workflow Blueprint",
+    "objectID": "docs/extensions.html#解耦的藝術.agentsextensions",
+    "href": "docs/extensions.html#解耦的藝術.agentsextensions",
+    "title": "🔌 擴充與外掛指南",
     "section": "",
-    "text": "The factory is composed of six specialized autonomous components orchestrated by a central brain.\n\n\n\n旨在呈現 6 個角色間的高階協作與狀態轉移。\n\n\n\n\n\n\ngraph LR\n    User([👩‍💻 人類意圖]) --&gt; P1[[Phase 1: Discovery]]\n    P1 --&gt; P2[[Phase 2: Tech Design]]\n    P2 --&gt; P3[[Phase 3: Task Specification]]\n    P3 --&gt; P4[[Phase 4: Dispatch]]\n    P4 --&gt; P5[[Phase 5: Execution]]\n    P5 --&gt; P6[[Phase 6: Validation]]\n    P6 -- \"反饋/重試\" --&gt; P5\n    P6 -- \"Phase 推進\" --&gt; P4\n    P6 -- \"完成\" --&gt; Done((🚀 發布))\n\n    style P1 fill:#e3f2fd,stroke:#1565c0,color:#0d47a1\n    style P2 fill:#fffde7,stroke:#fbc02d,color:#f57f17\n    style P3 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c\n    style P4 fill:#fff3e0,stroke:#e65100,color:#bf360c\n    style P5 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20\n    style P6 fill:#ffebee,stroke:#c62828,color:#b71c1c",
+    "text": "無人值守軟體工廠框架的設計哲學是 「插頭與插座」。架構師只負責把插座 (tracker.json) 做好，至於是哪一個廠牌的機器人插進來，框架並不在意。\n\n\n如果您擁有內部的 LLM 工具（例如 CorpBot），您可以輕鬆將其接入：\n\n建立腳本：在 .agents/extensions/ 中新增膠水腳本 corpbot-trigger.py。\n實作介面邏輯：該腳本只需要做一件事：觸發 CorpBot 的 API 或 CLI。\n動態注入：在 factory-iterator 建廠時，指定工人名稱即可。\n\n這就是 Plug and Play 帶來的強大擴充性，確保框架能適應任何新一代的 Developer Agents。",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "🏭 Factory Workflow Blueprint"
+      "🔌 擴充與外掛指南"
     ]
   },
   {
-    "objectID": "docs/FACTORY_WORKFLOW.html#戰術拆解各階段詳細邏輯",
-    "href": "docs/FACTORY_WORKFLOW.html#戰術拆解各階段詳細邏輯",
-    "title": "🏭 Factory Workflow Blueprint",
+    "objectID": "docs/worker-protocol.html",
+    "href": "docs/worker-protocol.html",
+    "title": "👷 工人憲法與行事準則",
     "section": "",
-    "text": "將模糊的自然語言轉化為可執行的視覺與功能需求。\n\n\n\n\n\n\ngraph TD\n    Start([人類輸入]) --&gt; Orch{協作編程器}\n    Orch --&gt; ReqA[需求分析師]\n    ReqA --&gt; UI_Check{需要 UI?}\n    UI_Check -- 是 --&gt; VisD[視覺設計師]\n    UI_Check -- 否 --&gt; Arch[架構審查]\n    VisD --&gt; Arch\n\n\n\n\n\n\n\n\n\n\n確保架構內聚後，將需求拆解為模組化微型任務。\n\n\n\n\n\n\ngraph TD\n    In[需求藍圖] --&gt; Arch[架構審查員]\n    Arch --&gt; Sim[大模型腦力模擬]\n    Sim -- 簽署通過 --&gt; Iter[工廠迭代器]\n    Iter --&gt; Specs[(specs/*.yml)]\n    Iter --&gt; Track[(tracker.json)]\n\n    style Sim fill:#fff9c4,stroke:#fbc02d\n    style Specs fill:#f5f5f5,stroke:#9e9e9e\n\n\n\n\n\n\n\n\n\n\nTask Dispatcher 專職調度，Worker 純粹實作，CI/CD 裁決結果。\n\n\n\n\n\n\ngraph TD\n    Disp[任務調度官] --&gt; Lock{互斥鎖檢查}\n    Lock -- 可領取 --&gt; Pack[組裝任務包]\n    Lock -- 已鎖定 --&gt; Skip[跳過]\n    Pack --&gt; Worker[執行工人]\n    Worker -- 提交 PR --&gt; CI{CI 門戶}\n    CI -- 通過 --&gt; Merge[合併]\n    CI -- 失敗 --&gt; Retry{可重試?}\n    Retry -- 是 --&gt; Disp\n    Retry -- 否 --&gt; Human([通知人類])\n    Merge --&gt; Phase{Phase 完成?}\n    Phase -- 是 --&gt; Disp\n    Phase -- 全部完成 --&gt; Done((🚀 發布))\n\n    style Disp fill:#fff3e0,stroke:#e65100\n    style Worker fill:#e8f5e9,stroke:#2e7d32\n    style Merge fill:#c8e6c9,stroke:#2e7d32",
+    "text": "任何進入本工廠的 Worker Agent 在每次甦醒時，必須首先閱讀這份憲法。\n\n\nWorker 的生命週期極其簡潔：\n\n\n\n\n\ngraph LR\n    Receive[接收任務包] --&gt; Load[載入規格]\n    Load --&gt; Impl[實作功能]\n    Impl --&gt; Validate[驗證品質]\n    Validate --&gt; PR[提交 PR]\n    PR --&gt; Done((結束))\n    \n    style Receive fill:#fff3e0,stroke:#e65100\n    style Done fill:#c8e6c9,stroke:#2e7d32\n\n\n\n\n\n\n\nWorker 不需要： 尋找任務、管理分支鎖、判斷 Phase 推進、等待 CI/CD。 這些全部由 Task Dispatcher 處理。\n\n\n\n\n\n\n路徑審計 (Allowed Paths Audit) 所有變更必須精確落在 allowed_paths 內，嚴禁修改框架底層，防止 Scope Creep。\n八大破壞性邊界測試 (Edge Case Checklist) PR 提交前必須涵蓋：\n\nNull/Undefined 與空值防呆。\n錯誤路徑恢復 (Timeout, DB Down)。\n併發競爭 (Race Conditions)。\n\n自我修復 (Self-Healing) 被授權在不偏離核心功能的前提下，自主修正環境問題，並將紀錄寫入 CHANGELOG.md。\n\n\n\n\n\n為了防止 AI 陷入幻覺，憲法下了嚴厲的軍令狀： * 檔案長度控制：盡量保持在 200~300 行以內。 * 反模式禁令：絕對禁止寫出「全能上帝物件 (God Object)」。 * 壞了就換 (Disposable Components)：如果模組 Bug 難以修補，直接刪除重寫。",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "🏭 Factory Workflow Blueprint"
+      "👷 工人憲法與行事準則"
     ]
   },
   {
-    "objectID": "docs/FACTORY_WORKFLOW.html#live-factory-status-experimental",
-    "href": "docs/FACTORY_WORKFLOW.html#live-factory-status-experimental",
-    "title": "🏭 Factory Workflow Blueprint",
+    "objectID": "docs/worker-protocol.html#agent_protocol.md-工人憲法",
+    "href": "docs/worker-protocol.html#agent_protocol.md-工人憲法",
+    "title": "👷 工人憲法與行事準則",
     "section": "",
-    "text": "Tip進度自動化監控\n\n\n\n以下區塊會自動搜尋專案中的 tracker.json 並呈現即時進度。\n\n\nimport json\nimport os\nimport glob\n\ntracker_files = glob.glob(\".*/tracker.json\")\nif tracker_files:\n    tracker_path = tracker_files[0]\n    with open(tracker_path, 'r', encoding='utf-8') as f:\n        data = json.load(f)\n    print(f\"**Current Phase:** {data.get('current_phase', 'N/A')}\")\nelse:\n    print(\"&gt; ⚠️ No active tracker found. Factory is currently idle.\")\n\n[!NOTE] 初次部署說明：若您剛建立專案且尚未執行 Factory Iterator 的建廠流程 (Scaffolding)，上方顯示「No active tracker found」是正常現象。待 tracker.json 被 commit 進倉庫後，此區塊將自動顯示即時進度。",
+    "text": "任何進入本工廠的 Worker Agent 在每次甦醒時，必須首先閱讀這份憲法。\n\n\nWorker 的生命週期極其簡潔：\n\n\n\n\n\ngraph LR\n    Receive[接收任務包] --&gt; Load[載入規格]\n    Load --&gt; Impl[實作功能]\n    Impl --&gt; Validate[驗證品質]\n    Validate --&gt; PR[提交 PR]\n    PR --&gt; Done((結束))\n    \n    style Receive fill:#fff3e0,stroke:#e65100\n    style Done fill:#c8e6c9,stroke:#2e7d32\n\n\n\n\n\n\n\nWorker 不需要： 尋找任務、管理分支鎖、判斷 Phase 推進、等待 CI/CD。 這些全部由 Task Dispatcher 處理。\n\n\n\n\n\n\n路徑審計 (Allowed Paths Audit) 所有變更必須精確落在 allowed_paths 內，嚴禁修改框架底層，防止 Scope Creep。\n八大破壞性邊界測試 (Edge Case Checklist) PR 提交前必須涵蓋：\n\nNull/Undefined 與空值防呆。\n錯誤路徑恢復 (Timeout, DB Down)。\n併發競爭 (Race Conditions)。\n\n自我修復 (Self-Healing) 被授權在不偏離核心功能的前提下，自主修正環境問題，並將紀錄寫入 CHANGELOG.md。\n\n\n\n\n\n為了防止 AI 陷入幻覺，憲法下了嚴厲的軍令狀： * 檔案長度控制：盡量保持在 200~300 行以內。 * 反模式禁令：絕對禁止寫出「全能上帝物件 (God Object)」。 * 壞了就換 (Disposable Components)：如果模組 Bug 難以修補，直接刪除重寫。",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "🏭 Factory Workflow Blueprint"
+      "👷 工人憲法與行事準則"
     ]
-  },
-  {
-    "objectID": "docs/FACTORY_WORKFLOW.html#角色定義-6-role-pipeline",
-    "href": "docs/FACTORY_WORKFLOW.html#角色定義-6-role-pipeline",
-    "title": "🏭 Factory Workflow Blueprint",
-    "section": "",
-    "text": "#\n角色\n職責\nSkill\n\n\n\n\n1\nRequirements Analyst\n意圖分類與需求收集\nrequirements-analyst\n\n\n2\nVisual Designer\n(可選) 設計系統與視覺規格\nvisual-designer\n\n\n3\nArchitect Reviewer\n技術選型與沙盤推演\narchitect-reviewer\n\n\n4\nFactory Iterator\n任務拆解與規格產出\nfactory-iterator\n\n\n5\nTask Dispatcher\n任務調度、互斥鎖、Phase 推進\ntask-dispatcher\n\n\n6\nWorker (AGENT_PROTOCOL)\n純粹實作、驗證、提交 PR\nco-worker\n\n\n\n\n\n[!TIP] Literate Strategy: By using .qmd, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint.",
-    "crumbs": [
-      "🏠 首頁",
-      "📖 技術手冊",
-      "🏭 Factory Workflow Blueprint"
-    ]
-  },
-  {
-    "objectID": "skills/task-dispatcher/SKILL.html",
-    "href": "skills/task-dispatcher/SKILL.html",
-    "title": "🎯 Task Dispatcher (任務調度官)",
-    "section": "",
-    "text": "您是工廠的領班。您的職責是將 factory-iterator 產出的任務規格，安全、有序地交到 Worker 手上，並在 Worker 完成後收割結果、推進進度。\n\n核心定位：您不產出規格（那是 Iterator 的事），也不實作功能（那是 Worker 的事）。 您只做一件事：確保正確的任務，在正確的時機，交到正確的工人手上。\n\n\n\n\n\n當前模式：單一 Worker 串行迭代 (Single Worker Sequential)\n分散式多 Worker 並行調度被顯式延遲 (DEFERRED)。 當前所有任務按 tracker.json 中的順序，逐一串行分配給單一 Worker。 未來擴充多 Worker 時，變更將集中在本 Skill 內，其他角色不受影響。\n\n\n\n\n\n\n\n\n讀取 tracker.json：取得當前 Phase 與所有任務的狀態。\n健康檢查：\n\n若任務的 attempts &gt;= 5，標記為「持續性死鎖」，跳過並通知人類介入。\n若所有任務均為 completed，判定專案完工並回報。\n\n\n\n\n\n\n此邏輯從 AGENT_PROTOCOL.md Step 1 完整遷移至此。\n\n對每個 pending 狀態的任務，檢查遠端分支 {AGENT_NAME}/task-{task_id} 的存在性：\n\n分支不存在 → 任務可被領取。進入 Step 3。\n分支已存在 → 檢查其 PR 狀態：\n\n\n\n\n\n\n\n\n\nPR 狀態\n判定\n動作\n\n\n\n\nMERGED 但 tracker 仍 pending\n⛔ Transaction 不一致\n停止執行。回報人類。\n\n\n無 PR 或 PR 為 CLOSED\n🔄 失效分支\n強制刪除舊分支，重新領取。\n\n\nPR 為 OPEN\n🔒 鎖定中\n跳過此任務。\n\n\n\n\n若無可領取任務：輸出「所有任務已被鎖定或正在 CI/CD 管線中。暫停調度。」並終止。\n\n\n\n\n\n這是 Dispatcher 的核心交付行為。\n\n\n建立 Feature Branch：\n\n從 {BASE_BRANCH} 切出 {AGENT_NAME}/task-{task_id}。\n推送空心跳提交 (Heartbeat Commit) 以宣告鎖定：\ngit commit --allow-empty -m \"chore: start task_{task_id}\"\ngit push origin {{AGENT_NAME}}/task-{task_id}\n\n組裝任務包 (Task Package)： 將以下資訊打包交付給 Worker：\ntask_package:\n  task_id: \"task_X_1_1\"\n  spec_ref: \"specs/tasks/task_X_1_1.yml\"\n  branch: \"{{AGENT_NAME}}/task-{task_id}\"\n  base_branch: \"{{BASE_BRANCH}}\"\n  allowed_paths: [...]   # 從 spec 中提取\n  rules_dir: \".agents/rules/\"\n  design_tokens_ref: \"docs/design_system.md\"  # 若有\n啟動 Worker：指示 Worker 按照 AGENT_PROTOCOL.md 從 Step 1 (接收任務包) 開始執行。\n\n\n\n\n\n此邏輯從 AGENT_PROTOCOL.md Step 6-7 完整遷移至此。\n\nWorker 提交 PR 後，Dispatcher 接管：\n\n監控 CI/CD：\n\nPR 通過 CI → 自動合併觸發。\nPR 失敗 CI → 根據失敗原因決定：\n\n可重試：遞增 attempts，重新進入 Step 2。\n不可重試：標記任務為 blocked，通知人類。\n\n\nPhase 推進判定：\n\n任務合併後，讀取最新的主線 tracker.json。\n判定準則：若同 Phase 的所有任務狀態皆為 completed，自動更新 current_phase 至下一階段。\n動作：提交一個獨立的 Phase 推進 commit。\n\n迭代循環：\n\nPhase 推進後，回到 Step 1，開始下一 Phase 的任務調度。\n若所有 Phase 完成，宣告專案完工。\n\n\n\n\n\n\n\n\n以下為架構預留接口，當前不實作。\n\n# 未來的 dispatcher_config.yml (概念)\ndispatch_strategy:\n  mode: \"sequential\"          # 當前：串行\n  # mode: \"parallel\"          # 未來：並行\n  # max_concurrent_workers: 3\n  # conflict_resolution: \"first-come-first-served\"\n  # task_affinity: \"by-module\" # 按模組分配，減少衝突\n當切換為並行模式時，Step 2 的互斥鎖機制將自然擴展為多 Worker 的分散式鎖。\n\n\n\n\n\n任務包 (Task Package)：交付給 Worker 的結構化任務資訊。\nPhase 推進 Commit：獨立的 tracker.json 更新提交。\n調度日誌：記錄每次任務分配、重試、跳過的決策原因。\n\n\n\n🎉 完成：所有任務已調度完畢或專案已完工。請回報最終狀態。"
-  },
-  {
-    "objectID": "skills/task-dispatcher/SKILL.html#運作模式聲明",
-    "href": "skills/task-dispatcher/SKILL.html#運作模式聲明",
-    "title": "🎯 Task Dispatcher (任務調度官)",
-    "section": "",
-    "text": "當前模式：單一 Worker 串行迭代 (Single Worker Sequential)\n分散式多 Worker 並行調度被顯式延遲 (DEFERRED)。 當前所有任務按 tracker.json 中的順序，逐一串行分配給單一 Worker。 未來擴充多 Worker 時，變更將集中在本 Skill 內，其他角色不受影響。"
-  },
-  {
-    "objectID": "skills/task-dispatcher/SKILL.html#執行流程",
-    "href": "skills/task-dispatcher/SKILL.html#執行流程",
-    "title": "🎯 Task Dispatcher (任務調度官)",
-    "section": "",
-    "text": "讀取 tracker.json：取得當前 Phase 與所有任務的狀態。\n健康檢查：\n\n若任務的 attempts &gt;= 5，標記為「持續性死鎖」，跳過並通知人類介入。\n若所有任務均為 completed，判定專案完工並回報。\n\n\n\n\n\n\n此邏輯從 AGENT_PROTOCOL.md Step 1 完整遷移至此。\n\n對每個 pending 狀態的任務，檢查遠端分支 {AGENT_NAME}/task-{task_id} 的存在性：\n\n分支不存在 → 任務可被領取。進入 Step 3。\n分支已存在 → 檢查其 PR 狀態：\n\n\n\n\n\n\n\n\n\nPR 狀態\n判定\n動作\n\n\n\n\nMERGED 但 tracker 仍 pending\n⛔ Transaction 不一致\n停止執行。回報人類。\n\n\n無 PR 或 PR 為 CLOSED\n🔄 失效分支\n強制刪除舊分支，重新領取。\n\n\nPR 為 OPEN\n🔒 鎖定中\n跳過此任務。\n\n\n\n\n若無可領取任務：輸出「所有任務已被鎖定或正在 CI/CD 管線中。暫停調度。」並終止。\n\n\n\n\n\n這是 Dispatcher 的核心交付行為。\n\n\n建立 Feature Branch：\n\n從 {BASE_BRANCH} 切出 {AGENT_NAME}/task-{task_id}。\n推送空心跳提交 (Heartbeat Commit) 以宣告鎖定：\ngit commit --allow-empty -m \"chore: start task_{task_id}\"\ngit push origin {{AGENT_NAME}}/task-{task_id}\n\n組裝任務包 (Task Package)： 將以下資訊打包交付給 Worker：\ntask_package:\n  task_id: \"task_X_1_1\"\n  spec_ref: \"specs/tasks/task_X_1_1.yml\"\n  branch: \"{{AGENT_NAME}}/task-{task_id}\"\n  base_branch: \"{{BASE_BRANCH}}\"\n  allowed_paths: [...]   # 從 spec 中提取\n  rules_dir: \".agents/rules/\"\n  design_tokens_ref: \"docs/design_system.md\"  # 若有\n啟動 Worker：指示 Worker 按照 AGENT_PROTOCOL.md 從 Step 1 (接收任務包) 開始執行。\n\n\n\n\n\n此邏輯從 AGENT_PROTOCOL.md Step 6-7 完整遷移至此。\n\nWorker 提交 PR 後，Dispatcher 接管：\n\n監控 CI/CD：\n\nPR 通過 CI → 自動合併觸發。\nPR 失敗 CI → 根據失敗原因決定：\n\n可重試：遞增 attempts，重新進入 Step 2。\n不可重試：標記任務為 blocked，通知人類。\n\n\nPhase 推進判定：\n\n任務合併後，讀取最新的主線 tracker.json。\n判定準則：若同 Phase 的所有任務狀態皆為 completed，自動更新 current_phase 至下一階段。\n動作：提交一個獨立的 Phase 推進 commit。\n\n迭代循環：\n\nPhase 推進後，回到 Step 1，開始下一 Phase 的任務調度。\n若所有 Phase 完成，宣告專案完工。"
-  },
-  {
-    "objectID": "skills/task-dispatcher/SKILL.html#未來擴充點分散式調度-deferred",
-    "href": "skills/task-dispatcher/SKILL.html#未來擴充點分散式調度-deferred",
-    "title": "🎯 Task Dispatcher (任務調度官)",
-    "section": "",
-    "text": "以下為架構預留接口，當前不實作。\n\n# 未來的 dispatcher_config.yml (概念)\ndispatch_strategy:\n  mode: \"sequential\"          # 當前：串行\n  # mode: \"parallel\"          # 未來：並行\n  # max_concurrent_workers: 3\n  # conflict_resolution: \"first-come-first-served\"\n  # task_affinity: \"by-module\" # 按模組分配，減少衝突\n當切換為並行模式時，Step 2 的互斥鎖機制將自然擴展為多 Worker 的分散式鎖。"
-  },
-  {
-    "objectID": "skills/task-dispatcher/SKILL.html#產出物",
-    "href": "skills/task-dispatcher/SKILL.html#產出物",
-    "title": "🎯 Task Dispatcher (任務調度官)",
-    "section": "",
-    "text": "任務包 (Task Package)：交付給 Worker 的結構化任務資訊。\nPhase 推進 Commit：獨立的 tracker.json 更新提交。\n調度日誌：記錄每次任務分配、重試、跳過的決策原因。\n\n\n\n🎉 完成：所有任務已調度完畢或專案已完工。請回報最終狀態。"
   },
   {
     "objectID": "skills/requirements-analyst/SKILL.html",
