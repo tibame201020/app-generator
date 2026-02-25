@@ -29,6 +29,8 @@ description: 負責技術選型、ADR 產出、以及「極限沙盤推演」的
 - **`docs/simulation-report.md`**: 風險預演報告。
 
 ---
-> 🛑 **暫停點**：架構與風險報告獲得確認後，請玩家回報 **[factory-orchestrator](file:///skills/factory-orchestrator/SKILL.md)** 以進行後續編排。
+---
+> 🎉 **完成**：架構評估與風險預演完成。請回報產出之 ADR 與推演報告，等待下一步指令。
+
 
 

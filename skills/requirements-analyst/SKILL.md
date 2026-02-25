@@ -39,5 +39,7 @@ description: 負責確認需求細節、探測使用者背景、並定調 UI/UX 
 - **`docs/RFP.md`**: 包含商業目標、使用者流程圖 (Mermaid) 以及意圖標籤。
 
 ---
-> 🛑 **暫停點**：需求與意圖探測完成後，請玩家回報 **[factory-orchestrator](file:///skills/factory-orchestrator/SKILL.md)** 以進行後續編排。
+---
+> 🎉 **完成**：需求與意圖探測完成。請回報目前的檔案產出狀態，等待下一步指令。
+
 

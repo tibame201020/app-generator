@@ -28,5 +28,7 @@ description: 專門負責定調設計系統 (Design System)、佈局規範與畫
 - **`docs/visual_specs.md`**: 針對特定畫面的詳細描述。
 
 ---
-> 🛑 **暫停點**：視覺定調完成後，請回報 **[factory-orchestrator](file:///skills/factory-orchestrator/SKILL.md)** 以進行後續編排。
+---
+> 🎉 **完成**：視覺規格定調完成。請回報產出之設計規範，等待下一步指令。
+
 
