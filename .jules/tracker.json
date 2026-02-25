@@ -138,7 +138,7 @@
           "id": "task_1_4_2",
           "phase": "phase_1",
           "title": "建立 Dockerfile (Frontend)",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_1_3_1"
           ],
