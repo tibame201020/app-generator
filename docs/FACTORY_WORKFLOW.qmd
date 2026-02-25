@@ -73,6 +73,11 @@ graph TD
 
 > Task Dispatcher 專職調度，Worker 純粹實作，CI/CD 裁決結果。
 
+::: callout-note
+#### 🤖 No-LLM Dispatcher Automation
+為實現低成本的「全自動排程執行 (Cron)」，本階段的「任務調度官」並非大語言模型 (LLM)，而是一支純粹的 Python 腳本 (`dispatcher.py`)。它負責處理 JSON 解析與 Git 互斥鎖，將高昂的 LLM 算力完全保留給 Worker 的程式碼實作。Phase 的推進則由 CI/CD (GitHub Actions) 自動判定。
+:::
+
 ```{mermaid}
 graph TD
     Disp[任務調度官] --> Lock{互斥鎖檢查}
