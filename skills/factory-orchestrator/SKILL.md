@@ -23,12 +23,11 @@ description: 軟體工廠的總指揮，負責管理 6 個 Skills 之間的切�
 ### 4. 任務規格產出
 引導 **[Factory Iterator](../factory-iterator/SKILL.md)** 產出模組化的任務規格與 `tracker.json`。
 
-### 5. 任務調度與執行 (Automated Script)
-**注意**：`Task Dispatcher` 不是一個 LLM Agent，而是一支 Python 工具腳本 (`skills/task-dispatcher/dispatcher.py`)。您不需要呼叫它。
-- 專案建置完成後，使用者可透過 Cron Job 呼叫該腳本。
-- 腳本會自動分配任務、發包給 Worker。
-- Worker 完成 PR 後，CI (`auto-merge.yml`) 會幫忙收割結果與推進 Phase。
-- 自動化流水線會持續從這階段循環，直至完工。
+### 5. 任務調度教導 (One-Shot Instruction)
+引導 **[Task Dispatcher](../task-dispatcher/SKILL.md)** 執行**一次性**教導：
+- 產出 `dispatcher.py` 自動化腳本（供 Cron 排程使用）。
+- 產出**可重複使用的 Worker Prompt**（使用者只需反覆餵給 Worker 即可持續推進任務）。
+- Dispatcher 完成教導後即退場。後續由「自動化腳本 + Worker + CI/CD」自動循環運作至完工。
 
 ### 6. 模式感知接力 (Mode-Aware Relay)
 
