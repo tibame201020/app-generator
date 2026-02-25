@@ -7,13 +7,15 @@ website:
     left:
       - href: index.qmd
         text: "🏠 首頁"
-      - href: FACTORY_WORKFLOW.qmd
+      - href: docs/FACTORY_WORKFLOW.qmd
         text: "🔄 流程藍圖"
       - section: "📖 技術手冊"
         contents:
+          - docs/FACTORY_WORKFLOW.qmd
           - docs/principles.qmd
           - docs/worker-protocol.qmd
           - docs/extensions.qmd
+
   sidebar:
     style: "floating"
 

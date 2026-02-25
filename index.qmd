@@ -37,7 +37,8 @@ GitHub Actions 扮演無情裁判。測試不通過即退回 PR，保護主分�
 
 ## 🚀 快速開始
 
-1.  **閱讀流程藍圖**：瞭解 [五大技能編排](FACTORY_WORKFLOW.qmd)。
+1.  **閱讀流程藍圖**：瞭解 [五大技能編排](docs/FACTORY_WORKFLOW.qmd)。
+
 2.  **啟動編排器**：執行 `factory-orchestrator` 技能進行探索。
 3.  **查看技術細節**：深入瞭解 [Git 狀態機原理](docs/principles.qmd)。
 
