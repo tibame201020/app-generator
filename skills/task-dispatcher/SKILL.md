@@ -53,11 +53,17 @@ description: 一次性教導者 (One-Shot Instructor)。在建廠後被喚醒一
 
 ### 2. 互斥鎖檢查
 - 檢查遠端是否存在分支 `{{AGENT_NAME}}/task-{task_id}`。
+- 若不存在：領取此任務。
 - 若存在：檢查 PR 狀態。
   - MERGED 但 tracker 仍 pending → 停止，回報 Transaction 不一致。
   - 無 PR 或 CLOSED → 刪除舊分支，重新領取。
-  - OPEN → 跳過此任務。
-- 若不存在：領取此任務。
+  - OPEN + CI 通過或進行中 → 跳過此任務，等待合併。
+  - OPEN + CI **失敗** → 執行恢復流程：
+    1. 關閉失敗的 PR：`gh pr close {{AGENT_NAME}}/task-{task_id}`
+    2. 刪除遠端分支：`git push origin --delete {{AGENT_NAME}}/task-{task_id}`
+    3. 在 tracker.json 中遞增該任務的 `attempts` (+1)
+    4. 若 attempts >= 5 → 停止，回報人類
+    5. 若 attempts < 5 → 重新領取此任務
 
 ### 3. 建立工作環境
 - `git fetch origin && git checkout {{BASE_BRANCH}} && git pull`

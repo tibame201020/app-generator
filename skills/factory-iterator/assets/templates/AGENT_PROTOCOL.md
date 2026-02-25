@@ -26,13 +26,23 @@
 
 1. 檢查遠端是否已存在分支 `{{AGENT_NAME}}/task-{task_id}`：
    - **不存在** → 可領取。
-   - **已存在** → 檢查 PR 狀態（`gh pr list --head {{AGENT_NAME}}/task-{task_id} --state all --json state`）：
+   - **已存在** → 檢查 PR 狀態（`gh pr list --head {{AGENT_NAME}}/task-{task_id} --state all --json state,statusCheckRollup`）：
 
 | PR 狀態 | 判定 | 動作 |
 |:---|:---|:---|
 | `MERGED` 但 tracker 仍 `pending` | ⛔ Transaction 不一致 | **停止，回報人類** |
 | 無 PR 或 `CLOSED` | 🔄 失效分支 | 刪除舊分支，重新領取 |
-| `OPEN` | 🔒 鎖定中 | 跳過此任務 |
+| `OPEN` + CI 通過或進行中 | 🔒 鎖定中 | 跳過此任務，等待合併 |
+| `OPEN` + CI **失敗** | 🔁 失敗恢復 | 執行以下恢復流程 ⬇️ |
+
+**CI 失敗恢復流程：**
+```
+1. 關閉失敗的 PR：gh pr close {{AGENT_NAME}}/task-{task_id}
+2. 刪除遠端分支：git push origin --delete {{AGENT_NAME}}/task-{task_id}
+3. 遞增 tracker.json 中該任務的 attempts（+1）
+4. 若 attempts >= 5 → 停止，回報人類：「任務 {task_id} 已連續失敗 5 次，需要人工介入。」
+5. 若 attempts < 5 → 重新領取此任務（回到本步驟的「不存在 → 可領取」路徑）
+```
 
 2. 領取任務後：
    ```
