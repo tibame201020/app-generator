@@ -165,7 +165,7 @@
           "id": "task_2_1_1",
           "phase": "phase_2",
           "title": "建立 Project 與 Conversation JPA Entities",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_1_1_3"
           ],
