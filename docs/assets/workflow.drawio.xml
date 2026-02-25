@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-02-25T02:45:00.000Z" agent="Antigravity" version="21.0.0">
+  <diagram id="factory-workflow" name="Software Factory Workflow">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Phase 1: Discovery -->
+        <mxCell id="p1" value="Phase 1: Discovery" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;startSize=23;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="200" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="n1" value="👩‍💻 Human" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="p1">
+          <mxGeometry x="40" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" value="🏁 Orchestrator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="p1">
+          <mxGeometry x="40" y="110" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" value="📝 Req Analyst" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="p1">
+          <mxGeometry x="40" y="180" width="120" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 2: Tech Design -->
+        <mxCell id="p2" value="Phase 2: Tech Design" style="swimlane;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;startSize=23;" vertex="1" parent="1">
+          <mxGeometry x="280" y="80" width="200" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="n4" value="🏛️ Architect" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="p2">
+          <mxGeometry x="40" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 3: Execution -->
+        <mxCell id="p3" value="Phase 3: Execution" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;startSize=23;" vertex="1" parent="1">
+          <mxGeometry x="520" y="80" width="200" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" value="🏭 Iterator" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="p3">
+          <mxGeometry x="40" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 4: Validation -->
+        <mxCell id="p4" value="Phase 4: Validation" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;startSize=23;" vertex="1" parent="1">
+          <mxGeometry x="760" y="80" width="200" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="n6" value="🤖 CI Checker" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="p4">
+          <mxGeometry x="40" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Connectors -->
+        <mxCell id="e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="n1" target="n2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="n2" target="n3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="n3" target="n4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="n4" target="n5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="n5" target="n6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

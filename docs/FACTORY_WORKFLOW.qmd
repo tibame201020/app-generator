@@ -11,8 +11,9 @@ subtitle: "The Literate State Machine of Software Production"
 
 The factory is composed of five specialized autonomous components orchestrated by a central brain.
 
-::: {.callout-important}
+::: callout-important
 ### 🔍 視覺化地圖
+
 由於產線流程較為複雜，我已將「完整決策藍圖」移至獨立頁面以獲得最佳顯示效果。
 
 [➡️ 點此開啟「全螢幕流程藍圖」](workflow-diagram.qmd){.btn .btn-primary .btn-lg role="button"}
