@@ -6,26 +6,26 @@ format:
     page-layout: full
 ---
 
-:::: column-screen-inset
-::: {#workflow-diagram style="text-align: center;"}
+::: {.column-screen-inset}
+::: {#workflow-diagram style="text-align: center; overflow: visible;"}
 ```{dot}
 //| fig-width: 100%
 //| fig-format: svg
 digraph G {
     graph [
-        rankdir=TB,          // 回歸縱向佈局，符合閱讀習慣
-        nodesep=0.6,
-        ranksep=0.8,
-        splines=polyline, 
-        pad=0.3,
+        rankdir=TB,
+        nodesep=0.5,
+        ranksep=0.6,         // 垂直間距
+        splines=polyline,
+        pad=0.2,
         bgcolor="transparent",
-        dpi=150,
-        center=true
+        center=true,
+        newrank=true
     ]
     
     fontname="Arial"
-    fontsize=22
-    label="Autonomous Software Factory Workflow"
+    fontsize=24
+    label="Autonomous Software Factory: Architecture Roadmap"
     labelloc="t"
 
     node [
@@ -34,92 +34,103 @@ digraph G {
         style="filled,rounded", 
         fillcolor="#f9f9f9", 
         color="#333333",
-        fontsize=13,
-        margin=0.2,
-        width=2.2
+        fontsize=12,
+        width=2.5,
+        height=0.7,
+        margin=0.1
     ]
     
     edge [
         fontname="Arial", 
         color="#666666",
-        fontsize=12,
-        penwidth=1.5
+        fontsize=10,
+        penwidth=1.2
     ]
 
-    User [shape=circle, label="👩‍💻 Human", fillcolor="#e1f5fe", width=1.5]
-    
+    // --- 定義 Phase 主軸 (建立穩定的橫向間隔) ---
+    // 使用一組同 Rank 的主導節點，並給予相同的 minlen 與 weight
+    { rank=same; Orch; Arch; Iter; CI_Gate }
+
+    // 強制橫向主軸，minlen=3 確保間距，weight 確保直線
+    Orch -> Arch [style=invis, minlen=3, weight=100]
+    Arch -> Iter [style=invis, minlen=3, weight=100]
+    Iter -> CI_Gate [style=invis, minlen=3, weight=100]
+
+    // --- Phase 1: Discovery (Group A) ---
     subgraph cluster_0 {
         label = "Phase 1: Discovery";
         color = "#e8f5e9";
         style = "filled,dashed";
         fillcolor = "#f1f8e9";
-        margin = 20;
         
-        Orchestrator [label="🏁 Factory Orchestrator", fillcolor="#fff9c4"]
-        ReqAnalyst [label="📝 Requirements Analyst"]
-        VisualDesigner [label="🎨 Visual Designer", style="filled,dashed,rounded", fillcolor="#ffffff"]
+        // 使用 group 屬性強迫垂直節點對齊成直線
+        node [group=g1]
+        Orch [label="🏁 Factory Orchestrator", fillcolor="#fff9c4"]
+        ReqA [label="📝 Requirements Analyst"]
+        D_UI [shape=diamond, label="Needs UI?", fillcolor="#ffffff"]
+        VisD [label="🎨 Visual Designer", style="filled,dashed,rounded", fillcolor="#ffffff"]
         
-        Decision_UI [shape=diamond, label="Needs UI?", fillcolor="#ffffff", width=1.8, height=1.2]
+        Human [shape=circle, label="👩‍💻 Human", fillcolor="#e1f5fe", width=1.0, height=1.0]
+        Human -> Orch -> ReqA -> D_UI
+        D_UI -> VisD [label="Yes"]
     }
-    
+
+    // --- Phase 2: Tech Design (Group B) ---
     subgraph cluster_1 {
         label = "Phase 2: Tech Design";
         color = "#fff3e0";
         style = "filled,dashed";
         fillcolor = "#fff8e1";
-        margin = 20;
         
-        Architect [label="🏛️ Architect Reviewer"]
-        Simulation [label="🧠 Mental Simulation", shape=ellipse, fillcolor="#ffffff"]
+        node [group=g2]
+        Arch [label="🏛️ Architect Reviewer"]
+        Sim  [label="🧠 Mental Simulation", shape=ellipse, fillcolor="#ffffff"]
+        
+        Arch -> Sim
     }
-    
+
+    // --- Phase 3: Execution (Group C) ---
     subgraph cluster_2 {
         label = "Phase 3: Execution";
         color = "#f3e5f5";
         style = "filled,dashed";
         fillcolor = "#f3e5f5";
-        margin = 20;
         
-        Iterator [label="🏭 Factory Iterator"]
-        Tracker [label="🗄️ tracker.json", shape=note, fillcolor="#ffffff"]
-        Workers [label="👷 Worker Agents"]
+        node [group=g3]
+        Iter [label="🏭 Factory Iterator"]
+        Track [label="🗄️ tracker.json", shape=note, fillcolor="#ffffff"]
+        Work [label="👷 Worker Agents"]
+        
+        Iter -> Track -> Work
     }
 
+    // --- Phase 4: Validation (Group D) ---
     subgraph cluster_3 {
         label = "Phase 4: Validation";
         color = "#ffebee";
         style = "filled,dashed";
         fillcolor = "#fffde7";
-        margin = 20;
 
-        CI [label="🤖 CI Checker\n(Gatekeeper)", shape=diamond, fillcolor="#ffffff", width=2.0, height=1.2]
-        Repair [label="🩹 Self-Healing", fillcolor="#ffccbc"]
-        Merge [label="✅ Merge & Advance", fillcolor="#c8e6c9"]
+        node [group=g4]
+        CI_Gate [label="🤖 CI Checker", shape=diamond, fillcolor="#ffffff"]
+        Rep     [label="🩹 Self-Healing", fillcolor="#ffccbc"]
+        Merg    [label="✅ Merge & Advance", fillcolor="#c8e6c9"]
+        
+        CI_Gate -> Merg [label="Pass"]
+        CI_Gate -> Rep [label="Fail"]
     }
 
-    // Connections
-    User -> Orchestrator
-    Orchestrator -> ReqAnalyst
-    ReqAnalyst -> Decision_UI
+    // --- 實質跨 Phase 連接邏輯 (不參與階層計算以避免拉扯) ---
+    edge [constraint=false]
+    D_UI -> Arch [label="No"]
+    VisD -> Arch
+    Sim -> Iter
+    Work -> CI_Gate [label="PR Submitted"]
     
-    Decision_UI -> VisualDesigner [label=" Yes"]
-    Decision_UI -> Architect [label=" No"]
-    
-    VisualDesigner -> Architect
-    Architect -> Simulation
-    Simulation -> Iterator
-    
-    Iterator -> Tracker
-    Tracker -> Workers
-    
-    Workers -> CI [label=" PR Submitted"]
-    
-    CI -> Merge [label=" Pass"]
-    CI -> Repair [label=" Fail"]
-    Repair -> Workers [constraint=false, color="#e57373", tailport=w, headport=w]
+    // 回饋迴路
+    Rep -> Work [color="#e57373", tailport=w, headport=w]
 }
 ```
 :::
-::::
 
 [⬅️ 返回工作流說明](FACTORY_WORKFLOW.qmd)
