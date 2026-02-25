@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="正式產出生產線藍圖，執行任務派發，並支援專案全生命週期迭代的「工廠管理員」。">
+<meta name="description" content="純粹的「任務規格產出器」。負責建廠部署、任務拆解與模組化切分，但不涉及任務派發或調度。">
 
 <title>skill – Autonomous Software Factory</title>
 <style>
@@ -173,13 +173,13 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#factory-iterator-lifecycle-tasks" id="toc-factory-iterator-lifecycle-tasks" class="nav-link active" data-scroll-target="#factory-iterator-lifecycle-tasks">🏭 Factory Iterator (Lifecycle &amp; Tasks)</a>
+  <li><a href="#factory-iterator-規格產出與任務切分" id="toc-factory-iterator-規格產出與任務切分" class="nav-link active" data-scroll-target="#factory-iterator-規格產出與任務切分">🏭 Factory Iterator (規格產出與任務切分)</a>
   <ul class="collapse">
   <li><a href="#執行流程" id="toc-執行流程" class="nav-link" data-scroll-target="#執行流程">📖 執行流程</a>
   <ul class="collapse">
   <li><a href="#step-1-建廠與環境部署-scaffolding" id="toc-step-1-建廠與環境部署-scaffolding" class="nav-link" data-scroll-target="#step-1-建廠與環境部署-scaffolding">Step 1: 建廠與環境部署 (Scaffolding)</a></li>
-  <li><a href="#step-2-任務拆解-intent-aware-micro-tasking" id="toc-step-2-任務拆解-intent-aware-micro-tasking" class="nav-link" data-scroll-target="#step-2-任務拆解-intent-aware-micro-tasking">Step 2: 任務拆解 (Intent-Aware Micro-Tasking)</a></li>
-  <li><a href="#step-3-自動化裁判所-cicd" id="toc-step-3-自動化裁判所-cicd" class="nav-link" data-scroll-target="#step-3-自動化裁判所-cicd">Step 3: 自動化裁判所 (CI/CD)</a></li>
+  <li><a href="#step-2-任務拆解與模組化-intent-aware-modular-micro-tasking" id="toc-step-2-任務拆解與模組化-intent-aware-modular-micro-tasking" class="nav-link" data-scroll-target="#step-2-任務拆解與模組化-intent-aware-modular-micro-tasking">Step 2: 任務拆解與模組化 (Intent-Aware Modular Micro-Tasking)</a></li>
+  <li><a href="#step-3-規格校驗-spec-integrity-check" id="toc-step-3-規格校驗-spec-integrity-check" class="nav-link" data-scroll-target="#step-3-規格校驗-spec-integrity-check">Step 3: 規格校驗 (Spec Integrity Check)</a></li>
   </ul></li>
   <li><a href="#產出物" id="toc-產出物" class="nav-link" data-scroll-target="#產出物">🛠️ 產出物</a></li>
   </ul></li>
@@ -192,9 +192,13 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<section id="factory-iterator-lifecycle-tasks" class="level1">
-<h1>🏭 Factory Iterator (Lifecycle &amp; Tasks)</h1>
-<p>您的目標是產出機器人可讀的代碼規格，並管理不間斷的開發與維護迭代。</p>
+<section id="factory-iterator-規格產出與任務切分" class="level1">
+<h1>🏭 Factory Iterator (規格產出與任務切分)</h1>
+<p>您的目標是產出機器人可讀的代碼規格，並將需求拆解為高內聚、低耦合的模組化微型任務。</p>
+<blockquote class="blockquote">
+<p><strong>職責邊界</strong>：您只負責「產出什麼任務」，不負責「把任務交給誰」。 任務的派發與調度由 <a href="../../skills/task-dispatcher/SKILL.html">Task Dispatcher</a> 專職處理。</p>
+</blockquote>
+<hr>
 <section id="執行流程" class="level2">
 <h2 class="anchored" data-anchor-id="執行流程">📖 執行流程</h2>
 <section id="step-1-建廠與環境部署-scaffolding" class="level3">
@@ -202,10 +206,11 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li>從模板產生 <code>.{{AGENT_NAME}}/tracker.json</code> 與 <code>AGENT_PROTOCOL.md</code>。</li>
 <li><strong>視覺規範注入</strong>：將 <code>RFP.md</code> 內的 Design Tokens 寫入任務規格中。</li>
+<li><strong>規則目錄初始化</strong>：確保 <code>.agents/rules/</code> 目錄存在且包含基本編碼守則。</li>
 </ul>
 </section>
-<section id="step-2-任務拆解-intent-aware-micro-tasking" class="level3">
-<h3 class="anchored" data-anchor-id="step-2-任務拆解-intent-aware-micro-tasking">Step 2: 任務拆解 (Intent-Aware Micro-Tasking)</h3>
+<section id="step-2-任務拆解與模組化-intent-aware-modular-micro-tasking" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-任務拆解與模組化-intent-aware-modular-micro-tasking">Step 2: 任務拆解與模組化 (Intent-Aware Modular Micro-Tasking)</h3>
 <ul>
 <li><strong>共通規範</strong>：拆解為符合「單檔 300 行內」的微型任務。</li>
 <li><strong>🟢 CREATE</strong>：關注環境搭建、初始核心邏輯。</li>
@@ -215,23 +220,30 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>細節</strong>：指定 <code>allowed_paths</code> 沙盒權限時應更為保守。</li>
 </ul></li>
 </ul>
+<blockquote class="blockquote">
+<p>[!IMPORTANT] ### 模組化切分原則 (Critical for Future Scalability) 每個任務的 <code>allowed_paths</code> 應盡量互不重疊。這是未來支援多 Worker 並行的關鍵前提： - 任務 A 修改 <code>src/auth/</code>，任務 B 修改 <code>src/dashboard/</code> → ✅ 可並行 - 任務 A 和 B 都修改 <code>src/shared/utils.ts</code> → ❌ 衝突風險</p>
+<p>當無法避免路徑重疊時，必須在 <code>tracker.json</code> 中建立明確的 <code>depends_on</code> 依賴關係。</p>
+</blockquote>
 </section>
-<section id="step-3-自動化裁判所-cicd" class="level3">
-<h3 class="anchored" data-anchor-id="step-3-自動化裁判所-cicd">Step 3: 自動化裁判所 (CI/CD)</h3>
+<section id="step-3-規格校驗-spec-integrity-check" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-規格校驗-spec-integrity-check">Step 3: 規格校驗 (Spec Integrity Check)</h3>
 <ul>
-<li>部署 Github Actions (auto-merge, cleanup)。</li>
+<li>確認每個任務的 <code>spec_ref</code> 指向實際存在的 YAML 檔案。</li>
+<li>確認 <code>tracker.json</code> 中的 task ID 與 spec 檔案名稱一致。</li>
+<li>確認 Phase 間的依賴順序合理。</li>
 </ul>
 </section>
 </section>
 <section id="產出物" class="level2">
 <h2 class="anchored" data-anchor-id="產出物">🛠️ 產出物</h2>
 <ul>
-<li><strong><code>.{{AGENT_NAME}}/</code></strong>: 包含 tracker 與協議。</li>
+<li><strong><code>.{{AGENT_NAME}}/tracker.json</code></strong>: 任務追蹤器（含 Phase 結構與依賴）。</li>
+<li><strong><code>.{{AGENT_NAME}}/AGENT_PROTOCOL.md</code></strong>: Worker 執行協議。</li>
 <li><strong><code>specs/tasks/*.yml</code></strong>: 強型別任務規格書。</li>
 </ul>
 <hr>
 <blockquote class="blockquote">
-<p>🎉 <strong>完成</strong>：產出配置清單，啟動無人值守生產線。</p>
+<p>🎉 <strong>完成</strong>：所有任務規格已產出並通過校驗。請將控制權交還 Orchestrator，由 <a href="../../skills/task-dispatcher/SKILL.html">Task Dispatcher</a> 接手調度。</p>
 </blockquote>
 
 

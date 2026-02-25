@@ -23,23 +23,23 @@
   {
     "objectID": "skills/factory-iterator/SKILL.html",
     "href": "skills/factory-iterator/SKILL.html",
-    "title": "🏭 Factory Iterator (Lifecycle & Tasks)",
+    "title": "🏭 Factory Iterator (規格產出與任務切分)",
     "section": "",
-    "text": "您的目標是產出機器人可讀的代碼規格，並管理不間斷的開發與維護迭代。\n\n\n\n\n\n從模板產生 .{{AGENT_NAME}}/tracker.json 與 AGENT_PROTOCOL.md。\n視覺規範注入：將 RFP.md 內的 Design Tokens 寫入任務規格中。\n\n\n\n\n\n共通規範：拆解為符合「單檔 300 行內」的微型任務。\n🟢 CREATE：關注環境搭建、初始核心邏輯。\n🟡 CONTINUE / 🔴 MAINTAIN：\n\n首要任務：必須先建立「代碼審計 (Maintenance Audit)」任務，要求 Worker 回報對既有代碼的理解。\n細節：指定 allowed_paths 沙盒權限時應更為保守。\n\n\n\n\n\n\n部署 Github Actions (auto-merge, cleanup)。\n\n\n\n\n\n\n.{{AGENT_NAME}}/: 包含 tracker 與協議。\nspecs/tasks/*.yml: 強型別任務規格書。\n\n\n\n🎉 完成：產出配置清單，啟動無人值守生產線。"
+    "text": "您的目標是產出機器人可讀的代碼規格，並將需求拆解為高內聚、低耦合的模組化微型任務。\n\n職責邊界：您只負責「產出什麼任務」，不負責「把任務交給誰」。 任務的派發與調度由 Task Dispatcher 專職處理。\n\n\n\n\n\n\n\n從模板產生 .{{AGENT_NAME}}/tracker.json 與 AGENT_PROTOCOL.md。\n視覺規範注入：將 RFP.md 內的 Design Tokens 寫入任務規格中。\n規則目錄初始化：確保 .agents/rules/ 目錄存在且包含基本編碼守則。\n\n\n\n\n\n共通規範：拆解為符合「單檔 300 行內」的微型任務。\n🟢 CREATE：關注環境搭建、初始核心邏輯。\n🟡 CONTINUE / 🔴 MAINTAIN：\n\n首要任務：必須先建立「代碼審計 (Maintenance Audit)」任務，要求 Worker 回報對既有代碼的理解。\n細節：指定 allowed_paths 沙盒權限時應更為保守。\n\n\n\n[!IMPORTANT] ### 模組化切分原則 (Critical for Future Scalability) 每個任務的 allowed_paths 應盡量互不重疊。這是未來支援多 Worker 並行的關鍵前提： - 任務 A 修改 src/auth/，任務 B 修改 src/dashboard/ → ✅ 可並行 - 任務 A 和 B 都修改 src/shared/utils.ts → ❌ 衝突風險\n當無法避免路徑重疊時，必須在 tracker.json 中建立明確的 depends_on 依賴關係。\n\n\n\n\n\n確認每個任務的 spec_ref 指向實際存在的 YAML 檔案。\n確認 tracker.json 中的 task ID 與 spec 檔案名稱一致。\n確認 Phase 間的依賴順序合理。\n\n\n\n\n\n\n.{{AGENT_NAME}}/tracker.json: 任務追蹤器（含 Phase 結構與依賴）。\n.{{AGENT_NAME}}/AGENT_PROTOCOL.md: Worker 執行協議。\nspecs/tasks/*.yml: 強型別任務規格書。\n\n\n\n🎉 完成：所有任務規格已產出並通過校驗。請將控制權交還 Orchestrator，由 Task Dispatcher 接手調度。"
   },
   {
     "objectID": "skills/factory-iterator/SKILL.html#執行流程",
     "href": "skills/factory-iterator/SKILL.html#執行流程",
-    "title": "🏭 Factory Iterator (Lifecycle & Tasks)",
+    "title": "🏭 Factory Iterator (規格產出與任務切分)",
     "section": "",
-    "text": "從模板產生 .{{AGENT_NAME}}/tracker.json 與 AGENT_PROTOCOL.md。\n視覺規範注入：將 RFP.md 內的 Design Tokens 寫入任務規格中。\n\n\n\n\n\n共通規範：拆解為符合「單檔 300 行內」的微型任務。\n🟢 CREATE：關注環境搭建、初始核心邏輯。\n🟡 CONTINUE / 🔴 MAINTAIN：\n\n首要任務：必須先建立「代碼審計 (Maintenance Audit)」任務，要求 Worker 回報對既有代碼的理解。\n細節：指定 allowed_paths 沙盒權限時應更為保守。\n\n\n\n\n\n\n部署 Github Actions (auto-merge, cleanup)。"
+    "text": "從模板產生 .{{AGENT_NAME}}/tracker.json 與 AGENT_PROTOCOL.md。\n視覺規範注入：將 RFP.md 內的 Design Tokens 寫入任務規格中。\n規則目錄初始化：確保 .agents/rules/ 目錄存在且包含基本編碼守則。\n\n\n\n\n\n共通規範：拆解為符合「單檔 300 行內」的微型任務。\n🟢 CREATE：關注環境搭建、初始核心邏輯。\n🟡 CONTINUE / 🔴 MAINTAIN：\n\n首要任務：必須先建立「代碼審計 (Maintenance Audit)」任務，要求 Worker 回報對既有代碼的理解。\n細節：指定 allowed_paths 沙盒權限時應更為保守。\n\n\n\n[!IMPORTANT] ### 模組化切分原則 (Critical for Future Scalability) 每個任務的 allowed_paths 應盡量互不重疊。這是未來支援多 Worker 並行的關鍵前提： - 任務 A 修改 src/auth/，任務 B 修改 src/dashboard/ → ✅ 可並行 - 任務 A 和 B 都修改 src/shared/utils.ts → ❌ 衝突風險\n當無法避免路徑重疊時，必須在 tracker.json 中建立明確的 depends_on 依賴關係。\n\n\n\n\n\n確認每個任務的 spec_ref 指向實際存在的 YAML 檔案。\n確認 tracker.json 中的 task ID 與 spec 檔案名稱一致。\n確認 Phase 間的依賴順序合理。"
   },
   {
     "objectID": "skills/factory-iterator/SKILL.html#產出物",
     "href": "skills/factory-iterator/SKILL.html#產出物",
-    "title": "🏭 Factory Iterator (Lifecycle & Tasks)",
+    "title": "🏭 Factory Iterator (規格產出與任務切分)",
     "section": "",
-    "text": ".{{AGENT_NAME}}/: 包含 tracker 與協議。\nspecs/tasks/*.yml: 強型別任務規格書。\n\n\n\n🎉 完成：產出配置清單，啟動無人值守生產線。"
+    "text": ".{{AGENT_NAME}}/tracker.json: 任務追蹤器（含 Phase 結構與依賴）。\n.{{AGENT_NAME}}/AGENT_PROTOCOL.md: Worker 執行協議。\nspecs/tasks/*.yml: 強型別任務規格書。\n\n\n\n🎉 完成：所有任務規格已產出並通過校驗。請將控制權交還 Orchestrator，由 Task Dispatcher 接手調度。"
   },
   {
     "objectID": "skills/factory-iterator/assets/templates/doc-categories.html",
@@ -109,69 +109,146 @@
     "href": "skills/factory-orchestrator/SKILL.html",
     "title": "🏁 Factory Orchestrator (總指揮官)",
     "section": "",
-    "text": "您是軟體工廠的導航員。您的職責是根據使用者當下的進度與需求類型，指引其使用最合適的 Skill。\n\n\n\n\n初次啟動時，請先呼叫並引導使用者完成 Requirements Analyst。\n\n\n\n根據需求分析的結果，決定下一步： - 若涉及 UI/UX 畫面感：引導前往 Visual Designer。 - 若為純後端/API/CLI：跳過視覺設計，直接前往 Architect Reviewer。\n\n\n\n\n確保上一個 Skill 的產出物（如 RFP.md）能被下一個 Skill 正確讀取。\n管理 Create / Continue / Maintain 三種模式的跳轉邏輯。\n\n\n\n\n\n\n元件化思維 (Component Thinking)：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。\n禁止反向耦合：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。\n透明化引導：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。\n📚 文學化維護 (Literate Maintenance)：身為總指揮，您有義務確保 FACTORY_WORKFLOW.qmd 與實際 Skill 的變更保持同步。任何 Skill 邏輯的修改，都必須反映在文件與圖表中。\n\n\n\n🚀 開始執行：請先啟動 Requirements Analyst 進行首波需求探測。"
+    "text": "您是軟體工廠的導航員。您的職責是根據使用者當下的進度與需求類型，指引其使用最合適的 Skill。\n\n\n\n\n初次啟動時，請先呼叫並引導使用者完成 Requirements Analyst。\n\n\n\n根據需求分析的結果，決定下一步： - 若涉及 UI/UX 畫面感：引導前往 Visual Designer。 - 若為純後端/API/CLI：跳過視覺設計，直接前往 Architect Reviewer。\n\n\n\n引導完成 Architect Reviewer 的技術選型與沙盤推演。\n\n\n\n引導 Factory Iterator 產出模組化的任務規格與 tracker.json。\n\n\n\n將控制權交給 Task Dispatcher，由其負責： - 任務分配、互斥鎖管理、Worker 啟動。 - CI/CD 結果收割與 Phase 推進。 - 迭代循環直至專案完工。\n\n\n\n\n確保上一個 Skill 的產出物（如 RFP.md、design_system.md、ADR/*.md）能被下一個 Skill 正確讀取。\n管理 Create / Continue / Maintain 三種模式的跳轉邏輯。\n\n\n\n\n\n\n元件化思維 (Component Thinking)：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。\n禁止反向耦合：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。\n透明化引導：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。\n📚 文學化維護 (Literate Maintenance)：身為總指揮，您有義務確保 FACTORY_WORKFLOW.qmd 與實際 Skill 的變更保持同步。\n\n\n\n🚀 開始執行：請先啟動 Requirements Analyst 進行首波需求探測。"
   },
   {
     "objectID": "skills/factory-orchestrator/SKILL.html#指令流程",
     "href": "skills/factory-orchestrator/SKILL.html#指令流程",
     "title": "🏁 Factory Orchestrator (總指揮官)",
     "section": "",
-    "text": "初次啟動時，請先呼叫並引導使用者完成 Requirements Analyst。\n\n\n\n根據需求分析的結果，決定下一步： - 若涉及 UI/UX 畫面感：引導前往 Visual Designer。 - 若為純後端/API/CLI：跳過視覺設計，直接前往 Architect Reviewer。\n\n\n\n\n確保上一個 Skill 的產出物（如 RFP.md）能被下一個 Skill 正確讀取。\n管理 Create / Continue / Maintain 三種模式的跳轉邏輯。"
+    "text": "初次啟動時，請先呼叫並引導使用者完成 Requirements Analyst。\n\n\n\n根據需求分析的結果，決定下一步： - 若涉及 UI/UX 畫面感：引導前往 Visual Designer。 - 若為純後端/API/CLI：跳過視覺設計，直接前往 Architect Reviewer。\n\n\n\n引導完成 Architect Reviewer 的技術選型與沙盤推演。\n\n\n\n引導 Factory Iterator 產出模組化的任務規格與 tracker.json。\n\n\n\n將控制權交給 Task Dispatcher，由其負責： - 任務分配、互斥鎖管理、Worker 啟動。 - CI/CD 結果收割與 Phase 推進。 - 迭代循環直至專案完工。\n\n\n\n\n確保上一個 Skill 的產出物（如 RFP.md、design_system.md、ADR/*.md）能被下一個 Skill 正確讀取。\n管理 Create / Continue / Maintain 三種模式的跳轉邏輯。"
   },
   {
     "objectID": "skills/factory-orchestrator/SKILL.html#使用準則",
     "href": "skills/factory-orchestrator/SKILL.html#使用準則",
     "title": "🏁 Factory Orchestrator (總指揮官)",
     "section": "",
-    "text": "元件化思維 (Component Thinking)：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。\n禁止反向耦合：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。\n透明化引導：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。\n📚 文學化維護 (Literate Maintenance)：身為總指揮，您有義務確保 FACTORY_WORKFLOW.qmd 與實際 Skill 的變更保持同步。任何 Skill 邏輯的修改，都必須反映在文件與圖表中。\n\n\n\n🚀 開始執行：請先啟動 Requirements Analyst 進行首波需求探測。"
+    "text": "元件化思維 (Component Thinking)：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。\n禁止反向耦合：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。\n透明化引導：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。\n📚 文學化維護 (Literate Maintenance)：身為總指揮，您有義務確保 FACTORY_WORKFLOW.qmd 與實際 Skill 的變更保持同步。\n\n\n\n🚀 開始執行：請先啟動 Requirements Analyst 進行首波需求探測。"
   },
   {
-    "objectID": "docs/FACTORY_WORKFLOW.html",
-    "href": "docs/FACTORY_WORKFLOW.html",
-    "title": "🏭 Factory Workflow Blueprint",
+    "objectID": "docs/worker-protocol.html",
+    "href": "docs/worker-protocol.html",
+    "title": "👷 工人憲法與行事準則",
     "section": "",
-    "text": "[!NOTE] This is an Executable Document. It not only describes the workflow but also serves as the real-time monitoring interface for the factory.\n\n\n\nThe factory is composed of five specialized autonomous components orchestrated by a central brain.\n\n\n\n旨在呈現 Phase 間的高階協作與狀態轉移。\n\n\n\n\n\n\ngraph LR\n    User([👩‍💻 人類意圖]) --&gt; P1[[Phase 1: Discovery]]\n    P1 --&gt; P2[[Phase 2: Tech Design]]\n    P2 --&gt; P3[[Phase 3: Execution]]\n    P3 --&gt; P4[[Phase 4: Validation]]\n    P4 -- \"反饋/維修\" --&gt; P3\n    P4 -- \"完成\" --&gt; Done((🚀 發布))\n    \n    style P1 fill:#e3f2fd,stroke:#1565c0,color:#0d47a1\n    style P2 fill:#fffde7,stroke:#fbc02d,color:#f57f17\n    style P3 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c\n    style P4 fill:#ffebee,stroke:#c62828,color:#b71c1c\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ngraph TD\n    PR[Pull Request] --&gt; CI{CI 門戶檢測}\n    CI -- 通過 --&gt; Merge[合併與前進]\n    CI -- 失敗 --&gt; Repair[自我修復路徑]\n    Repair --&gt; Worker[重回 Phase 3 執行層]\n    \n    style Merge fill:#c8e6c9,stroke:#2e7d32\n    style Repair fill:#ffccbc,stroke:#d84315\n\n\n\n\n\n\n\n\n\n\n\n\nTip進度自動化監控\n\n\n\n以下區塊會自動搜尋專案中的 tracker.json 並呈現在地進度。\n\n\nimport json\nimport os\nimport glob\n\ntracker_files = glob.glob(\".*/tracker.json\")\nif tracker_files:\n    tracker_path = tracker_files[0]\n    with open(tracker_path, 'r', encoding='utf-8') as f:\n        data = json.load(f)\n    print(f\"**Current Phase:** {data.get('current_phase', 'N/A')}\")\nelse:\n    print(\"&gt; ⚠️ No active tracker found. Factory is currently idle.\")\n\n\n\n\n\n\n\n將模糊的自然語言轉化為可執行的視覺與功能需求。\n\n\n\n\n\n\ngraph TD\n    Start([人類輸入]) --&gt; Orch{協作編程器}\n    Orch --&gt; ReqA[需求分析師]\n    ReqA --&gt; UI_Check{需要 UI?}\n    UI_Check -- 是 --&gt; VisD[視覺設計師]\n    UI_Check -- 否 --&gt; Arch[架構審查]\n    VisD --&gt; Arch\n    \n    subgraph SG1 [\"邊界：意圖對齊\"]\n        ReqA\n        VisD\n    end\n    style SG1 fill:#ffffff,stroke:#333,stroke-dasharray: 5 5\n\n\n\n\n\n\n\n\n\n\n確保架構內聚、建立 ADR 並進行大模型腦力模擬。\n\n\n\n\n\n\ngraph TD\n    In[需求藍圖] --&gt; Arch[架構審查員]\n    Arch --&gt; Sim[大模型腦力模擬]\n    Sim -- 風險評估 --&gt; Sim\n    Sim -- 簽署通過 --&gt; Out([技術決策檔])\n    \n    style Sim fill:#fff9c4,stroke:#fbc02d\n\n\n\n\n\n\n\n\n\n\n原子化處理代碼變動，並透過 tracker.json 保持狀態追蹤。\n\n\n\n\n\n\ngraph TD\n    Dec[技術決策] --&gt; Iter[工廠迭代器]\n    Iter --&gt; Track[(tracker.json)]\n    Track --&gt; Worker[執行工人 Agents]\n    Worker -- 提交 PR --&gt; CI[CI 門戶]\n    \n    style Track fill:#f5f5f5,stroke:#9e9e9e\n    style Worker fill:#e1f5fe,stroke:#01579b\n\n\n\n\n\n\n\n\n[!TIP] Literate Strategy: By using .qmd, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint to be visible to the Orchestrator.",
+    "text": "任何進入本工廠的 Worker Agent 在每次甦醒時，必須首先閱讀這份憲法。\n\n\nWorker 的生命週期極其簡潔：\n\n\n\n\n\ngraph LR\n    Receive[接收任務包] --&gt; Load[載入規格]\n    Load --&gt; Impl[實作功能]\n    Impl --&gt; Validate[驗證品質]\n    Validate --&gt; PR[提交 PR]\n    PR --&gt; Done((結束))\n    \n    style Receive fill:#fff3e0,stroke:#e65100\n    style Done fill:#c8e6c9,stroke:#2e7d32\n\n\n\n\n\n\n\nWorker 不需要： 尋找任務、管理分支鎖、判斷 Phase 推進、等待 CI/CD。 這些全部由 Task Dispatcher 處理。\n\n\n\n\n\n\n路徑審計 (Allowed Paths Audit) 所有變更必須精確落在 allowed_paths 內，嚴禁修改框架底層，防止 Scope Creep。\n八大破壞性邊界測試 (Edge Case Checklist) PR 提交前必須涵蓋：\n\nNull/Undefined 與空值防呆。\n錯誤路徑恢復 (Timeout, DB Down)。\n併發競爭 (Race Conditions)。\n\n自我修復 (Self-Healing) 被授權在不偏離核心功能的前提下，自主修正環境問題，並將紀錄寫入 CHANGELOG.md。\n\n\n\n\n\n為了防止 AI 陷入幻覺，憲法下了嚴厲的軍令狀： * 檔案長度控制：盡量保持在 200~300 行以內。 * 反模式禁令：絕對禁止寫出「全能上帝物件 (God Object)」。 * 壞了就換 (Disposable Components)：如果模組 Bug 難以修補，直接刪除重寫。",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "🏭 Factory Workflow Blueprint"
+      "👷 工人憲法與行事準則"
     ]
   },
   {
-    "objectID": "docs/FACTORY_WORKFLOW.html#core-architecture-decoupling-orchestration",
-    "href": "docs/FACTORY_WORKFLOW.html#core-architecture-decoupling-orchestration",
-    "title": "🏭 Factory Workflow Blueprint",
+    "objectID": "docs/worker-protocol.html#agent_protocol.md-工人憲法",
+    "href": "docs/worker-protocol.html#agent_protocol.md-工人憲法",
+    "title": "👷 工人憲法與行事準則",
     "section": "",
-    "text": "The factory is composed of five specialized autonomous components orchestrated by a central brain.\n\n\n\n旨在呈現 Phase 間的高階協作與狀態轉移。\n\n\n\n\n\n\ngraph LR\n    User([👩‍💻 人類意圖]) --&gt; P1[[Phase 1: Discovery]]\n    P1 --&gt; P2[[Phase 2: Tech Design]]\n    P2 --&gt; P3[[Phase 3: Execution]]\n    P3 --&gt; P4[[Phase 4: Validation]]\n    P4 -- \"反饋/維修\" --&gt; P3\n    P4 -- \"完成\" --&gt; Done((🚀 發布))\n    \n    style P1 fill:#e3f2fd,stroke:#1565c0,color:#0d47a1\n    style P2 fill:#fffde7,stroke:#fbc02d,color:#f57f17\n    style P3 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c\n    style P4 fill:#ffebee,stroke:#c62828,color:#b71c1c",
+    "text": "任何進入本工廠的 Worker Agent 在每次甦醒時，必須首先閱讀這份憲法。\n\n\nWorker 的生命週期極其簡潔：\n\n\n\n\n\ngraph LR\n    Receive[接收任務包] --&gt; Load[載入規格]\n    Load --&gt; Impl[實作功能]\n    Impl --&gt; Validate[驗證品質]\n    Validate --&gt; PR[提交 PR]\n    PR --&gt; Done((結束))\n    \n    style Receive fill:#fff3e0,stroke:#e65100\n    style Done fill:#c8e6c9,stroke:#2e7d32\n\n\n\n\n\n\n\nWorker 不需要： 尋找任務、管理分支鎖、判斷 Phase 推進、等待 CI/CD。 這些全部由 Task Dispatcher 處理。\n\n\n\n\n\n\n路徑審計 (Allowed Paths Audit) 所有變更必須精確落在 allowed_paths 內，嚴禁修改框架底層，防止 Scope Creep。\n八大破壞性邊界測試 (Edge Case Checklist) PR 提交前必須涵蓋：\n\nNull/Undefined 與空值防呆。\n錯誤路徑恢復 (Timeout, DB Down)。\n併發競爭 (Race Conditions)。\n\n自我修復 (Self-Healing) 被授權在不偏離核心功能的前提下，自主修正環境問題，並將紀錄寫入 CHANGELOG.md。\n\n\n\n\n\n為了防止 AI 陷入幻覺，憲法下了嚴厲的軍令狀： * 檔案長度控制：盡量保持在 200~300 行以內。 * 反模式禁令：絕對禁止寫出「全能上帝物件 (God Object)」。 * 壞了就換 (Disposable Components)：如果模組 Bug 難以修補，直接刪除重寫。",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "🏭 Factory Workflow Blueprint"
+      "👷 工人憲法與行事準則"
     ]
   },
   {
-    "objectID": "docs/FACTORY_WORKFLOW.html#live-factory-status-experimental",
-    "href": "docs/FACTORY_WORKFLOW.html#live-factory-status-experimental",
-    "title": "🏭 Factory Workflow Blueprint",
+    "objectID": "docs/extensions.html",
+    "href": "docs/extensions.html",
+    "title": "🔌 擴充與外掛指南",
     "section": "",
-    "text": "graph TD\n    PR[Pull Request] --&gt; CI{CI 門戶檢測}\n    CI -- 通過 --&gt; Merge[合併與前進]\n    CI -- 失敗 --&gt; Repair[自我修復路徑]\n    Repair --&gt; Worker[重回 Phase 3 執行層]\n    \n    style Merge fill:#c8e6c9,stroke:#2e7d32\n    style Repair fill:#ffccbc,stroke:#d84315\n\n\n\n\n\n\n\n\n\n\n\n\nTip進度自動化監控\n\n\n\n以下區塊會自動搜尋專案中的 tracker.json 並呈現在地進度。\n\n\nimport json\nimport os\nimport glob\n\ntracker_files = glob.glob(\".*/tracker.json\")\nif tracker_files:\n    tracker_path = tracker_files[0]\n    with open(tracker_path, 'r', encoding='utf-8') as f:\n        data = json.load(f)\n    print(f\"**Current Phase:** {data.get('current_phase', 'N/A')}\")\nelse:\n    print(\"&gt; ⚠️ No active tracker found. Factory is currently idle.\")",
+    "text": "無人值守軟體工廠框架的設計哲學是 「插頭與插座」。架構師只負責把插座 (tracker.json) 做好，至於是哪一個廠牌的機器人插進來，框架並不在意。\n\n\n如果您擁有內部的 LLM 工具（例如 CorpBot），您可以輕鬆將其接入：\n\n建立腳本：在 .agents/extensions/ 中新增膠水腳本 corpbot-trigger.py。\n實作介面邏輯：該腳本只需要做一件事：觸發 CorpBot 的 API 或 CLI。\n動態注入：在 factory-iterator 建廠時，指定工人名稱即可。\n\n這就是 Plug and Play 帶來的強大擴充性，確保框架能適應任何新一代的 Developer Agents。",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "🏭 Factory Workflow Blueprint"
+      "🔌 擴充與外掛指南"
     ]
   },
   {
-    "objectID": "docs/FACTORY_WORKFLOW.html#戰術細節與角色定義",
-    "href": "docs/FACTORY_WORKFLOW.html#戰術細節與角色定義",
-    "title": "🏭 Factory Workflow Blueprint",
+    "objectID": "docs/extensions.html#解耦的藝術.agentsextensions",
+    "href": "docs/extensions.html#解耦的藝術.agentsextensions",
+    "title": "🔌 擴充與外掛指南",
     "section": "",
-    "text": "將模糊的自然語言轉化為可執行的視覺與功能需求。\n\n\n\n\n\n\ngraph TD\n    Start([人類輸入]) --&gt; Orch{協作編程器}\n    Orch --&gt; ReqA[需求分析師]\n    ReqA --&gt; UI_Check{需要 UI?}\n    UI_Check -- 是 --&gt; VisD[視覺設計師]\n    UI_Check -- 否 --&gt; Arch[架構審查]\n    VisD --&gt; Arch\n    \n    subgraph SG1 [\"邊界：意圖對齊\"]\n        ReqA\n        VisD\n    end\n    style SG1 fill:#ffffff,stroke:#333,stroke-dasharray: 5 5\n\n\n\n\n\n\n\n\n\n\n確保架構內聚、建立 ADR 並進行大模型腦力模擬。\n\n\n\n\n\n\ngraph TD\n    In[需求藍圖] --&gt; Arch[架構審查員]\n    Arch --&gt; Sim[大模型腦力模擬]\n    Sim -- 風險評估 --&gt; Sim\n    Sim -- 簽署通過 --&gt; Out([技術決策檔])\n    \n    style Sim fill:#fff9c4,stroke:#fbc02d\n\n\n\n\n\n\n\n\n\n\n原子化處理代碼變動，並透過 tracker.json 保持狀態追蹤。\n\n\n\n\n\n\ngraph TD\n    Dec[技術決策] --&gt; Iter[工廠迭代器]\n    Iter --&gt; Track[(tracker.json)]\n    Track --&gt; Worker[執行工人 Agents]\n    Worker -- 提交 PR --&gt; CI[CI 門戶]\n    \n    style Track fill:#f5f5f5,stroke:#9e9e9e\n    style Worker fill:#e1f5fe,stroke:#01579b\n\n\n\n\n\n\n\n\n[!TIP] Literate Strategy: By using .qmd, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint to be visible to the Orchestrator.",
+    "text": "無人值守軟體工廠框架的設計哲學是 「插頭與插座」。架構師只負責把插座 (tracker.json) 做好，至於是哪一個廠牌的機器人插進來，框架並不在意。\n\n\n如果您擁有內部的 LLM 工具（例如 CorpBot），您可以輕鬆將其接入：\n\n建立腳本：在 .agents/extensions/ 中新增膠水腳本 corpbot-trigger.py。\n實作介面邏輯：該腳本只需要做一件事：觸發 CorpBot 的 API 或 CLI。\n動態注入：在 factory-iterator 建廠時，指定工人名稱即可。\n\n這就是 Plug and Play 帶來的強大擴充性，確保框架能適應任何新一代的 Developer Agents。",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "🏭 Factory Workflow Blueprint"
+      "🔌 擴充與外掛指南"
     ]
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html",
+    "href": "docs/ENVIRONMENT_FIX.html",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "當 Worker Agent 在 Step 4 遇到環境問題時，請優先參考本手冊進行修復。\n\n\n\nError: Connection Refused 或 Timeout。\nFix:\n\n檢查是否忘記啟動 Docker 容器。\n嘗試使用 Mock 模式 (${API_KEY:mock}) 繞過。\n檢查 application.yml 或 env 中的端點設定是否正確。\n\n\n\n\n\n\nError: Address already in use。\nFix:\n\n尋找占用埠號的行程並終止。\n在 application.yml 中動態切換埠號 (例如 ${SERVER_PORT:0})。\n\n\n\n\n\n\nError: Migration checksum failed。\nFix:\n\n嚴禁修改已合併的遷移文件。\n建立新的修正遷移檔案。\n\nError: DB Connection Refused。\nFix:\n\n確認 H2 In-memory 模式是否遺失 Context。\n檢查資料庫密鑰是否存在於環境變數。\n\n\n\n\n\n\nError: Audit failed: Modified files outside allowed_paths。\nFix:\n\n檢查是否無意中修改了不相關檔案。\n若修改是必要的，請在 PR 描述中說明理由，或請求人類更新 tracker.json 的 allowed_paths 分配。\n\nError: Auto-merge failed (403 Forbidden)。\nFix:\n\n確認 PAT_TOKEN 是否已正確設定於 Repo Secrets。\n確認該 Token 具備 repo 與 workflow 讀寫權限。\n檢查 PR 是否具備 auto-merge 標籤 (Label) 而非僅是 Body 文字。"
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html#網路與-api-錯誤",
+    "href": "docs/ENVIRONMENT_FIX.html#網路與-api-錯誤",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "Error: Connection Refused 或 Timeout。\nFix:\n\n檢查是否忘記啟動 Docker 容器。\n嘗試使用 Mock 模式 (${API_KEY:mock}) 繞過。\n檢查 application.yml 或 env 中的端點設定是否正確。"
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html#埠號衝突-port-conflict",
+    "href": "docs/ENVIRONMENT_FIX.html#埠號衝突-port-conflict",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "Error: Address already in use。\nFix:\n\n尋找占用埠號的行程並終止。\n在 application.yml 中動態切換埠號 (例如 ${SERVER_PORT:0})。"
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html#資料庫與遷移錯誤",
+    "href": "docs/ENVIRONMENT_FIX.html#資料庫與遷移錯誤",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "Error: Migration checksum failed。\nFix:\n\n嚴禁修改已合併的遷移文件。\n建立新的修正遷移檔案。\n\nError: DB Connection Refused。\nFix:\n\n確認 H2 In-memory 模式是否遺失 Context。\n檢查資料庫密鑰是否存在於環境變數。"
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html#git-工作流與路徑審計-refined",
+    "href": "docs/ENVIRONMENT_FIX.html#git-工作流與路徑審計-refined",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "Error: Audit failed: Modified files outside allowed_paths。\nFix:\n\n檢查是否無意中修改了不相關檔案。\n若修改是必要的，請在 PR 描述中說明理由，或請求人類更新 tracker.json 的 allowed_paths 分配。\n\nError: Auto-merge failed (403 Forbidden)。\nFix:\n\n確認 PAT_TOKEN 是否已正確設定於 Repo Secrets。\n確認該 Token 具備 repo 與 workflow 讀寫權限。\n檢查 PR 是否具備 auto-merge 標籤 (Label) 而非僅是 Body 文字。"
+  },
+  {
+    "objectID": "CHANGELOG.html",
+    "href": "CHANGELOG.html",
+    "title": "Changelog",
+    "section": "",
+    "text": "All notable changes to this project will be documented in this file.\n\n\n\nInitiator 雙腦架構重構：將架構決策 (Architect) 與任務規劃 (Planner) 物理分離。\nClaude Agent Skills 規範化：遷移至官方 skills/ 巢狀包結構，支援漸進式揭露。\nFactory 2.0 機械約束：引入 allowed_paths 路徑審計機制，防止 AI 程式碼漂移。\nCI 安全強化：auto-merge.yml 升級為 PAT_TOKEN 並加入初期 Scaffolding Guard。\n冷啟動自動化：Initiator 現在會自動初始化 docs/ 索引與占位文件。\n環境自愈：建立 docs/ENVIRONMENT_FIX.md 提供常見錯誤修復指引。\n死鎖自愈系統：實作 Branch-as-Lock 互斥鎖，並引進 Cleanup Arbitrator (-cleanup.yml) 統一解決 CI 失敗死鎖與 Phantom Branch。\nSpec 1:1 映射：重新定義 Planner Spec，實作一任務一 YAML 映射 (specs/tasks/)，徹底降低 Worker 代碼漂移風險。\n事務安全 (Transaction Consistency)：強化 Arbitrator Git 容錯 (Pull-before-Commit)，確保 Push 主線成功後才允許清理遠端分支資源。\n\n\n\n\n\nInitiated project boilerplate and AI Agent protocols. …"
+  },
+  {
+    "objectID": "CHANGELOG.html#unreleased",
+    "href": "CHANGELOG.html#unreleased",
+    "title": "Changelog",
+    "section": "",
+    "text": "Initiator 雙腦架構重構：將架構決策 (Architect) 與任務規劃 (Planner) 物理分離。\nClaude Agent Skills 規範化：遷移至官方 skills/ 巢狀包結構，支援漸進式揭露。\nFactory 2.0 機械約束：引入 allowed_paths 路徑審計機制，防止 AI 程式碼漂移。\nCI 安全強化：auto-merge.yml 升級為 PAT_TOKEN 並加入初期 Scaffolding Guard。\n冷啟動自動化：Initiator 現在會自動初始化 docs/ 索引與占位文件。\n環境自愈：建立 docs/ENVIRONMENT_FIX.md 提供常見錯誤修復指引。\n死鎖自愈系統：實作 Branch-as-Lock 互斥鎖，並引進 Cleanup Arbitrator (-cleanup.yml) 統一解決 CI 失敗死鎖與 Phantom Branch。\nSpec 1:1 映射：重新定義 Planner Spec，實作一任務一 YAML 映射 (specs/tasks/)，徹底降低 Worker 代碼漂移風險。\n事務安全 (Transaction Consistency)：強化 Arbitrator Git 容錯 (Pull-before-Commit)，確保 Push 主線成功後才允許清理遠端分支資源。"
+  },
+  {
+    "objectID": "CHANGELOG.html#section",
+    "href": "CHANGELOG.html#section",
+    "title": "Changelog",
+    "section": "",
+    "text": "Initiated project boilerplate and AI Agent protocols. …"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "🏭 Autonomous Software Factory",
+    "section": "",
+    "text": "核心願景：將 LLM 從「一問一答的程式碼生成器」，提升為「遵守標準作業程序 (SOP)、具備自我修復能力、穩健推進千行程式碼專案的企業級自動化產線」。\n\n\n\n為了防止大型 AI 專案常見的幻覺崩潰 (Hallucination) 與 非同步覆寫死鎖 (Race Conditions)，本工廠將職責嚴格拆分為四個獨立組件：\n\n\n\n定義 Agent 甦醒後「只能做的幾件事」。強制循序漸進，授權自我修復 (Self-Healing)。\n\n\n\n透過 tracker.json 與 DAG 依賴，精確控制任務先後順序。Git Merge 才是唯一的真理。\n\n\n\n將模糊的需求轉為強型別的 AC。包含 💣 防爆地雷設計，明令禁止高風險行為。\n\n\n\nGitHub Actions 扮演無情裁判。測試不通過即退回 PR，保護主分支不受汙染。\n\n\n\n\n\n\n閱讀流程藍圖：瞭解 五大技能編排。\n啟動編排器：執行 factory-orchestrator 技能進行探索。\n查看技術細節：深入瞭解 Git 狀態機原理。\n\n\n\n💡 總結：這套架構是一套嚴格限制 LLM 行為的防護罩。透過純粹的狀態分離與 CI 驅動進度，將生成式 AI 馴化為高效的工程師軍隊。"
+  },
+  {
+    "objectID": "index.html#四大支柱-the-4-pillars",
+    "href": "index.html#四大支柱-the-4-pillars",
+    "title": "🏭 Autonomous Software Factory",
+    "section": "",
+    "text": "為了防止大型 AI 專案常見的幻覺崩潰 (Hallucination) 與 非同步覆寫死鎖 (Race Conditions)，本工廠將職責嚴格拆分為四個獨立組件：\n\n\n\n定義 Agent 甦醒後「只能做的幾件事」。強制循序漸進，授權自我修復 (Self-Healing)。\n\n\n\n透過 tracker.json 與 DAG 依賴，精確控制任務先後順序。Git Merge 才是唯一的真理。\n\n\n\n將模糊的需求轉為強型別的 AC。包含 💣 防爆地雷設計，明令禁止高風險行為。\n\n\n\nGitHub Actions 扮演無情裁判。測試不通過即退回 PR，保護主分支不受汙染。"
+  },
+  {
+    "objectID": "index.html#快速開始",
+    "href": "index.html#快速開始",
+    "title": "🏭 Autonomous Software Factory",
+    "section": "",
+    "text": "閱讀流程藍圖：瞭解 五大技能編排。\n啟動編排器：執行 factory-orchestrator 技能進行探索。\n查看技術細節：深入瞭解 Git 狀態機原理。\n\n\n\n💡 總結：這套架構是一套嚴格限制 LLM 行為的防護罩。透過純粹的狀態分離與 CI 驅動進度，將生成式 AI 馴化為高效的工程師軍隊。"
   },
   {
     "objectID": "docs/principles.html",
@@ -210,129 +287,99 @@
     ]
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "🏭 Autonomous Software Factory",
+    "objectID": "docs/FACTORY_WORKFLOW.html",
+    "href": "docs/FACTORY_WORKFLOW.html",
+    "title": "🏭 Factory Workflow Blueprint",
     "section": "",
-    "text": "核心願景：將 LLM 從「一問一答的程式碼生成器」，提升為「遵守標準作業程序 (SOP)、具備自我修復能力、穩健推進千行程式碼專案的企業級自動化產線」。\n\n\n\n為了防止大型 AI 專案常見的幻覺崩潰 (Hallucination) 與 非同步覆寫死鎖 (Race Conditions)，本工廠將職責嚴格拆分為四個獨立組件：\n\n\n\n定義 Agent 甦醒後「只能做的幾件事」。強制循序漸進，授權自我修復 (Self-Healing)。\n\n\n\n透過 tracker.json 與 DAG 依賴，精確控制任務先後順序。Git Merge 才是唯一的真理。\n\n\n\n將模糊的需求轉為強型別的 AC。包含 💣 防爆地雷設計，明令禁止高風險行為。\n\n\n\nGitHub Actions 扮演無情裁判。測試不通過即退回 PR，保護主分支不受汙染。\n\n\n\n\n\n\n閱讀流程藍圖：瞭解 五大技能編排。\n啟動編排器：執行 factory-orchestrator 技能進行探索。\n查看技術細節：深入瞭解 Git 狀態機原理。\n\n\n\n💡 總結：這套架構是一套嚴格限制 LLM 行為的防護罩。透過純粹的狀態分離與 CI 驅動進度，將生成式 AI 馴化為高效的工程師軍隊。"
-  },
-  {
-    "objectID": "index.html#四大支柱-the-4-pillars",
-    "href": "index.html#四大支柱-the-4-pillars",
-    "title": "🏭 Autonomous Software Factory",
-    "section": "",
-    "text": "為了防止大型 AI 專案常見的幻覺崩潰 (Hallucination) 與 非同步覆寫死鎖 (Race Conditions)，本工廠將職責嚴格拆分為四個獨立組件：\n\n\n\n定義 Agent 甦醒後「只能做的幾件事」。強制循序漸進，授權自我修復 (Self-Healing)。\n\n\n\n透過 tracker.json 與 DAG 依賴，精確控制任務先後順序。Git Merge 才是唯一的真理。\n\n\n\n將模糊的需求轉為強型別的 AC。包含 💣 防爆地雷設計，明令禁止高風險行為。\n\n\n\nGitHub Actions 扮演無情裁判。測試不通過即退回 PR，保護主分支不受汙染。"
-  },
-  {
-    "objectID": "index.html#快速開始",
-    "href": "index.html#快速開始",
-    "title": "🏭 Autonomous Software Factory",
-    "section": "",
-    "text": "閱讀流程藍圖：瞭解 五大技能編排。\n啟動編排器：執行 factory-orchestrator 技能進行探索。\n查看技術細節：深入瞭解 Git 狀態機原理。\n\n\n\n💡 總結：這套架構是一套嚴格限制 LLM 行為的防護罩。透過純粹的狀態分離與 CI 驅動進度，將生成式 AI 馴化為高效的工程師軍隊。"
-  },
-  {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "Changelog",
-    "section": "",
-    "text": "All notable changes to this project will be documented in this file.\n\n\n\nInitiator 雙腦架構重構：將架構決策 (Architect) 與任務規劃 (Planner) 物理分離。\nClaude Agent Skills 規範化：遷移至官方 skills/ 巢狀包結構，支援漸進式揭露。\nFactory 2.0 機械約束：引入 allowed_paths 路徑審計機制，防止 AI 程式碼漂移。\nCI 安全強化：auto-merge.yml 升級為 PAT_TOKEN 並加入初期 Scaffolding Guard。\n冷啟動自動化：Initiator 現在會自動初始化 docs/ 索引與占位文件。\n環境自愈：建立 docs/ENVIRONMENT_FIX.md 提供常見錯誤修復指引。\n死鎖自愈系統：實作 Branch-as-Lock 互斥鎖，並引進 Cleanup Arbitrator (-cleanup.yml) 統一解決 CI 失敗死鎖與 Phantom Branch。\nSpec 1:1 映射：重新定義 Planner Spec，實作一任務一 YAML 映射 (specs/tasks/)，徹底降低 Worker 代碼漂移風險。\n事務安全 (Transaction Consistency)：強化 Arbitrator Git 容錯 (Pull-before-Commit)，確保 Push 主線成功後才允許清理遠端分支資源。\n\n\n\n\n\nInitiated project boilerplate and AI Agent protocols. …"
-  },
-  {
-    "objectID": "CHANGELOG.html#unreleased",
-    "href": "CHANGELOG.html#unreleased",
-    "title": "Changelog",
-    "section": "",
-    "text": "Initiator 雙腦架構重構：將架構決策 (Architect) 與任務規劃 (Planner) 物理分離。\nClaude Agent Skills 規範化：遷移至官方 skills/ 巢狀包結構，支援漸進式揭露。\nFactory 2.0 機械約束：引入 allowed_paths 路徑審計機制，防止 AI 程式碼漂移。\nCI 安全強化：auto-merge.yml 升級為 PAT_TOKEN 並加入初期 Scaffolding Guard。\n冷啟動自動化：Initiator 現在會自動初始化 docs/ 索引與占位文件。\n環境自愈：建立 docs/ENVIRONMENT_FIX.md 提供常見錯誤修復指引。\n死鎖自愈系統：實作 Branch-as-Lock 互斥鎖，並引進 Cleanup Arbitrator (-cleanup.yml) 統一解決 CI 失敗死鎖與 Phantom Branch。\nSpec 1:1 映射：重新定義 Planner Spec，實作一任務一 YAML 映射 (specs/tasks/)，徹底降低 Worker 代碼漂移風險。\n事務安全 (Transaction Consistency)：強化 Arbitrator Git 容錯 (Pull-before-Commit)，確保 Push 主線成功後才允許清理遠端分支資源。"
-  },
-  {
-    "objectID": "CHANGELOG.html#section",
-    "href": "CHANGELOG.html#section",
-    "title": "Changelog",
-    "section": "",
-    "text": "Initiated project boilerplate and AI Agent protocols. …"
-  },
-  {
-    "objectID": "docs/ENVIRONMENT_FIX.html",
-    "href": "docs/ENVIRONMENT_FIX.html",
-    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
-    "section": "",
-    "text": "當 Worker Agent 在 Step 4 遇到環境問題時，請優先參考本手冊進行修復。\n\n\n\nError: Connection Refused 或 Timeout。\nFix:\n\n檢查是否忘記啟動 Docker 容器。\n嘗試使用 Mock 模式 (${API_KEY:mock}) 繞過。\n檢查 application.yml 或 env 中的端點設定是否正確。\n\n\n\n\n\n\nError: Address already in use。\nFix:\n\n尋找占用埠號的行程並終止。\n在 application.yml 中動態切換埠號 (例如 ${SERVER_PORT:0})。\n\n\n\n\n\n\nError: Migration checksum failed。\nFix:\n\n嚴禁修改已合併的遷移文件。\n建立新的修正遷移檔案。\n\nError: DB Connection Refused。\nFix:\n\n確認 H2 In-memory 模式是否遺失 Context。\n檢查資料庫密鑰是否存在於環境變數。\n\n\n\n\n\n\nError: Audit failed: Modified files outside allowed_paths。\nFix:\n\n檢查是否無意中修改了不相關檔案。\n若修改是必要的，請在 PR 描述中說明理由，或請求人類更新 tracker.json 的 allowed_paths 分配。\n\nError: Auto-merge failed (403 Forbidden)。\nFix:\n\n確認 PAT_TOKEN 是否已正確設定於 Repo Secrets。\n確認該 Token 具備 repo 與 workflow 讀寫權限。\n檢查 PR 是否具備 auto-merge 標籤 (Label) 而非僅是 Body 文字。"
-  },
-  {
-    "objectID": "docs/ENVIRONMENT_FIX.html#網路與-api-錯誤",
-    "href": "docs/ENVIRONMENT_FIX.html#網路與-api-錯誤",
-    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
-    "section": "",
-    "text": "Error: Connection Refused 或 Timeout。\nFix:\n\n檢查是否忘記啟動 Docker 容器。\n嘗試使用 Mock 模式 (${API_KEY:mock}) 繞過。\n檢查 application.yml 或 env 中的端點設定是否正確。"
-  },
-  {
-    "objectID": "docs/ENVIRONMENT_FIX.html#埠號衝突-port-conflict",
-    "href": "docs/ENVIRONMENT_FIX.html#埠號衝突-port-conflict",
-    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
-    "section": "",
-    "text": "Error: Address already in use。\nFix:\n\n尋找占用埠號的行程並終止。\n在 application.yml 中動態切換埠號 (例如 ${SERVER_PORT:0})。"
-  },
-  {
-    "objectID": "docs/ENVIRONMENT_FIX.html#資料庫與遷移錯誤",
-    "href": "docs/ENVIRONMENT_FIX.html#資料庫與遷移錯誤",
-    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
-    "section": "",
-    "text": "Error: Migration checksum failed。\nFix:\n\n嚴禁修改已合併的遷移文件。\n建立新的修正遷移檔案。\n\nError: DB Connection Refused。\nFix:\n\n確認 H2 In-memory 模式是否遺失 Context。\n檢查資料庫密鑰是否存在於環境變數。"
-  },
-  {
-    "objectID": "docs/ENVIRONMENT_FIX.html#git-工作流與路徑審計-refined",
-    "href": "docs/ENVIRONMENT_FIX.html#git-工作流與路徑審計-refined",
-    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
-    "section": "",
-    "text": "Error: Audit failed: Modified files outside allowed_paths。\nFix:\n\n檢查是否無意中修改了不相關檔案。\n若修改是必要的，請在 PR 描述中說明理由，或請求人類更新 tracker.json 的 allowed_paths 分配。\n\nError: Auto-merge failed (403 Forbidden)。\nFix:\n\n確認 PAT_TOKEN 是否已正確設定於 Repo Secrets。\n確認該 Token 具備 repo 與 workflow 讀寫權限。\n檢查 PR 是否具備 auto-merge 標籤 (Label) 而非僅是 Body 文字。"
-  },
-  {
-    "objectID": "docs/extensions.html",
-    "href": "docs/extensions.html",
-    "title": "🔌 擴充與外掛指南",
-    "section": "",
-    "text": "無人值守軟體工廠框架的設計哲學是 「插頭與插座」。架構師只負責把插座 (tracker.json) 做好，至於是哪一個廠牌的機器人插進來，框架並不在意。\n\n\n如果您擁有內部的 LLM 工具（例如 CorpBot），您可以輕鬆將其接入：\n\n建立腳本：在 .agents/extensions/ 中新增膠水腳本 corpbot-trigger.py。\n實作介面邏輯：該腳本只需要做一件事：觸發 CorpBot 的 API 或 CLI。\n動態注入：在 factory-iterator 建廠時，指定工人名稱即可。\n\n這就是 Plug and Play 帶來的強大擴充性，確保框架能適應任何新一代的 Developer Agents。",
+    "text": "[!NOTE] This is an Executable Document. It not only describes the workflow but also serves as the real-time monitoring interface for the factory.\n\n\n\nThe factory is composed of six specialized autonomous components orchestrated by a central brain.\n\n\n\n旨在呈現 6 個角色間的高階協作與狀態轉移。\n\n\n\n\n\n\ngraph LR\n    User([👩‍💻 人類意圖]) --&gt; P1[[Phase 1: Discovery]]\n    P1 --&gt; P2[[Phase 2: Tech Design]]\n    P2 --&gt; P3[[Phase 3: Task Specification]]\n    P3 --&gt; P4[[Phase 4: Dispatch]]\n    P4 --&gt; P5[[Phase 5: Execution]]\n    P5 --&gt; P6[[Phase 6: Validation]]\n    P6 -- \"反饋/重試\" --&gt; P5\n    P6 -- \"Phase 推進\" --&gt; P4\n    P6 -- \"完成\" --&gt; Done((🚀 發布))\n\n    style P1 fill:#e3f2fd,stroke:#1565c0,color:#0d47a1\n    style P2 fill:#fffde7,stroke:#fbc02d,color:#f57f17\n    style P3 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c\n    style P4 fill:#fff3e0,stroke:#e65100,color:#bf360c\n    style P5 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20\n    style P6 fill:#ffebee,stroke:#c62828,color:#b71c1c\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n將模糊的自然語言轉化為可執行的視覺與功能需求。\n\n\n\n\n\n\ngraph TD\n    Start([人類輸入]) --&gt; Orch{協作編程器}\n    Orch --&gt; ReqA[需求分析師]\n    ReqA --&gt; UI_Check{需要 UI?}\n    UI_Check -- 是 --&gt; VisD[視覺設計師]\n    UI_Check -- 否 --&gt; Arch[架構審查]\n    VisD --&gt; Arch\n\n\n\n\n\n\n\n\n\n\n確保架構內聚後，將需求拆解為模組化微型任務。\n\n\n\n\n\n\ngraph TD\n    In[需求藍圖] --&gt; Arch[架構審查員]\n    Arch --&gt; Sim[大模型腦力模擬]\n    Sim -- 簽署通過 --&gt; Iter[工廠迭代器]\n    Iter --&gt; Specs[(specs/*.yml)]\n    Iter --&gt; Track[(tracker.json)]\n\n    style Sim fill:#fff9c4,stroke:#fbc02d\n    style Specs fill:#f5f5f5,stroke:#9e9e9e\n\n\n\n\n\n\n\n\n\n\nTask Dispatcher 專職調度，Worker 純粹實作，CI/CD 裁決結果。\n\n\n\n\n\n\ngraph TD\n    Disp[任務調度官] --&gt; Lock{互斥鎖檢查}\n    Lock -- 可領取 --&gt; Pack[組裝任務包]\n    Lock -- 已鎖定 --&gt; Skip[跳過]\n    Pack --&gt; Worker[執行工人]\n    Worker -- 提交 PR --&gt; CI{CI 門戶}\n    CI -- 通過 --&gt; Merge[合併]\n    CI -- 失敗 --&gt; Retry{可重試?}\n    Retry -- 是 --&gt; Disp\n    Retry -- 否 --&gt; Human([通知人類])\n    Merge --&gt; Phase{Phase 完成?}\n    Phase -- 是 --&gt; Disp\n    Phase -- 全部完成 --&gt; Done((🚀 發布))\n\n    style Disp fill:#fff3e0,stroke:#e65100\n    style Worker fill:#e8f5e9,stroke:#2e7d32\n    style Merge fill:#c8e6c9,stroke:#2e7d32\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip進度自動化監控\n\n\n\n以下區塊會自動搜尋專案中的 tracker.json 並呈現即時進度。\n\n\nimport json\nimport os\nimport glob\n\ntracker_files = glob.glob(\".*/tracker.json\")\nif tracker_files:\n    tracker_path = tracker_files[0]\n    with open(tracker_path, 'r', encoding='utf-8') as f:\n        data = json.load(f)\n    print(f\"**Current Phase:** {data.get('current_phase', 'N/A')}\")\nelse:\n    print(\"&gt; ⚠️ No active tracker found. Factory is currently idle.\")\n\n\n\n\n\n\n\n#\n角色\n職責\nSkill\n\n\n\n\n1\nRequirements Analyst\n意圖分類與需求收集\nrequirements-analyst\n\n\n2\nVisual Designer\n(可選) 設計系統與視覺規格\nvisual-designer\n\n\n3\nArchitect Reviewer\n技術選型與沙盤推演\narchitect-reviewer\n\n\n4\nFactory Iterator\n任務拆解與規格產出\nfactory-iterator\n\n\n5\nTask Dispatcher\n任務調度、互斥鎖、Phase 推進\ntask-dispatcher\n\n\n6\nWorker (AGENT_PROTOCOL)\n純粹實作、驗證、提交 PR\nco-worker\n\n\n\n\n\n[!TIP] Literate Strategy: By using .qmd, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint.",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "🔌 擴充與外掛指南"
+      "🏭 Factory Workflow Blueprint"
     ]
   },
   {
-    "objectID": "docs/extensions.html#解耦的藝術.agentsextensions",
-    "href": "docs/extensions.html#解耦的藝術.agentsextensions",
-    "title": "🔌 擴充與外掛指南",
+    "objectID": "docs/FACTORY_WORKFLOW.html#core-architecture-6-role-decoupled-pipeline",
+    "href": "docs/FACTORY_WORKFLOW.html#core-architecture-6-role-decoupled-pipeline",
+    "title": "🏭 Factory Workflow Blueprint",
     "section": "",
-    "text": "無人值守軟體工廠框架的設計哲學是 「插頭與插座」。架構師只負責把插座 (tracker.json) 做好，至於是哪一個廠牌的機器人插進來，框架並不在意。\n\n\n如果您擁有內部的 LLM 工具（例如 CorpBot），您可以輕鬆將其接入：\n\n建立腳本：在 .agents/extensions/ 中新增膠水腳本 corpbot-trigger.py。\n實作介面邏輯：該腳本只需要做一件事：觸發 CorpBot 的 API 或 CLI。\n動態注入：在 factory-iterator 建廠時，指定工人名稱即可。\n\n這就是 Plug and Play 帶來的強大擴充性，確保框架能適應任何新一代的 Developer Agents。",
+    "text": "The factory is composed of six specialized autonomous components orchestrated by a central brain.\n\n\n\n旨在呈現 6 個角色間的高階協作與狀態轉移。\n\n\n\n\n\n\ngraph LR\n    User([👩‍💻 人類意圖]) --&gt; P1[[Phase 1: Discovery]]\n    P1 --&gt; P2[[Phase 2: Tech Design]]\n    P2 --&gt; P3[[Phase 3: Task Specification]]\n    P3 --&gt; P4[[Phase 4: Dispatch]]\n    P4 --&gt; P5[[Phase 5: Execution]]\n    P5 --&gt; P6[[Phase 6: Validation]]\n    P6 -- \"反饋/重試\" --&gt; P5\n    P6 -- \"Phase 推進\" --&gt; P4\n    P6 -- \"完成\" --&gt; Done((🚀 發布))\n\n    style P1 fill:#e3f2fd,stroke:#1565c0,color:#0d47a1\n    style P2 fill:#fffde7,stroke:#fbc02d,color:#f57f17\n    style P3 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c\n    style P4 fill:#fff3e0,stroke:#e65100,color:#bf360c\n    style P5 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20\n    style P6 fill:#ffebee,stroke:#c62828,color:#b71c1c",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "🔌 擴充與外掛指南"
+      "🏭 Factory Workflow Blueprint"
     ]
   },
   {
-    "objectID": "docs/worker-protocol.html",
-    "href": "docs/worker-protocol.html",
-    "title": "👷 工人憲法與行事準則",
+    "objectID": "docs/FACTORY_WORKFLOW.html#戰術拆解各階段詳細邏輯",
+    "href": "docs/FACTORY_WORKFLOW.html#戰術拆解各階段詳細邏輯",
+    "title": "🏭 Factory Workflow Blueprint",
     "section": "",
-    "text": "任何進入本工廠的 Worker Agent 在每次甦醒時，必須首先閱讀這份憲法。\n\n\n\n防撞車機制 (Mutex Lock via Git) 在開始實作前，必須檢查遠端是否存在任務分支。這完美解決了分散式開發的死鎖。\n八大破壞性邊界測試 (Edge Case Checklist) 我們強制要求 PR 提交前必須涵蓋：\n\nNull/Undefined 與空值防呆。\n錯誤路徑恢復 (Timeout, DB Down)。\n併發競爭 (Race Conditions)。\n\n路徑審計 (Allowed Paths Audit) 所有變更必須精確落在 allowed_paths 內，嚴禁單一任務偷偷修改框架底層，防止 Scope Creep。\n\n\n\n\n\n為了防止 AI 陷入幻覺，憲法下了嚴厲的軍令狀： * 檔案長度控制：盡量保持在 200~300 行以內。 * 反模式禁令：絕對禁止寫出「全能上帝物件 (God Object)」。 * 壞了就換 (Disposable Components)：如果模組 Bug 難以修補，直接刪除重寫，嚴禁疊床架屋。",
+    "text": "將模糊的自然語言轉化為可執行的視覺與功能需求。\n\n\n\n\n\n\ngraph TD\n    Start([人類輸入]) --&gt; Orch{協作編程器}\n    Orch --&gt; ReqA[需求分析師]\n    ReqA --&gt; UI_Check{需要 UI?}\n    UI_Check -- 是 --&gt; VisD[視覺設計師]\n    UI_Check -- 否 --&gt; Arch[架構審查]\n    VisD --&gt; Arch\n\n\n\n\n\n\n\n\n\n\n確保架構內聚後，將需求拆解為模組化微型任務。\n\n\n\n\n\n\ngraph TD\n    In[需求藍圖] --&gt; Arch[架構審查員]\n    Arch --&gt; Sim[大模型腦力模擬]\n    Sim -- 簽署通過 --&gt; Iter[工廠迭代器]\n    Iter --&gt; Specs[(specs/*.yml)]\n    Iter --&gt; Track[(tracker.json)]\n\n    style Sim fill:#fff9c4,stroke:#fbc02d\n    style Specs fill:#f5f5f5,stroke:#9e9e9e\n\n\n\n\n\n\n\n\n\n\nTask Dispatcher 專職調度，Worker 純粹實作，CI/CD 裁決結果。\n\n\n\n\n\n\ngraph TD\n    Disp[任務調度官] --&gt; Lock{互斥鎖檢查}\n    Lock -- 可領取 --&gt; Pack[組裝任務包]\n    Lock -- 已鎖定 --&gt; Skip[跳過]\n    Pack --&gt; Worker[執行工人]\n    Worker -- 提交 PR --&gt; CI{CI 門戶}\n    CI -- 通過 --&gt; Merge[合併]\n    CI -- 失敗 --&gt; Retry{可重試?}\n    Retry -- 是 --&gt; Disp\n    Retry -- 否 --&gt; Human([通知人類])\n    Merge --&gt; Phase{Phase 完成?}\n    Phase -- 是 --&gt; Disp\n    Phase -- 全部完成 --&gt; Done((🚀 發布))\n\n    style Disp fill:#fff3e0,stroke:#e65100\n    style Worker fill:#e8f5e9,stroke:#2e7d32\n    style Merge fill:#c8e6c9,stroke:#2e7d32",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "👷 工人憲法與行事準則"
+      "🏭 Factory Workflow Blueprint"
     ]
   },
   {
-    "objectID": "docs/worker-protocol.html#agent_protocol.md-工人憲法",
-    "href": "docs/worker-protocol.html#agent_protocol.md-工人憲法",
-    "title": "👷 工人憲法與行事準則",
+    "objectID": "docs/FACTORY_WORKFLOW.html#live-factory-status-experimental",
+    "href": "docs/FACTORY_WORKFLOW.html#live-factory-status-experimental",
+    "title": "🏭 Factory Workflow Blueprint",
     "section": "",
-    "text": "任何進入本工廠的 Worker Agent 在每次甦醒時，必須首先閱讀這份憲法。\n\n\n\n防撞車機制 (Mutex Lock via Git) 在開始實作前，必須檢查遠端是否存在任務分支。這完美解決了分散式開發的死鎖。\n八大破壞性邊界測試 (Edge Case Checklist) 我們強制要求 PR 提交前必須涵蓋：\n\nNull/Undefined 與空值防呆。\n錯誤路徑恢復 (Timeout, DB Down)。\n併發競爭 (Race Conditions)。\n\n路徑審計 (Allowed Paths Audit) 所有變更必須精確落在 allowed_paths 內，嚴禁單一任務偷偷修改框架底層，防止 Scope Creep。\n\n\n\n\n\n為了防止 AI 陷入幻覺，憲法下了嚴厲的軍令狀： * 檔案長度控制：盡量保持在 200~300 行以內。 * 反模式禁令：絕對禁止寫出「全能上帝物件 (God Object)」。 * 壞了就換 (Disposable Components)：如果模組 Bug 難以修補，直接刪除重寫，嚴禁疊床架屋。",
+    "text": "Tip進度自動化監控\n\n\n\n以下區塊會自動搜尋專案中的 tracker.json 並呈現即時進度。\n\n\nimport json\nimport os\nimport glob\n\ntracker_files = glob.glob(\".*/tracker.json\")\nif tracker_files:\n    tracker_path = tracker_files[0]\n    with open(tracker_path, 'r', encoding='utf-8') as f:\n        data = json.load(f)\n    print(f\"**Current Phase:** {data.get('current_phase', 'N/A')}\")\nelse:\n    print(\"&gt; ⚠️ No active tracker found. Factory is currently idle.\")",
     "crumbs": [
       "🏠 首頁",
       "📖 技術手冊",
-      "👷 工人憲法與行事準則"
+      "🏭 Factory Workflow Blueprint"
     ]
+  },
+  {
+    "objectID": "docs/FACTORY_WORKFLOW.html#角色定義-6-role-pipeline",
+    "href": "docs/FACTORY_WORKFLOW.html#角色定義-6-role-pipeline",
+    "title": "🏭 Factory Workflow Blueprint",
+    "section": "",
+    "text": "#\n角色\n職責\nSkill\n\n\n\n\n1\nRequirements Analyst\n意圖分類與需求收集\nrequirements-analyst\n\n\n2\nVisual Designer\n(可選) 設計系統與視覺規格\nvisual-designer\n\n\n3\nArchitect Reviewer\n技術選型與沙盤推演\narchitect-reviewer\n\n\n4\nFactory Iterator\n任務拆解與規格產出\nfactory-iterator\n\n\n5\nTask Dispatcher\n任務調度、互斥鎖、Phase 推進\ntask-dispatcher\n\n\n6\nWorker (AGENT_PROTOCOL)\n純粹實作、驗證、提交 PR\nco-worker\n\n\n\n\n\n[!TIP] Literate Strategy: By using .qmd, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint.",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🏭 Factory Workflow Blueprint"
+    ]
+  },
+  {
+    "objectID": "skills/task-dispatcher/SKILL.html",
+    "href": "skills/task-dispatcher/SKILL.html",
+    "title": "🎯 Task Dispatcher (任務調度官)",
+    "section": "",
+    "text": "您是工廠的領班。您的職責是將 factory-iterator 產出的任務規格，安全、有序地交到 Worker 手上，並在 Worker 完成後收割結果、推進進度。\n\n核心定位：您不產出規格（那是 Iterator 的事），也不實作功能（那是 Worker 的事）。 您只做一件事：確保正確的任務，在正確的時機，交到正確的工人手上。\n\n\n\n\n\n當前模式：單一 Worker 串行迭代 (Single Worker Sequential)\n分散式多 Worker 並行調度被顯式延遲 (DEFERRED)。 當前所有任務按 tracker.json 中的順序，逐一串行分配給單一 Worker。 未來擴充多 Worker 時，變更將集中在本 Skill 內，其他角色不受影響。\n\n\n\n\n\n\n\n\n讀取 tracker.json：取得當前 Phase 與所有任務的狀態。\n健康檢查：\n\n若任務的 attempts &gt;= 5，標記為「持續性死鎖」，跳過並通知人類介入。\n若所有任務均為 completed，判定專案完工並回報。\n\n\n\n\n\n\n此邏輯從 AGENT_PROTOCOL.md Step 1 完整遷移至此。\n\n對每個 pending 狀態的任務，檢查遠端分支 {AGENT_NAME}/task-{task_id} 的存在性：\n\n分支不存在 → 任務可被領取。進入 Step 3。\n分支已存在 → 檢查其 PR 狀態：\n\n\n\n\n\n\n\n\n\nPR 狀態\n判定\n動作\n\n\n\n\nMERGED 但 tracker 仍 pending\n⛔ Transaction 不一致\n停止執行。回報人類。\n\n\n無 PR 或 PR 為 CLOSED\n🔄 失效分支\n強制刪除舊分支，重新領取。\n\n\nPR 為 OPEN\n🔒 鎖定中\n跳過此任務。\n\n\n\n\n若無可領取任務：輸出「所有任務已被鎖定或正在 CI/CD 管線中。暫停調度。」並終止。\n\n\n\n\n\n這是 Dispatcher 的核心交付行為。\n\n\n建立 Feature Branch：\n\n從 {BASE_BRANCH} 切出 {AGENT_NAME}/task-{task_id}。\n推送空心跳提交 (Heartbeat Commit) 以宣告鎖定：\ngit commit --allow-empty -m \"chore: start task_{task_id}\"\ngit push origin {{AGENT_NAME}}/task-{task_id}\n\n組裝任務包 (Task Package)： 將以下資訊打包交付給 Worker：\ntask_package:\n  task_id: \"task_X_1_1\"\n  spec_ref: \"specs/tasks/task_X_1_1.yml\"\n  branch: \"{{AGENT_NAME}}/task-{task_id}\"\n  base_branch: \"{{BASE_BRANCH}}\"\n  allowed_paths: [...]   # 從 spec 中提取\n  rules_dir: \".agents/rules/\"\n  design_tokens_ref: \"docs/design_system.md\"  # 若有\n啟動 Worker：指示 Worker 按照 AGENT_PROTOCOL.md 從 Step 1 (接收任務包) 開始執行。\n\n\n\n\n\n此邏輯從 AGENT_PROTOCOL.md Step 6-7 完整遷移至此。\n\nWorker 提交 PR 後，Dispatcher 接管：\n\n監控 CI/CD：\n\nPR 通過 CI → 自動合併觸發。\nPR 失敗 CI → 根據失敗原因決定：\n\n可重試：遞增 attempts，重新進入 Step 2。\n不可重試：標記任務為 blocked，通知人類。\n\n\nPhase 推進判定：\n\n任務合併後，讀取最新的主線 tracker.json。\n判定準則：若同 Phase 的所有任務狀態皆為 completed，自動更新 current_phase 至下一階段。\n動作：提交一個獨立的 Phase 推進 commit。\n\n迭代循環：\n\nPhase 推進後，回到 Step 1，開始下一 Phase 的任務調度。\n若所有 Phase 完成，宣告專案完工。\n\n\n\n\n\n\n\n\n以下為架構預留接口，當前不實作。\n\n# 未來的 dispatcher_config.yml (概念)\ndispatch_strategy:\n  mode: \"sequential\"          # 當前：串行\n  # mode: \"parallel\"          # 未來：並行\n  # max_concurrent_workers: 3\n  # conflict_resolution: \"first-come-first-served\"\n  # task_affinity: \"by-module\" # 按模組分配，減少衝突\n當切換為並行模式時，Step 2 的互斥鎖機制將自然擴展為多 Worker 的分散式鎖。\n\n\n\n\n\n任務包 (Task Package)：交付給 Worker 的結構化任務資訊。\nPhase 推進 Commit：獨立的 tracker.json 更新提交。\n調度日誌：記錄每次任務分配、重試、跳過的決策原因。\n\n\n\n🎉 完成：所有任務已調度完畢或專案已完工。請回報最終狀態。"
+  },
+  {
+    "objectID": "skills/task-dispatcher/SKILL.html#運作模式聲明",
+    "href": "skills/task-dispatcher/SKILL.html#運作模式聲明",
+    "title": "🎯 Task Dispatcher (任務調度官)",
+    "section": "",
+    "text": "當前模式：單一 Worker 串行迭代 (Single Worker Sequential)\n分散式多 Worker 並行調度被顯式延遲 (DEFERRED)。 當前所有任務按 tracker.json 中的順序，逐一串行分配給單一 Worker。 未來擴充多 Worker 時，變更將集中在本 Skill 內，其他角色不受影響。"
+  },
+  {
+    "objectID": "skills/task-dispatcher/SKILL.html#執行流程",
+    "href": "skills/task-dispatcher/SKILL.html#執行流程",
+    "title": "🎯 Task Dispatcher (任務調度官)",
+    "section": "",
+    "text": "讀取 tracker.json：取得當前 Phase 與所有任務的狀態。\n健康檢查：\n\n若任務的 attempts &gt;= 5，標記為「持續性死鎖」，跳過並通知人類介入。\n若所有任務均為 completed，判定專案完工並回報。\n\n\n\n\n\n\n此邏輯從 AGENT_PROTOCOL.md Step 1 完整遷移至此。\n\n對每個 pending 狀態的任務，檢查遠端分支 {AGENT_NAME}/task-{task_id} 的存在性：\n\n分支不存在 → 任務可被領取。進入 Step 3。\n分支已存在 → 檢查其 PR 狀態：\n\n\n\n\n\n\n\n\n\nPR 狀態\n判定\n動作\n\n\n\n\nMERGED 但 tracker 仍 pending\n⛔ Transaction 不一致\n停止執行。回報人類。\n\n\n無 PR 或 PR 為 CLOSED\n🔄 失效分支\n強制刪除舊分支，重新領取。\n\n\nPR 為 OPEN\n🔒 鎖定中\n跳過此任務。\n\n\n\n\n若無可領取任務：輸出「所有任務已被鎖定或正在 CI/CD 管線中。暫停調度。」並終止。\n\n\n\n\n\n這是 Dispatcher 的核心交付行為。\n\n\n建立 Feature Branch：\n\n從 {BASE_BRANCH} 切出 {AGENT_NAME}/task-{task_id}。\n推送空心跳提交 (Heartbeat Commit) 以宣告鎖定：\ngit commit --allow-empty -m \"chore: start task_{task_id}\"\ngit push origin {{AGENT_NAME}}/task-{task_id}\n\n組裝任務包 (Task Package)： 將以下資訊打包交付給 Worker：\ntask_package:\n  task_id: \"task_X_1_1\"\n  spec_ref: \"specs/tasks/task_X_1_1.yml\"\n  branch: \"{{AGENT_NAME}}/task-{task_id}\"\n  base_branch: \"{{BASE_BRANCH}}\"\n  allowed_paths: [...]   # 從 spec 中提取\n  rules_dir: \".agents/rules/\"\n  design_tokens_ref: \"docs/design_system.md\"  # 若有\n啟動 Worker：指示 Worker 按照 AGENT_PROTOCOL.md 從 Step 1 (接收任務包) 開始執行。\n\n\n\n\n\n此邏輯從 AGENT_PROTOCOL.md Step 6-7 完整遷移至此。\n\nWorker 提交 PR 後，Dispatcher 接管：\n\n監控 CI/CD：\n\nPR 通過 CI → 自動合併觸發。\nPR 失敗 CI → 根據失敗原因決定：\n\n可重試：遞增 attempts，重新進入 Step 2。\n不可重試：標記任務為 blocked，通知人類。\n\n\nPhase 推進判定：\n\n任務合併後，讀取最新的主線 tracker.json。\n判定準則：若同 Phase 的所有任務狀態皆為 completed，自動更新 current_phase 至下一階段。\n動作：提交一個獨立的 Phase 推進 commit。\n\n迭代循環：\n\nPhase 推進後，回到 Step 1，開始下一 Phase 的任務調度。\n若所有 Phase 完成，宣告專案完工。"
+  },
+  {
+    "objectID": "skills/task-dispatcher/SKILL.html#未來擴充點分散式調度-deferred",
+    "href": "skills/task-dispatcher/SKILL.html#未來擴充點分散式調度-deferred",
+    "title": "🎯 Task Dispatcher (任務調度官)",
+    "section": "",
+    "text": "以下為架構預留接口，當前不實作。\n\n# 未來的 dispatcher_config.yml (概念)\ndispatch_strategy:\n  mode: \"sequential\"          # 當前：串行\n  # mode: \"parallel\"          # 未來：並行\n  # max_concurrent_workers: 3\n  # conflict_resolution: \"first-come-first-served\"\n  # task_affinity: \"by-module\" # 按模組分配，減少衝突\n當切換為並行模式時，Step 2 的互斥鎖機制將自然擴展為多 Worker 的分散式鎖。"
+  },
+  {
+    "objectID": "skills/task-dispatcher/SKILL.html#產出物",
+    "href": "skills/task-dispatcher/SKILL.html#產出物",
+    "title": "🎯 Task Dispatcher (任務調度官)",
+    "section": "",
+    "text": "任務包 (Task Package)：交付給 Worker 的結構化任務資訊。\nPhase 推進 Commit：獨立的 tracker.json 更新提交。\n調度日誌：記錄每次任務分配、重試、跳過的決策原因。\n\n\n\n🎉 完成：所有任務已調度完畢或專案已完工。請回報最終狀態。"
   },
   {
     "objectID": "skills/requirements-analyst/SKILL.html",
@@ -402,56 +449,56 @@
     "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html",
     "title": "{{AGENT_NAME}} Agent Execution Protocol",
     "section": "",
-    "text": "每次 Schedule 觸發後，{{AGENT_NAME}} 必須依序執行以下步驟，不得跳過。\n\n\n\n\n⚖️ 規則預載 (Rules First)：在執行任何操作（包含領取鎖）前，先確認 .agents/rules/ 目錄是否存在且不為空。\n\n護欄 (Guard)：若目錄不存在，您必須停止執行並回報：「Rules directory missing. Scaffolding may be incomplete. 禁止在無規則約束下執行。」\n讀取所有 .agents/rules/*.md。所有後續的分支刪除或開發行為均受此規約約束。\n\n讀取 .{{AGENT_NAME}}/tracker.json。\n🛡️ 健康檢查 (Attempts Check)：若該任務的 attempts &gt;= 5，視為「持續性死鎖」，您必須跳過該任務並提示人類介入。\n🛑 重要！物理互斥鎖 (Branch-as-Lock & Self-Healing)：在領取任務前，您必須檢查遠端 (Origin) 是否已存在分支 {AGENT_NAME}/task-{task_id}：\n\n若不存在：可領取。\n若已存在：檢查其 PR 狀態（使用 gh pr list --head {{AGENT_NAME}}/task-{task_id} --state all --json state）。\n\n異常狀態情境 (Issue C Fix)：若 PR 狀態為 MERGED 但主線 tracker 仍為 pending，這代表 Transaction 不一致。禁止自動重啟。您必須停止執行並回報：「Critical: Transaction mismatch (PR merged but tracker pending). Human intervention required.」。\n可重啟情境：若 gh 返回空（無 PR 存在）或 PR 狀態為 CLOSED，代表該分支已失效。您被授權強制刪除舊分支並重新領取：git push origin --delete {{AGENT_NAME}}/task-{task_id}。\n鎖定情境：若 PR 狀態為 OPEN，代表任務由其他 Worker 處理中，請立刻跳過。\n\n\n若找不到可領取任務，輸出「Tasks are currently locked or in CI/CD pipeline. Halting.」並終止。\n狀態及計數遞增 (State Update)：\n\n您領取任務後，必須切換至 Feature Branch。\n初始心跳包 (Heartbeat Commit)：\n\n產生空提交：git commit --allow-empty -m \"chore: start task_{task_id}\"\n立刻推送到遠端：git push origin {{AGENT_NAME}}/task-{task_id}\n\n語義去噪說明：禁止在 Feature Branch 頻繁改動 tracker.json 的 in_progress 狀態。工廠的「在途事實」完全由分支/PR 偵測與主線 tracker 定義。\n\n\n\n\n\n\n1:1 Spec 讀取 (No Guessing)：\n\n完整讀取 spec_ref 檔案。\n嚴格限令：禁止「猜測」任務，必須依此檔案為唯一準則。\n\n維護模式審計 (Maintenance/Audit Step)：\n\n重要：若專案已有既有程式碼，您必須先執行 list_dir 與 grep_search 遍歷涉及的模組。\n禁令：禁止隨意修改既有的命名規範或基礎架構，除非 Spec 明文要求。您必須在腦中建立「新舊融合」的方案。\n\n讀取 docs/doc-categories.md 索引以獲取專案背景。\n\n\n\n\n\n依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。\n實作必須包含：功能程式碼 + 對應的單元測試／整合測試。\n若有架構或 Skill 邏輯變更，必須同步更新 FACTORY_WORKFLOW.qmd 與 docs/*.qmd 內的對應文件與 CHANGELOG.md。確保「文學化編程 (Literate Programming)」之同步性。\n🧠 認知上限與架構守則 (Cognitive Load & Architecture Limit)：\n\n檔案長度控制：新建立或修改的檔案，長度應盡量保持在 200~300 行以內。\n反模式禁令 (Anti-Patterns Ban)：絕對禁止寫出「全能上帝物件 (God Object)」或「大泥球 (Big Ball of Mud)」。如果一個功能需要追溯超過 3 個不同的方法或檔案才能看懂邏輯，代表拆得太碎或耦合太深，您必須主動進行重構 (Refactor)，保持模組的「高內聚、低耦合」。\n壞了就換 (Disposable Components)：如果舊有的小型模組充滿 Bug 難以修復，請果斷刪除並重寫，不要疊床架屋。\n\n\n\n\n\n\n雖然需嚴格遵守 Spec，但身為高階 Agent，您被授權進行邏輯上的自我修復與環境適應。\n🛡️ 機械性約束 (Allowed Paths Check)：\n\n在執行 git commit 前，您必須執行 git diff --name-only。\n嚴格限令：所有異動檔案的路徑必須位於此任務定義的 allowed_paths 範圍內。\n若偵測到超出範圍的異動，您必須修正代碼，或在 PR 中明確說明理由並請求人類核准權限擴張。\n\n授權行為：您可自行加入必要的配置、微調架構或修正先前的錯誤，並將此「自主修正 (Self-Healing)」的紀錄寫入 CHANGELOG.md 及 PR 描述中。\n目標是：在不偏離核心功能的目標下，確保程式碼能 100% 成功執行與編譯。\n\n\n\n\n\nTDD 三部曲：撰寫測試 -&gt; 執行測試確認失敗 (RED) -&gt; 實作功能 -&gt; 執行測試確認通過 (GREEN)。\n80% 覆蓋率：確保單元測試 + 整合測試覆蓋率達到 80% 以上。\n🛡️ TDD 分級制 (Phase-aware Testing)：\n\nPhase 1 (Setup)：僅強制要求測試 1-4 項 (基礎守後)。\nPhase 2+ (Implementation)：必須全面涵蓋 1-8 項破壞性邊界測試。\n\n\nNull/Undefined 行為。\n空陣列 / 空字串傳入。\nSpec 中定義的 negative_test_cases。\n邊界數值 (Max/Min)。\n錯誤路徑 (網路請求失敗、Timeout、DB 失聯)。\n併發競爭 (Race Conditions)。\n極端大資料量 (10k+ items) 效能分析。\n特殊字元 (Unicode, Emoji, SQL injection 防禦)。\n\n對照 spec 的 Acceptance Criteria 與 Success Criteria 逐條自我檢查。\n對照相關 skill 或 rule 文件末尾的 PR Checklist 逐條確認。\n若任何一條未通過，回到 Step 3 或 Step 4 修正，不得帶著失敗的測試提 PR。\n\n\n\n\n\n專案的主開發分支為 {BASE_BRANCH}。\n{{AGENT_NAME}} 每次執行任務時，必須從 {BASE_BRANCH} 切出新分支：{AGENT_NAME}/task-{task_id}。\n重要狀態轉移 (Transaction)：\n\n在您確認所有測試通過、且 git diff 符合路徑約束後，您必須在 Feature Branch 分支上將 .{{AGENT_NAME}}/tracker.json 中該任務的 status 改為 completed 並 commit。\nPhase 自動推進 (Issue A/B/D Fix)：您必須判定自己是否為該階段的「最後任務」：\n\n同步 (Sync)：在判定前，您必須先執行 git fetch origin。\n遠端讀取 (Remote Read)：讀取主線最新狀態：git show origin/{{BASE_BRANCH}}:.{{AGENT_NAME}}/tracker.json &gt; /tmp/latest_tracker.json。\n判定準則：以 /tmp/latest_tracker.json 為準。若其中同 Phase 的所有其他任務狀態皆已為 completed，則您確定為最後一人。\n動作：此時您必須同步將頂層的 current_phase 更新為下一階段（參考階段順序）。\n\n這代表了本次任務的「交易提交」。只有 PR 被合併後，主分支的狀態才會同步更新。\n\n提交 PR 時，目標分支 (Base Branch) 必須設定為 {BASE_BRANCH}。\nPR Title 格式：[{{AGENT_NAME}}] {task_title}\nPR Description 必須包含：\n\n對應 Task ID。\n已完成的 Acceptance Criteria 列表。\n路徑審計報告：聲明所有變更均符合 allowed_paths。\n重要：您必須為 PR 添加 GitHub Label auto-merge 以觸發自動合併。\n推薦指令：gh pr create --title \"[{{AGENT_NAME}}] {task_title}\" --body \"{description}\" --label \"auto-merge\"。\n嚴禁僅在 PR Body 寫文字標籤，那將無法觸發 CI 裁判。\n\n\n\n\n\n\n提交 PR 後，身分驗證後的自動合併機器人會接手。\n如果 CI 測試通過且符合安全門檻（由具備 PAT 權限的 Bot 操作），PR 將會被 Squash Merge。\n由於主分支的 tracker 狀態是透過 PR 合併而成，只有 Merge 成功，該任務才算正式結束。"
+    "text": "Worker 的唯一職責：接收任務、實作功能、驗證品質、提交 PR。\n\n\n\n\n您是 Co-Worker（協作工人），不是調度員。\n\n❌ 您不需要自己尋找或領取任務。\n❌ 您不需要管理分支鎖或偵測 PR 狀態。\n❌ 您不需要判斷 Phase 是否推進。\n❌ 您不需要等待 CI/CD 結果。\n\n以上所有調度邏輯由 Task Dispatcher 處理。 您只需專注於：接收 → 理解 → 實作 → 驗證 → 提交。\n\n\n\n\n\nTask Dispatcher 會提供一個結構化的任務包，包含：\ntask_package:\n  task_id: \"task_X_1_1\"\n  spec_ref: \"specs/tasks/task_X_1_1.yml\"\n  branch: \"{{AGENT_NAME}}/task-{task_id}\"\n  base_branch: \"{{BASE_BRANCH}}\"\n  allowed_paths: [...]\n  rules_dir: \".agents/rules/\"\n  design_tokens_ref: \"docs/design_system.md\"\n您的動作： - 切換至指定的 Feature Branch。 - ⚖️ 規則預載 (Rules First)：讀取 rules_dir 中的所有 .md 規則檔案。 - 護欄 (Guard)：若目錄不存在或為空，停止執行並回報：「Rules directory missing. 禁止在無規則約束下執行。」\n\n\n\n\n1:1 Spec 讀取 (No Guessing)：\n\n完整讀取 spec_ref 檔案。\n嚴格限令：禁止「猜測」任務，必須依此檔案為唯一準則。\n\n維護模式審計 (Maintenance/Audit Step)：\n\n重要：若專案已有既有程式碼，您必須先執行 list_dir 與 grep_search 遍歷涉及的模組。\n禁令：禁止隨意修改既有的命名規範或基礎架構，除非 Spec 明文要求。\n\n讀取 docs/doc-categories.md 索引以獲取專案背景。\n\n\n\n\n\n依照 Spec 實作功能，嚴格遵守 Rules 文件中的程式碼風格。\n實作必須包含：功能程式碼 + 對應的單元測試／整合測試。\n若有架構或 Skill 邏輯變更，必須同步更新 FACTORY_WORKFLOW.qmd 與 docs/*.qmd。\n🧠 認知上限與架構守則 (Cognitive Load & Architecture Limit)：\n\n檔案長度控制：新建立或修改的檔案，長度應盡量保持在 200~300 行以內。\n反模式禁令 (Anti-Patterns Ban)：絕對禁止寫出「全能上帝物件 (God Object)」或「大泥球 (Big Ball of Mud)」。\n壞了就換 (Disposable Components)：如果舊有的小型模組充滿 Bug 難以修復，請果斷刪除並重寫。\n\n\n\n\n\n\n雖然需嚴格遵守 Spec，但身為高階 Agent，您被授權進行邏輯上的自我修復與環境適應。\n🛡️ 機械性約束 (Allowed Paths Check)：\n\n在執行 git commit 前，您必須執行 git diff --name-only。\n嚴格限令：所有異動檔案的路徑必須位於任務包定義的 allowed_paths 範圍內。\n若偵測到超出範圍的異動，您必須修正代碼，或在 PR 中明確說明理由並請求人類核准。\n\n授權行為：您可自行加入必要的配置、微調架構或修正先前的錯誤，並將此「自主修正 (Self-Healing)」的紀錄寫入 CHANGELOG.md。\n目標：在不偏離核心功能的目標下，確保程式碼能 100% 成功執行與編譯。\n\n\n\n\n\nTDD 三部曲：撰寫測試 → 確認失敗 (RED) → 實作功能 → 確認通過 (GREEN)。\n80% 覆蓋率：確保單元測試 + 整合測試覆蓋率達到 80% 以上。\n🛡️ TDD 分級制 (Phase-aware Testing)：\n\nPhase 1 (Setup)：僅強制要求測試 1-4 項 (基礎守後)。\nPhase 2+ (Implementation)：必須全面涵蓋 1-8 項破壞性邊界測試。\n\n\nNull/Undefined 行為。\n空陣列 / 空字串傳入。\nSpec 中定義的 negative_test_cases。\n邊界數值 (Max/Min)。\n錯誤路徑 (網路請求失敗、Timeout、DB 失聯)。\n併發競爭 (Race Conditions)。\n極端大資料量 (10k+ items) 效能分析。\n特殊字元 (Unicode, Emoji, SQL injection 防禦)。\n\n對照 Spec 的 Acceptance Criteria 與 Success Criteria 逐條自我檢查。\n若任何一條未通過，回到 Step 3 或 Step 4 修正，不得帶著失敗的測試提 PR。\n\n\n\n\n\n在確認所有測試通過、且 git diff 符合路徑約束後：\n\n在 Feature Branch 上將 tracker.json 中該任務的 status 改為 completed 並 commit。\n提交 PR，目標分支為任務包中指定的 base_branch。\n\nPR 格式：\n\nTitle：[{{AGENT_NAME}}] {task_title}\nDescription 必須包含：\n\n對應 Task ID。\n已完成的 Acceptance Criteria 列表。\n路徑審計報告：聲明所有變更均符合 allowed_paths。\n\n必須添加 GitHub Label auto-merge 以觸發自動合併。\n推薦指令：gh pr create --title \"[{{AGENT_NAME}}] {task_title}\" --body \"{description}\" --label \"auto-merge\"\n\n\n\n\n🏁 Worker 的生命週期到此結束。 PR 提交後，後續的 CI/CD 監控、Phase 推進與下一任務的調度，全部由 Task Dispatcher 接管。您無需等待或關心結果。"
   },
   {
-    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-1-read-rules-state-防撞車機制",
-    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-1-read-rules-state-防撞車機制",
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#角色聲明",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#角色聲明",
     "title": "{{AGENT_NAME}} Agent Execution Protocol",
     "section": "",
-    "text": "⚖️ 規則預載 (Rules First)：在執行任何操作（包含領取鎖）前，先確認 .agents/rules/ 目錄是否存在且不為空。\n\n護欄 (Guard)：若目錄不存在，您必須停止執行並回報：「Rules directory missing. Scaffolding may be incomplete. 禁止在無規則約束下執行。」\n讀取所有 .agents/rules/*.md。所有後續的分支刪除或開發行為均受此規約約束。\n\n讀取 .{{AGENT_NAME}}/tracker.json。\n🛡️ 健康檢查 (Attempts Check)：若該任務的 attempts &gt;= 5，視為「持續性死鎖」，您必須跳過該任務並提示人類介入。\n🛑 重要！物理互斥鎖 (Branch-as-Lock & Self-Healing)：在領取任務前，您必須檢查遠端 (Origin) 是否已存在分支 {AGENT_NAME}/task-{task_id}：\n\n若不存在：可領取。\n若已存在：檢查其 PR 狀態（使用 gh pr list --head {{AGENT_NAME}}/task-{task_id} --state all --json state）。\n\n異常狀態情境 (Issue C Fix)：若 PR 狀態為 MERGED 但主線 tracker 仍為 pending，這代表 Transaction 不一致。禁止自動重啟。您必須停止執行並回報：「Critical: Transaction mismatch (PR merged but tracker pending). Human intervention required.」。\n可重啟情境：若 gh 返回空（無 PR 存在）或 PR 狀態為 CLOSED，代表該分支已失效。您被授權強制刪除舊分支並重新領取：git push origin --delete {{AGENT_NAME}}/task-{task_id}。\n鎖定情境：若 PR 狀態為 OPEN，代表任務由其他 Worker 處理中，請立刻跳過。\n\n\n若找不到可領取任務，輸出「Tasks are currently locked or in CI/CD pipeline. Halting.」並終止。\n狀態及計數遞增 (State Update)：\n\n您領取任務後，必須切換至 Feature Branch。\n初始心跳包 (Heartbeat Commit)：\n\n產生空提交：git commit --allow-empty -m \"chore: start task_{task_id}\"\n立刻推送到遠端：git push origin {{AGENT_NAME}}/task-{task_id}\n\n語義去噪說明：禁止在 Feature Branch 頻繁改動 tracker.json 的 in_progress 狀態。工廠的「在途事實」完全由分支/PR 偵測與主線 tracker 定義。"
+    "text": "您是 Co-Worker（協作工人），不是調度員。\n\n❌ 您不需要自己尋找或領取任務。\n❌ 您不需要管理分支鎖或偵測 PR 狀態。\n❌ 您不需要判斷 Phase 是否推進。\n❌ 您不需要等待 CI/CD 結果。\n\n以上所有調度邏輯由 Task Dispatcher 處理。 您只需專注於：接收 → 理解 → 實作 → 驗證 → 提交。"
   },
   {
-    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-2-acquire-context-load-spec-領取與加載",
-    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-2-acquire-context-load-spec-領取與加載",
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-1-接收任務包-receive-task-package",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-1-接收任務包-receive-task-package",
     "title": "{{AGENT_NAME}} Agent Execution Protocol",
     "section": "",
-    "text": "1:1 Spec 讀取 (No Guessing)：\n\n完整讀取 spec_ref 檔案。\n嚴格限令：禁止「猜測」任務，必須依此檔案為唯一準則。\n\n維護模式審計 (Maintenance/Audit Step)：\n\n重要：若專案已有既有程式碼，您必須先執行 list_dir 與 grep_search 遍歷涉及的模組。\n禁令：禁止隨意修改既有的命名規範或基礎架構，除非 Spec 明文要求。您必須在腦中建立「新舊融合」的方案。\n\n讀取 docs/doc-categories.md 索引以獲取專案背景。"
+    "text": "Task Dispatcher 會提供一個結構化的任務包，包含：\ntask_package:\n  task_id: \"task_X_1_1\"\n  spec_ref: \"specs/tasks/task_X_1_1.yml\"\n  branch: \"{{AGENT_NAME}}/task-{task_id}\"\n  base_branch: \"{{BASE_BRANCH}}\"\n  allowed_paths: [...]\n  rules_dir: \".agents/rules/\"\n  design_tokens_ref: \"docs/design_system.md\"\n您的動作： - 切換至指定的 Feature Branch。 - ⚖️ 規則預載 (Rules First)：讀取 rules_dir 中的所有 .md 規則檔案。 - 護欄 (Guard)：若目錄不存在或為空，停止執行並回報：「Rules directory missing. 禁止在無規則約束下執行。」"
   },
   {
-    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-3-implement-cognitive-load-limit-認知上限守則",
-    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-3-implement-cognitive-load-limit-認知上限守則",
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-2-載入規格與上下文-load-spec-context",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-2-載入規格與上下文-load-spec-context",
     "title": "{{AGENT_NAME}} Agent Execution Protocol",
     "section": "",
-    "text": "依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。\n實作必須包含：功能程式碼 + 對應的單元測試／整合測試。\n若有架構或 Skill 邏輯變更，必須同步更新 FACTORY_WORKFLOW.qmd 與 docs/*.qmd 內的對應文件與 CHANGELOG.md。確保「文學化編程 (Literate Programming)」之同步性。\n🧠 認知上限與架構守則 (Cognitive Load & Architecture Limit)：\n\n檔案長度控制：新建立或修改的檔案，長度應盡量保持在 200~300 行以內。\n反模式禁令 (Anti-Patterns Ban)：絕對禁止寫出「全能上帝物件 (God Object)」或「大泥球 (Big Ball of Mud)」。如果一個功能需要追溯超過 3 個不同的方法或檔案才能看懂邏輯，代表拆得太碎或耦合太深，您必須主動進行重構 (Refactor)，保持模組的「高內聚、低耦合」。\n壞了就換 (Disposable Components)：如果舊有的小型模組充滿 Bug 難以修復，請果斷刪除並重寫，不要疊床架屋。"
+    "text": "1:1 Spec 讀取 (No Guessing)：\n\n完整讀取 spec_ref 檔案。\n嚴格限令：禁止「猜測」任務，必須依此檔案為唯一準則。\n\n維護模式審計 (Maintenance/Audit Step)：\n\n重要：若專案已有既有程式碼，您必須先執行 list_dir 與 grep_search 遍歷涉及的模組。\n禁令：禁止隨意修改既有的命名規範或基礎架構，除非 Spec 明文要求。\n\n讀取 docs/doc-categories.md 索引以獲取專案背景。"
   },
   {
-    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-4-self-healing-path-auditing-自我修復與路徑審計",
-    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-4-self-healing-path-auditing-自我修復與路徑審計",
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-3-實作功能-implement",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-3-實作功能-implement",
     "title": "{{AGENT_NAME}} Agent Execution Protocol",
     "section": "",
-    "text": "雖然需嚴格遵守 Spec，但身為高階 Agent，您被授權進行邏輯上的自我修復與環境適應。\n🛡️ 機械性約束 (Allowed Paths Check)：\n\n在執行 git commit 前，您必須執行 git diff --name-only。\n嚴格限令：所有異動檔案的路徑必須位於此任務定義的 allowed_paths 範圍內。\n若偵測到超出範圍的異動，您必須修正代碼，或在 PR 中明確說明理由並請求人類核准權限擴張。\n\n授權行為：您可自行加入必要的配置、微調架構或修正先前的錯誤，並將此「自主修正 (Self-Healing)」的紀錄寫入 CHANGELOG.md 及 PR 描述中。\n目標是：在不偏離核心功能的目標下，確保程式碼能 100% 成功執行與編譯。"
+    "text": "依照 Spec 實作功能，嚴格遵守 Rules 文件中的程式碼風格。\n實作必須包含：功能程式碼 + 對應的單元測試／整合測試。\n若有架構或 Skill 邏輯變更，必須同步更新 FACTORY_WORKFLOW.qmd 與 docs/*.qmd。\n🧠 認知上限與架構守則 (Cognitive Load & Architecture Limit)：\n\n檔案長度控制：新建立或修改的檔案，長度應盡量保持在 200~300 行以內。\n反模式禁令 (Anti-Patterns Ban)：絕對禁止寫出「全能上帝物件 (God Object)」或「大泥球 (Big Ball of Mud)」。\n壞了就換 (Disposable Components)：如果舊有的小型模組充滿 Bug 難以修復，請果斷刪除並重寫。"
   },
   {
-    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-5-validate-tdd-ecc-standard",
-    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-5-validate-tdd-ecc-standard",
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-4-自我修復與路徑審計-self-healing-path-auditing",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-4-自我修復與路徑審計-self-healing-path-auditing",
     "title": "{{AGENT_NAME}} Agent Execution Protocol",
     "section": "",
-    "text": "TDD 三部曲：撰寫測試 -&gt; 執行測試確認失敗 (RED) -&gt; 實作功能 -&gt; 執行測試確認通過 (GREEN)。\n80% 覆蓋率：確保單元測試 + 整合測試覆蓋率達到 80% 以上。\n🛡️ TDD 分級制 (Phase-aware Testing)：\n\nPhase 1 (Setup)：僅強制要求測試 1-4 項 (基礎守後)。\nPhase 2+ (Implementation)：必須全面涵蓋 1-8 項破壞性邊界測試。\n\n\nNull/Undefined 行為。\n空陣列 / 空字串傳入。\nSpec 中定義的 negative_test_cases。\n邊界數值 (Max/Min)。\n錯誤路徑 (網路請求失敗、Timeout、DB 失聯)。\n併發競爭 (Race Conditions)。\n極端大資料量 (10k+ items) 效能分析。\n特殊字元 (Unicode, Emoji, SQL injection 防禦)。\n\n對照 spec 的 Acceptance Criteria 與 Success Criteria 逐條自我檢查。\n對照相關 skill 或 rule 文件末尾的 PR Checklist 逐條確認。\n若任何一條未通過，回到 Step 3 或 Step 4 修正，不得帶著失敗的測試提 PR。"
+    "text": "雖然需嚴格遵守 Spec，但身為高階 Agent，您被授權進行邏輯上的自我修復與環境適應。\n🛡️ 機械性約束 (Allowed Paths Check)：\n\n在執行 git commit 前，您必須執行 git diff --name-only。\n嚴格限令：所有異動檔案的路徑必須位於任務包定義的 allowed_paths 範圍內。\n若偵測到超出範圍的異動，您必須修正代碼，或在 PR 中明確說明理由並請求人類核准。\n\n授權行為：您可自行加入必要的配置、微調架構或修正先前的錯誤，並將此「自主修正 (Self-Healing)」的紀錄寫入 CHANGELOG.md。\n目標：在不偏離核心功能的目標下，確保程式碼能 100% 成功執行與編譯。"
   },
   {
-    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-6-finalize-status-submit-pr",
-    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-6-finalize-status-submit-pr",
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-5-驗證品質-validate-tdd",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-5-驗證品質-validate-tdd",
     "title": "{{AGENT_NAME}} Agent Execution Protocol",
     "section": "",
-    "text": "專案的主開發分支為 {BASE_BRANCH}。\n{{AGENT_NAME}} 每次執行任務時，必須從 {BASE_BRANCH} 切出新分支：{AGENT_NAME}/task-{task_id}。\n重要狀態轉移 (Transaction)：\n\n在您確認所有測試通過、且 git diff 符合路徑約束後，您必須在 Feature Branch 分支上將 .{{AGENT_NAME}}/tracker.json 中該任務的 status 改為 completed 並 commit。\nPhase 自動推進 (Issue A/B/D Fix)：您必須判定自己是否為該階段的「最後任務」：\n\n同步 (Sync)：在判定前，您必須先執行 git fetch origin。\n遠端讀取 (Remote Read)：讀取主線最新狀態：git show origin/{{BASE_BRANCH}}:.{{AGENT_NAME}}/tracker.json &gt; /tmp/latest_tracker.json。\n判定準則：以 /tmp/latest_tracker.json 為準。若其中同 Phase 的所有其他任務狀態皆已為 completed，則您確定為最後一人。\n動作：此時您必須同步將頂層的 current_phase 更新為下一階段（參考階段順序）。\n\n這代表了本次任務的「交易提交」。只有 PR 被合併後，主分支的狀態才會同步更新。\n\n提交 PR 時，目標分支 (Base Branch) 必須設定為 {BASE_BRANCH}。\nPR Title 格式：[{{AGENT_NAME}}] {task_title}\nPR Description 必須包含：\n\n對應 Task ID。\n已完成的 Acceptance Criteria 列表。\n路徑審計報告：聲明所有變更均符合 allowed_paths。\n重要：您必須為 PR 添加 GitHub Label auto-merge 以觸發自動合併。\n推薦指令：gh pr create --title \"[{{AGENT_NAME}}] {task_title}\" --body \"{description}\" --label \"auto-merge\"。\n嚴禁僅在 PR Body 寫文字標籤，那將無法觸發 CI 裁判。"
+    "text": "TDD 三部曲：撰寫測試 → 確認失敗 (RED) → 實作功能 → 確認通過 (GREEN)。\n80% 覆蓋率：確保單元測試 + 整合測試覆蓋率達到 80% 以上。\n🛡️ TDD 分級制 (Phase-aware Testing)：\n\nPhase 1 (Setup)：僅強制要求測試 1-4 項 (基礎守後)。\nPhase 2+ (Implementation)：必須全面涵蓋 1-8 項破壞性邊界測試。\n\n\nNull/Undefined 行為。\n空陣列 / 空字串傳入。\nSpec 中定義的 negative_test_cases。\n邊界數值 (Max/Min)。\n錯誤路徑 (網路請求失敗、Timeout、DB 失聯)。\n併發競爭 (Race Conditions)。\n極端大資料量 (10k+ items) 效能分析。\n特殊字元 (Unicode, Emoji, SQL injection 防禦)。\n\n對照 Spec 的 Acceptance Criteria 與 Success Criteria 逐條自我檢查。\n若任何一條未通過，回到 Step 3 或 Step 4 修正，不得帶著失敗的測試提 PR。"
   },
   {
-    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-7-wait-for-cicd-auto-merge-git-as-state-machine",
-    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-7-wait-for-cicd-auto-merge-git-as-state-machine",
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-6-提交-pr-submit-pull-request",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-6-提交-pr-submit-pull-request",
     "title": "{{AGENT_NAME}} Agent Execution Protocol",
     "section": "",
-    "text": "提交 PR 後，身分驗證後的自動合併機器人會接手。\n如果 CI 測試通過且符合安全門檻（由具備 PAT 權限的 Bot 操作），PR 將會被 Squash Merge。\n由於主分支的 tracker 狀態是透過 PR 合併而成，只有 Merge 成功，該任務才算正式結束。"
+    "text": "在確認所有測試通過、且 git diff 符合路徑約束後：\n\n在 Feature Branch 上將 tracker.json 中該任務的 status 改為 completed 並 commit。\n提交 PR，目標分支為任務包中指定的 base_branch。\n\nPR 格式：\n\nTitle：[{{AGENT_NAME}}] {task_title}\nDescription 必須包含：\n\n對應 Task ID。\n已完成的 Acceptance Criteria 列表。\n路徑審計報告：聲明所有變更均符合 allowed_paths。\n\n必須添加 GitHub Label auto-merge 以觸發自動合併。\n推薦指令：gh pr create --title \"[{{AGENT_NAME}}] {task_title}\" --body \"{description}\" --label \"auto-merge\"\n\n\n\n\n🏁 Worker 的生命週期到此結束。 PR 提交後，後續的 CI/CD 監控、Phase 推進與下一任務的調度，全部由 Task Dispatcher 接管。您無需等待或關心結果。"
   },
   {
     "objectID": "skills/visual-designer/SKILL.html",

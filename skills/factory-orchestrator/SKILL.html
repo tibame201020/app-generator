@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="軟體工廠的總指揮，負責管理 Skills 之間的切換邏輯與執行狀態，確保流程不發生硬耦合。">
+<meta name="description" content="軟體工廠的總指揮，負責管理 6 個 Skills 之間的切換邏輯與執行狀態，確保流程不發生硬耦合。">
 
 <title>skill – Autonomous Software Factory</title>
 <style>
@@ -179,7 +179,10 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#意圖與背景確認" id="toc-意圖與背景確認" class="nav-link" data-scroll-target="#意圖與背景確認">1. 意圖與背景確認</a></li>
   <li><a href="#動態路徑管理" id="toc-動態路徑管理" class="nav-link" data-scroll-target="#動態路徑管理">2. 動態路徑管理</a></li>
-  <li><a href="#狀態接力-relay" id="toc-狀態接力-relay" class="nav-link" data-scroll-target="#狀態接力-relay">3. 狀態接力 (Relay)</a></li>
+  <li><a href="#技術評審與模擬" id="toc-技術評審與模擬" class="nav-link" data-scroll-target="#技術評審與模擬">3. 技術評審與模擬</a></li>
+  <li><a href="#任務規格產出" id="toc-任務規格產出" class="nav-link" data-scroll-target="#任務規格產出">4. 任務規格產出</a></li>
+  <li><a href="#任務調度與執行" id="toc-任務調度與執行" class="nav-link" data-scroll-target="#任務調度與執行">5. 任務調度與執行</a></li>
+  <li><a href="#狀態接力-relay" id="toc-狀態接力-relay" class="nav-link" data-scroll-target="#狀態接力-relay">6. 狀態接力 (Relay)</a></li>
   </ul></li>
   <li><a href="#使用準則" id="toc-使用準則" class="nav-link" data-scroll-target="#使用準則">🛠️ 使用準則</a></li>
   </ul></li>
@@ -199,16 +202,28 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="指令流程">📖 指令流程</h2>
 <section id="意圖與背景確認" class="level3">
 <h3 class="anchored" data-anchor-id="意圖與背景確認">1. 意圖與背景確認</h3>
-<p>初次啟動時，請先呼叫並引導使用者完成 <strong><a href="file:///skills/requirements-analyst/SKILL.md">Requirements Analyst</a></strong>。</p>
+<p>初次啟動時，請先呼叫並引導使用者完成 <strong><a href="../../skills/requirements-analyst/SKILL.html">Requirements Analyst</a></strong>。</p>
 </section>
 <section id="動態路徑管理" class="level3">
 <h3 class="anchored" data-anchor-id="動態路徑管理">2. 動態路徑管理</h3>
-<p>根據需求分析的結果，決定下一步： - <strong>若涉及 UI/UX 畫面感</strong>：引導前往 <strong><a href="file:///skills/visual-designer/SKILL.md">Visual Designer</a></strong>。 - <strong>若為純後端/API/CLI</strong>：跳過視覺設計，直接前往 <strong><a href="file:///skills/architect-reviewer/SKILL.md">Architect Reviewer</a></strong>。</p>
+<p>根據需求分析的結果，決定下一步： - <strong>若涉及 UI/UX 畫面感</strong>：引導前往 <strong><a href="../../skills/visual-designer/SKILL.html">Visual Designer</a></strong>。 - <strong>若為純後端/API/CLI</strong>：跳過視覺設計，直接前往 <strong><a href="../../skills/architect-reviewer/SKILL.html">Architect Reviewer</a></strong>。</p>
+</section>
+<section id="技術評審與模擬" class="level3">
+<h3 class="anchored" data-anchor-id="技術評審與模擬">3. 技術評審與模擬</h3>
+<p>引導完成 <strong><a href="../../skills/architect-reviewer/SKILL.html">Architect Reviewer</a></strong> 的技術選型與沙盤推演。</p>
+</section>
+<section id="任務規格產出" class="level3">
+<h3 class="anchored" data-anchor-id="任務規格產出">4. 任務規格產出</h3>
+<p>引導 <strong><a href="../../skills/factory-iterator/SKILL.html">Factory Iterator</a></strong> 產出模組化的任務規格與 <code>tracker.json</code>。</p>
+</section>
+<section id="任務調度與執行" class="level3">
+<h3 class="anchored" data-anchor-id="任務調度與執行">5. 任務調度與執行</h3>
+<p>將控制權交給 <strong><a href="../../skills/task-dispatcher/SKILL.html">Task Dispatcher</a></strong>，由其負責： - 任務分配、互斥鎖管理、Worker 啟動。 - CI/CD 結果收割與 Phase 推進。 - 迭代循環直至專案完工。</p>
 </section>
 <section id="狀態接力-relay" class="level3">
-<h3 class="anchored" data-anchor-id="狀態接力-relay">3. 狀態接力 (Relay)</h3>
+<h3 class="anchored" data-anchor-id="狀態接力-relay">6. 狀態接力 (Relay)</h3>
 <ul>
-<li>確保上一個 Skill 的產出物（如 <code>RFP.md</code>）能被下一個 Skill 正確讀取。</li>
+<li>確保上一個 Skill 的產出物（如 <code>RFP.md</code>、<code>design_system.md</code>、<code>ADR/*.md</code>）能被下一個 Skill 正確讀取。</li>
 <li>管理 <code>Create / Continue / Maintain</code> 三種模式的跳轉邏輯。</li>
 </ul>
 </section>
@@ -219,11 +234,11 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>元件化思維 (Component Thinking)</strong>：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。</li>
 <li><strong>禁止反向耦合</strong>：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。</li>
 <li><strong>透明化引導</strong>：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。</li>
-<li><strong>📚 文學化維護 (Literate Maintenance)</strong>：身為總指揮，您有義務確保 <code>FACTORY_WORKFLOW.qmd</code> 與實際 Skill 的變更保持同步。任何 Skill 邏輯的修改，都必須反映在文件與圖表中。</li>
+<li><strong>📚 文學化維護 (Literate Maintenance)</strong>：身為總指揮，您有義務確保 <code>FACTORY_WORKFLOW.qmd</code> 與實際 Skill 的變更保持同步。</li>
 </ul>
 <hr>
 <blockquote class="blockquote">
-<p>🚀 <strong>開始執行</strong>：請先啟動 <strong><a href="file:///skills/requirements-analyst/SKILL.md">Requirements Analyst</a></strong> 進行首波需求探測。</p>
+<p>🚀 <strong>開始執行</strong>：請先啟動 <strong><a href="../../skills/requirements-analyst/SKILL.html">Requirements Analyst</a></strong> 進行首波需求探測。</p>
 </blockquote>
 
 

@@ -212,17 +212,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#autonomous-software-factory-workflow" id="toc-autonomous-software-factory-workflow" class="nav-link active" data-scroll-target="#autonomous-software-factory-workflow">🏭 Autonomous Software Factory Workflow</a>
   <ul class="collapse">
-  <li><a href="#core-architecture-decoupling-orchestration" id="toc-core-architecture-decoupling-orchestration" class="nav-link" data-scroll-target="#core-architecture-decoupling-orchestration">🏗️ Core Architecture: Decoupling &amp; Orchestration</a>
+  <li><a href="#core-architecture-6-role-decoupled-pipeline" id="toc-core-architecture-6-role-decoupled-pipeline" class="nav-link" data-scroll-target="#core-architecture-6-role-decoupled-pipeline">🏗️ Core Architecture: 6-Role Decoupled Pipeline</a>
   <ul class="collapse">
   <li><a href="#戰略全景軟體工廠生命週期" id="toc-戰略全景軟體工廠生命週期" class="nav-link" data-scroll-target="#戰略全景軟體工廠生命週期">🗺️ 戰略全景：軟體工廠生命週期</a></li>
   </ul></li>
-  <li><a href="#live-factory-status-experimental" id="toc-live-factory-status-experimental" class="nav-link" data-scroll-target="#live-factory-status-experimental">📊 Live Factory Status (Experimental)</a></li>
-  <li><a href="#戰術細節與角色定義" id="toc-戰術細節與角色定義" class="nav-link" data-scroll-target="#戰術細節與角色定義">🔍 戰術細節與角色定義</a>
+  <li><a href="#戰術拆解各階段詳細邏輯" id="toc-戰術拆解各階段詳細邏輯" class="nav-link" data-scroll-target="#戰術拆解各階段詳細邏輯">🔍 戰術拆解：各階段詳細邏輯</a>
   <ul class="collapse">
   <li><a href="#discovery-意圖具現化" id="toc-discovery-意圖具現化" class="nav-link" data-scroll-target="#discovery-意圖具現化">1. Discovery: 意圖具現化</a></li>
-  <li><a href="#tech-design-技術建模" id="toc-tech-design-技術建模" class="nav-link" data-scroll-target="#tech-design-技術建模">2. Tech Design: 技術建模</a></li>
-  <li><a href="#execution-工廠迭代" id="toc-execution-工廠迭代" class="nav-link" data-scroll-target="#execution-工廠迭代">3. Execution: 工廠迭代</a></li>
+  <li><a href="#tech-design-task-specification" id="toc-tech-design-task-specification" class="nav-link" data-scroll-target="#tech-design-task-specification">2. Tech Design → Task Specification</a></li>
+  <li><a href="#dispatch-execution-validation" id="toc-dispatch-execution-validation" class="nav-link" data-scroll-target="#dispatch-execution-validation">3. Dispatch → Execution → Validation</a></li>
   </ul></li>
+  <li><a href="#live-factory-status-experimental" id="toc-live-factory-status-experimental" class="nav-link" data-scroll-target="#live-factory-status-experimental">📊 Live Factory Status (Experimental)</a></li>
+  <li><a href="#角色定義-6-role-pipeline" id="toc-角色定義-6-role-pipeline" class="nav-link" data-scroll-target="#角色定義-6-role-pipeline">🛠️ 角色定義 (6-Role Pipeline)</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -255,13 +256,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <blockquote class="blockquote">
 <p>[!NOTE] This is an <strong>Executable Document</strong>. It not only describes the workflow but also serves as the real-time monitoring interface for the factory.</p>
 </blockquote>
-<section id="core-architecture-decoupling-orchestration" class="level2">
-<h2 class="anchored" data-anchor-id="core-architecture-decoupling-orchestration">🏗️ Core Architecture: Decoupling &amp; Orchestration</h2>
-<p>The factory is composed of five specialized autonomous components orchestrated by a central brain.</p>
+<section id="core-architecture-6-role-decoupled-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="core-architecture-6-role-decoupled-pipeline">🏗️ Core Architecture: 6-Role Decoupled Pipeline</h2>
+<p>The factory is composed of six specialized autonomous components orchestrated by a central brain.</p>
 <section id="戰略全景軟體工廠生命週期" class="level3">
 <h3 class="anchored" data-anchor-id="戰略全景軟體工廠生命週期">🗺️ 戰略全景：軟體工廠生命週期</h3>
 <blockquote class="blockquote">
-<p>旨在呈現 Phase 間的高階協作與狀態轉移。</p>
+<p>旨在呈現 6 個角色間的高階協作與狀態轉移。</p>
 </blockquote>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
@@ -271,15 +272,108 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre class="mermaid mermaid-js">graph LR
     User([👩‍💻 人類意圖]) --&gt; P1[[Phase 1: Discovery]]
     P1 --&gt; P2[[Phase 2: Tech Design]]
-    P2 --&gt; P3[[Phase 3: Execution]]
-    P3 --&gt; P4[[Phase 4: Validation]]
-    P4 -- "反饋/維修" --&gt; P3
-    P4 -- "完成" --&gt; Done((🚀 發布))
-    
+    P2 --&gt; P3[[Phase 3: Task Specification]]
+    P3 --&gt; P4[[Phase 4: Dispatch]]
+    P4 --&gt; P5[[Phase 5: Execution]]
+    P5 --&gt; P6[[Phase 6: Validation]]
+    P6 -- "反饋/重試" --&gt; P5
+    P6 -- "Phase 推進" --&gt; P4
+    P6 -- "完成" --&gt; Done((🚀 發布))
+
     style P1 fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
     style P2 fill:#fffde7,stroke:#fbc02d,color:#f57f17
     style P3 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c
-    style P4 fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style P4 fill:#fff3e0,stroke:#e65100,color:#bf360c
+    style P5 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style P6 fill:#ffebee,stroke:#c62828,color:#b71c1c
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="戰術拆解各階段詳細邏輯" class="level2">
+<h2 class="anchored" data-anchor-id="戰術拆解各階段詳細邏輯">🔍 戰術拆解：各階段詳細邏輯</h2>
+<section id="discovery-意圖具現化" class="level3">
+<h3 class="anchored" data-anchor-id="discovery-意圖具現化">1. Discovery: 意圖具現化</h3>
+<blockquote class="blockquote">
+<p>將模糊的自然語言轉化為可執行的視覺與功能需求。</p>
+</blockquote>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph TD
+    Start([人類輸入]) --&gt; Orch{協作編程器}
+    Orch --&gt; ReqA[需求分析師]
+    ReqA --&gt; UI_Check{需要 UI?}
+    UI_Check -- 是 --&gt; VisD[視覺設計師]
+    UI_Check -- 否 --&gt; Arch[架構審查]
+    VisD --&gt; Arch
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="tech-design-task-specification" class="level3">
+<h3 class="anchored" data-anchor-id="tech-design-task-specification">2. Tech Design → Task Specification</h3>
+<blockquote class="blockquote">
+<p>確保架構內聚後，將需求拆解為模組化微型任務。</p>
+</blockquote>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph TD
+    In[需求藍圖] --&gt; Arch[架構審查員]
+    Arch --&gt; Sim[大模型腦力模擬]
+    Sim -- 簽署通過 --&gt; Iter[工廠迭代器]
+    Iter --&gt; Specs[(specs/*.yml)]
+    Iter --&gt; Track[(tracker.json)]
+
+    style Sim fill:#fff9c4,stroke:#fbc02d
+    style Specs fill:#f5f5f5,stroke:#9e9e9e
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="dispatch-execution-validation" class="level3">
+<h3 class="anchored" data-anchor-id="dispatch-execution-validation">3. Dispatch → Execution → Validation</h3>
+<blockquote class="blockquote">
+<p>Task Dispatcher 專職調度，Worker 純粹實作，CI/CD 裁決結果。</p>
+</blockquote>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph TD
+    Disp[任務調度官] --&gt; Lock{互斥鎖檢查}
+    Lock -- 可領取 --&gt; Pack[組裝任務包]
+    Lock -- 已鎖定 --&gt; Skip[跳過]
+    Pack --&gt; Worker[執行工人]
+    Worker -- 提交 PR --&gt; CI{CI 門戶}
+    CI -- 通過 --&gt; Merge[合併]
+    CI -- 失敗 --&gt; Retry{可重試?}
+    Retry -- 是 --&gt; Disp
+    Retry -- 否 --&gt; Human([通知人類])
+    Merge --&gt; Phase{Phase 完成?}
+    Phase -- 是 --&gt; Disp
+    Phase -- 全部完成 --&gt; Done((🚀 發布))
+
+    style Disp fill:#fff3e0,stroke:#e65100
+    style Worker fill:#e8f5e9,stroke:#2e7d32
+    style Merge fill:#c8e6c9,stroke:#2e7d32
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -291,25 +385,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="live-factory-status-experimental" class="level2">
 <h2 class="anchored" data-anchor-id="live-factory-status-experimental">📊 Live Factory Status (Experimental)</h2>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph TD
-    PR[Pull Request] --&gt; CI{CI 門戶檢測}
-    CI -- 通過 --&gt; Merge[合併與前進]
-    CI -- 失敗 --&gt; Repair[自我修復路徑]
-    Repair --&gt; Worker[重回 Phase 3 執行層]
-    
-    style Merge fill:#c8e6c9,stroke:#2e7d32
-    style Repair fill:#ffccbc,stroke:#d84315
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -320,7 +395,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>以下區塊會自動搜尋專案中的 <code>tracker.json</code> 並呈現在地進度。</p>
+<p>以下區塊會自動搜尋專案中的 <code>tracker.json</code> 並呈現即時進度。</p>
 </div>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
@@ -337,93 +412,62 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"&gt; ⚠️ No active tracker found. Factory is currently idle."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <hr>
 </section>
-<section id="戰術細節與角色定義" class="level2">
-<h2 class="anchored" data-anchor-id="戰術細節與角色定義">🔍 戰術細節與角色定義</h2>
-<section id="discovery-意圖具現化" class="level3">
-<h3 class="anchored" data-anchor-id="discovery-意圖具現化">1. <a href="../skills/requirements-analyst/SKILL.html">Discovery: 意圖具現化</a></h3>
-<blockquote class="blockquote">
-<p>將模糊的自然語言轉化為可執行的視覺與功能需求。</p>
-</blockquote>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph TD
-    Start([人類輸入]) --&gt; Orch{協作編程器}
-    Orch --&gt; ReqA[需求分析師]
-    ReqA --&gt; UI_Check{需要 UI?}
-    UI_Check -- 是 --&gt; VisD[視覺設計師]
-    UI_Check -- 否 --&gt; Arch[架構審查]
-    VisD --&gt; Arch
-    
-    subgraph SG1 ["邊界：意圖對齊"]
-        ReqA
-        VisD
-    end
-    style SG1 fill:#ffffff,stroke:#333,stroke-dasharray: 5 5
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-</section>
-<section id="tech-design-技術建模" class="level3">
-<h3 class="anchored" data-anchor-id="tech-design-技術建模">2. <a href="../skills/architect-reviewer/SKILL.html">Tech Design: 技術建模</a></h3>
-<blockquote class="blockquote">
-<p>確保架構內聚、建立 ADR 並進行大模型腦力模擬。</p>
-</blockquote>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph TD
-    In[需求藍圖] --&gt; Arch[架構審查員]
-    Arch --&gt; Sim[大模型腦力模擬]
-    Sim -- 風險評估 --&gt; Sim
-    Sim -- 簽署通過 --&gt; Out([技術決策檔])
-    
-    style Sim fill:#fff9c4,stroke:#fbc02d
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-</section>
-<section id="execution-工廠迭代" class="level3">
-<h3 class="anchored" data-anchor-id="execution-工廠迭代">3. <a href="../skills/factory-iterator/SKILL.html">Execution: 工廠迭代</a></h3>
-<blockquote class="blockquote">
-<p>原子化處理代碼變動，並透過 <code>tracker.json</code> 保持狀態追蹤。</p>
-</blockquote>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph TD
-    Dec[技術決策] --&gt; Iter[工廠迭代器]
-    Iter --&gt; Track[(tracker.json)]
-    Track --&gt; Worker[執行工人 Agents]
-    Worker -- 提交 PR --&gt; CI[CI 門戶]
-    
-    style Track fill:#f5f5f5,stroke:#9e9e9e
-    style Worker fill:#e1f5fe,stroke:#01579b
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
+<section id="角色定義-6-role-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="角色定義-6-role-pipeline">🛠️ 角色定義 (6-Role Pipeline)</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">#</th>
+<th style="text-align: left;">角色</th>
+<th style="text-align: left;">職責</th>
+<th style="text-align: left;">Skill</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;"><a href="../skills/requirements-analyst/SKILL.html">Requirements Analyst</a></td>
+<td style="text-align: left;">意圖分類與需求收集</td>
+<td style="text-align: left;"><code>requirements-analyst</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;"><a href="../skills/visual-designer/SKILL.html">Visual Designer</a></td>
+<td style="text-align: left;"><strong>(可選)</strong> 設計系統與視覺規格</td>
+<td style="text-align: left;"><code>visual-designer</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;"><a href="../skills/architect-reviewer/SKILL.html">Architect Reviewer</a></td>
+<td style="text-align: left;">技術選型與沙盤推演</td>
+<td style="text-align: left;"><code>architect-reviewer</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;"><a href="../skills/factory-iterator/SKILL.html">Factory Iterator</a></td>
+<td style="text-align: left;">任務拆解與規格產出</td>
+<td style="text-align: left;"><code>factory-iterator</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;"><a href="../skills/task-dispatcher/SKILL.html">Task Dispatcher</a></td>
+<td style="text-align: left;"><strong>任務調度、互斥鎖、Phase 推進</strong></td>
+<td style="text-align: left;"><code>task-dispatcher</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">Worker (AGENT_PROTOCOL)</td>
+<td style="text-align: left;">純粹實作、驗證、提交 PR</td>
+<td style="text-align: left;">co-worker</td>
+</tr>
+</tbody>
+</table>
 <hr>
 <blockquote class="blockquote">
-<p>[!TIP] <strong>Literate Strategy</strong>: By using <code>.qmd</code>, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint to be visible to the Orchestrator.</p>
+<p>[!TIP] <strong>Literate Strategy</strong>: By using <code>.qmd</code>, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint.</p>
 </blockquote>
 
 
-</section>
 </section>
 </section>
 
