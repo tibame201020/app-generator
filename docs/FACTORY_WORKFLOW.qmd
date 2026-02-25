@@ -16,33 +16,84 @@ format:
 
 The factory is composed of five specialized autonomous components orchestrated by a central brain.
 
-```{mermaid}
-graph TD
-    User((👩‍💻 Human)) --> Orchestrator[🏁 Factory Orchestrator]
+```{dot}
+digraph G {
+    fontname="Helvetica,Arial,sans-serif"
+    node [fontname="Helvetica,Arial,sans-serif", shape=box, style=filled, fillcolor="#f9f9f9", color="#333333"]
+    edge [fontname="Helvetica,Arial,sans-serif", color="#666666"]
     
-    subgraph "Phase 1: Discovery"
-        Orchestrator --> ReqAnalyst[📝 Requirements Analyst]
-        ReqAnalyst --> VisualDesigner{🎨 Needs UI?}
-        VisualDesigner -- Yes --> VisualSkill[🖼️ Visual Designer]
-        VisualDesigner -- No --> Architect
-    end
-    
-    subgraph "Phase 2: Technical Design"
-        VisualSkill --> Architect[🏛️ Architect Reviewer]
-        Architect --> Simulation[🧠 Mental Simulation]
-    end
-    
-    subgraph "Phase 3: Execution"
-        Simulation --> Iterator[🏭 Factory Iterator]
-        Iterator --> Tracker[🗄️ tracker.json]
-        Tracker --> Worker[👷 Worker Agents]
-    end
+    label="🏭 Autonomous Software Factory Workflow"
+    labelloc="t"
+    fontsize=20
 
-    Worker --> PR[🚀 Pull Request]
-    PR --> CI{🤖 CI Checker}
-    CI -- Pass --> Merge[✅ Merge & Advance]
-    CI -- Fail --> Repair[🩹 Self-Healing]
-    Repair --> Worker
+    User [shape=circle, label="👩‍💻 Human", fillcolor="#e1f5fe"]
+    
+    subgraph cluster_0 {
+        label = "Phase 1: Discovery";
+        color = "#e8f5e9";
+        style = filled;
+        fillcolor = "#f1f8e9";
+        
+        Orchestrator [label="🏁 Factory Orchestrator", fillcolor="#fff9c4"]
+        ReqAnalyst [label="📝 Requirements Analyst"]
+        VisualDesigner [label="🎨 Visual Designer", style=dashed]
+        
+        Decision_UI [shape=diamond, label="Needs UI?", fillcolor="#ffffff"]
+    }
+    
+    subgraph cluster_1 {
+        label = "Phase 2: Technical Design";
+        color = "#fff3e0";
+        style = filled;
+        fillcolor = "#fff8e1";
+        
+        Architect [label="🏛️ Architect Reviewer"]
+        Simulation [label="🧠 Mental Simulation", shape=ellipse]
+    }
+    
+    subgraph cluster_2 {
+        label = "Phase 3: Execution";
+        color = "#f3e5f5";
+        style = filled;
+        fillcolor = "#f3e5f5";
+        
+        Iterator [label="🏭 Factory Iterator"]
+        Tracker [label="🗄️ tracker.json", shape=note]
+        Workers [label="👷 Worker Agents"]
+    }
+
+    subgraph cluster_3 {
+        label = "Phase 4: Validation";
+        color = "#ffebee";
+        style = filled;
+        fillcolor = "#fffde7";
+
+        CI [label="🤖 CI Checker\n(Gatekeeper)", shape=diamond]
+        Repair [label="🩹 Self-Healing", fillcolor="#ffccbc"]
+        Merge [label="✅ Merge & Advance", fillcolor="#c8e6c9"]
+    }
+
+    // Connections
+    User -> Orchestrator
+    Orchestrator -> ReqAnalyst
+    ReqAnalyst -> Decision_UI
+    
+    Decision_UI -> VisualDesigner [label="Yes"]
+    Decision_UI -> Architect [label="No"]
+    
+    VisualDesigner -> Architect
+    Architect -> Simulation
+    Simulation -> Iterator
+    
+    Iterator -> Tracker
+    Tracker -> Workers
+    
+    Workers -> CI [label="PR"]
+    
+    CI -> Merge [label="Pass"]
+    CI -> Repair [label="Fail"]
+    Repair -> Workers
+}
 ```
 
 ## 📊 Live Factory Status (Experimental)
