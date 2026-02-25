@@ -25,8 +25,12 @@
 ## Step 2: Acquire Context & Load Spec (領取與加載)
 - **1:1 Spec 讀取 (No Guessing)**：
   - 完整讀取 `spec_ref` 檔案。
-  - **嚴格限令**：禁止根據檔案名稱或上下文「猜測」任務，必須以該檔案內容為唯一準則。若檔案不存在，立刻停機回報。
+  - **嚴格限令**：禁止「猜測」任務，必須依此檔案為唯一準則。
+- **維護模式審計 (Maintenance/Audit Step)**：
+  - **重要**：若專案已有既有程式碼，您**必須**先執行 `list_dir` 與 `grep_search` 遍歷涉及的模組。
+  - **禁令**：禁止隨意修改既有的命名規範或基礎架構，除非 Spec 明文要求。您必須在腦中建立「新舊融合」的方案。
 - 讀取 `docs/doc-categories.md` 索引以獲取專案背景。
+
 
 ## Step 3: Implement & Cognitive Load Limit (認知上限守則)
 - 依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。

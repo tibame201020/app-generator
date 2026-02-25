@@ -1,0 +1,23 @@
+id: "task_X_1_1" # 必須與 tracker.json 中的 ID 完全一致
+title: "任務標題"
+objective: "客觀具體目標描述"
+
+# 🎨 視覺與畫面感要求 (Visual Requirements)
+visual_requirements:
+  design_tokens_ref: "docs/design_system.md" # 引用全域設計規範
+  layout_spec: "例如：左側導航、中央主表、右側抽屜"
+  mockup_description: "描述該畫面應有的視覺動態、間距感（如：緊湊或呼吸感）"
+
+acceptance_criteria:
+  - "建立 OOO 或實作 XXX"
+  - "[禁令] 絕對不可以做ＯＯＯ"
+  - "[Fallback] API Key 必須設定預設值"
+  # [Phase End] 若此為該階段最後一任務，將 tracker.json 的 current_phase 更新至下一階段
+  # - "[Phase End] 更新 current_phase"
+
+# ECC-Inspired fields
+success_criteria:
+  - "定義量化指標 (如：Lighthouse 效能 > 90)"
+negative_test_cases:
+  - "描述應被阻擋或妥善處理的異常輸入情境"
+
