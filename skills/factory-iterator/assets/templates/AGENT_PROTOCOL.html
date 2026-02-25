@@ -20,41 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -210,12 +175,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#agent_name-agent-execution-protocol" id="toc-agent_name-agent-execution-protocol" class="nav-link active" data-scroll-target="#agent_name-agent-execution-protocol">{{AGENT_NAME}} Agent Execution Protocol</a>
   <ul class="collapse">
   <li><a href="#角色聲明" id="toc-角色聲明" class="nav-link" data-scroll-target="#角色聲明">⚠️ 角色聲明</a></li>
-  <li><a href="#step-1-接收任務包-receive-task-package" id="toc-step-1-接收任務包-receive-task-package" class="nav-link" data-scroll-target="#step-1-接收任務包-receive-task-package">Step 1: 接收任務包 (Receive Task Package)</a></li>
-  <li><a href="#step-2-載入規格與上下文-load-spec-context" id="toc-step-2-載入規格與上下文-load-spec-context" class="nav-link" data-scroll-target="#step-2-載入規格與上下文-load-spec-context">Step 2: 載入規格與上下文 (Load Spec &amp; Context)</a></li>
-  <li><a href="#step-3-實作功能-implement" id="toc-step-3-實作功能-implement" class="nav-link" data-scroll-target="#step-3-實作功能-implement">Step 3: 實作功能 (Implement)</a></li>
-  <li><a href="#step-4-自我修復與路徑審計-self-healing-path-auditing" id="toc-step-4-自我修復與路徑審計-self-healing-path-auditing" class="nav-link" data-scroll-target="#step-4-自我修復與路徑審計-self-healing-path-auditing">Step 4: 自我修復與路徑審計 (Self-Healing &amp; Path Auditing)</a></li>
-  <li><a href="#step-5-驗證品質-validate-tdd" id="toc-step-5-驗證品質-validate-tdd" class="nav-link" data-scroll-target="#step-5-驗證品質-validate-tdd">Step 5: 驗證品質 (Validate &amp; TDD)</a></li>
-  <li><a href="#step-6-提交-pr-submit-pull-request" id="toc-step-6-提交-pr-submit-pull-request" class="nav-link" data-scroll-target="#step-6-提交-pr-submit-pull-request">Step 6: 提交 PR (Submit Pull Request)</a></li>
+  <li><a href="#step-1-讀取狀態與尋找任務-state-read-task-discovery" id="toc-step-1-讀取狀態與尋找任務-state-read-task-discovery" class="nav-link" data-scroll-target="#step-1-讀取狀態與尋找任務-state-read-task-discovery">Step 1: 讀取狀態與尋找任務 (State Read &amp; Task Discovery)</a></li>
+  <li><a href="#step-2-互斥鎖檢查與分支建立-branch-as-lock-checkout" id="toc-step-2-互斥鎖檢查與分支建立-branch-as-lock-checkout" class="nav-link" data-scroll-target="#step-2-互斥鎖檢查與分支建立-branch-as-lock-checkout">Step 2: 互斥鎖檢查與分支建立 (Branch-as-Lock &amp; Checkout)</a></li>
+  <li><a href="#step-3-載入規格與上下文-load-spec-context" id="toc-step-3-載入規格與上下文-load-spec-context" class="nav-link" data-scroll-target="#step-3-載入規格與上下文-load-spec-context">Step 3: 載入規格與上下文 (Load Spec &amp; Context)</a></li>
+  <li><a href="#step-4-實作功能-implement" id="toc-step-4-實作功能-implement" class="nav-link" data-scroll-target="#step-4-實作功能-implement">Step 4: 實作功能 (Implement)</a></li>
+  <li><a href="#step-5-自我修復與路徑審計-self-healing-path-auditing" id="toc-step-5-自我修復與路徑審計-self-healing-path-auditing" class="nav-link" data-scroll-target="#step-5-自我修復與路徑審計-self-healing-path-auditing">Step 5: 自我修復與路徑審計 (Self-Healing &amp; Path Auditing)</a></li>
+  <li><a href="#step-6-驗證品質-validate-tdd" id="toc-step-6-驗證品質-validate-tdd" class="nav-link" data-scroll-target="#step-6-驗證品質-validate-tdd">Step 6: 驗證品質 (Validate &amp; TDD)</a></li>
+  <li><a href="#step-7-提交-pr-submit-pull-request" id="toc-step-7-提交-pr-submit-pull-request" class="nav-link" data-scroll-target="#step-7-提交-pr-submit-pull-request">Step 7: 提交 PR (Submit Pull Request)</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -229,53 +195,102 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="agent_name-agent-execution-protocol" class="level1">
 <h1>{{AGENT_NAME}} Agent Execution Protocol</h1>
 <blockquote class="blockquote">
-<p>Worker 的唯一職責：接收任務、實作功能、驗證品質、提交 PR。</p>
+<p>本協議由 <strong>Task Dispatcher (教導者)</strong> 編寫。你遵循的每一步，都是 Dispatcher 教你的。</p>
 </blockquote>
 <section id="角色聲明" class="level2">
 <h2 class="anchored" data-anchor-id="角色聲明">⚠️ 角色聲明</h2>
 <blockquote class="blockquote">
-<p><strong>您是 Co-Worker（協作工人），不是調度員。</strong></p>
-<ul>
-<li>❌ 您<strong>不需要</strong>自己尋找或領取任務。</li>
-<li>❌ 您<strong>不需要</strong>管理分支鎖或偵測 PR 狀態。</li>
-<li>❌ 您<strong>不需要</strong>判斷 Phase 是否推進。</li>
-<li>❌ 您<strong>不需要</strong>等待 CI/CD 結果。</li>
-</ul>
-<p>以上所有調度邏輯由 <strong>Task Dispatcher</strong> 處理。 您只需專注於：<strong>接收 → 理解 → 實作 → 驗證 → 提交</strong>。</p>
+<p><strong>您是被指導的執行者 (Instructed Executor)，不是自主決策者。</strong></p>
+<p>本協議包含任務尋找、分支管理等「看似調度」的操作。 但這些行為<strong>不是你自主決定的</strong>——它們來自 Task Dispatcher 編寫的標準化流程。 <strong>知識的來源 (Source of Truth) 集中在 Dispatcher，你只是忠實地執行。</strong></p>
 </blockquote>
 <hr>
 </section>
-<section id="step-1-接收任務包-receive-task-package" class="level2">
-<h2 class="anchored" data-anchor-id="step-1-接收任務包-receive-task-package">Step 1: 接收任務包 (Receive Task Package)</h2>
-<p>Task Dispatcher 會提供一個結構化的任務包，包含：</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">task_package</span><span class="kw">:</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">task_id</span><span class="kw">:</span><span class="at"> </span><span class="st">"task_X_1_1"</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">spec_ref</span><span class="kw">:</span><span class="at"> </span><span class="st">"specs/tasks/task_X_1_1.yml"</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">branch</span><span class="kw">:</span><span class="at"> </span><span class="st">"{{AGENT_NAME}}/task-{task_id}"</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">base_branch</span><span class="kw">:</span><span class="at"> </span><span class="st">"{{BASE_BRANCH}}"</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">allowed_paths</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">...</span><span class="kw">]</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">rules_dir</span><span class="kw">:</span><span class="at"> </span><span class="st">".agents/rules/"</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">design_tokens_ref</span><span class="kw">:</span><span class="at"> </span><span class="st">"docs/design_system.md"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>您的動作：</strong> - 切換至指定的 Feature Branch。 - <strong>⚖️ 規則預載 (Rules First)</strong>：讀取 <code>rules_dir</code> 中的所有 <code>.md</code> 規則檔案。 - <strong>護欄 (Guard)</strong>：若目錄不存在或為空，<strong>停止執行</strong>並回報：「Rules directory missing. 禁止在無規則約束下執行。」</p>
+<section id="step-1-讀取狀態與尋找任務-state-read-task-discovery" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-讀取狀態與尋找任務-state-read-task-discovery">Step 1: 讀取狀態與尋找任務 (State Read &amp; Task Discovery)</h2>
+<blockquote class="blockquote">
+<p><strong>此步驟由 Dispatcher 教導，Worker 機械性執行。</strong></p>
+</blockquote>
+<ol type="1">
+<li><strong>讀取 <code>.{{AGENT_NAME}}/tracker.json</code></strong>。</li>
+<li>找到 <code>current_phase</code> 中第一個 <code>status == "pending"</code> 的任務。</li>
+<li>🛡️ <strong>健康檢查</strong>：若該任務的 <code>attempts</code> &gt;= 5，視為「持續性死鎖」，<strong>停止執行</strong>並回報人類。</li>
+<li>若沒有 <code>pending</code> 任務，回報「所有任務已完成或正在等待 CI bump phase」並終止。</li>
+</ol>
 </section>
-<section id="step-2-載入規格與上下文-load-spec-context" class="level2">
-<h2 class="anchored" data-anchor-id="step-2-載入規格與上下文-load-spec-context">Step 2: 載入規格與上下文 (Load Spec &amp; Context)</h2>
+<section id="step-2-互斥鎖檢查與分支建立-branch-as-lock-checkout" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-互斥鎖檢查與分支建立-branch-as-lock-checkout">Step 2: 互斥鎖檢查與分支建立 (Branch-as-Lock &amp; Checkout)</h2>
+<blockquote class="blockquote">
+<p><strong>此步驟由 Dispatcher 教導，Worker 機械性執行。</strong></p>
+</blockquote>
+<ol type="1">
+<li>檢查遠端是否已存在分支 <code>{AGENT_NAME}/task-{task_id}</code>：
 <ul>
+<li><strong>不存在</strong> → 可領取。</li>
+<li><strong>已存在</strong> → 檢查 PR 狀態（<code>gh pr list --head {{AGENT_NAME}}/task-{task_id} --state all --json state</code>）：</li>
+</ul></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">PR 狀態</th>
+<th style="text-align: left;">判定</th>
+<th style="text-align: left;">動作</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>MERGED</code> 但 tracker 仍 <code>pending</code></td>
+<td style="text-align: left;">⛔ Transaction 不一致</td>
+<td style="text-align: left;"><strong>停止，回報人類</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">無 PR 或 <code>CLOSED</code></td>
+<td style="text-align: left;">🔄 失效分支</td>
+<td style="text-align: left;">刪除舊分支，重新領取</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>OPEN</code></td>
+<td style="text-align: left;">🔒 鎖定中</td>
+<td style="text-align: left;">跳過此任務</td>
+</tr>
+</tbody>
+</table>
+<ol start="2" type="1">
+<li><p>領取任務後：</p>
+<pre><code>git fetch origin
+git checkout {{BASE_BRANCH}} &amp;&amp; git pull
+git checkout -b {{AGENT_NAME}}/task-{task_id}
+git commit --allow-empty -m "chore: start {task_id}"
+git push origin {{AGENT_NAME}}/task-{task_id}</code></pre></li>
+</ol>
+</section>
+<section id="step-3-載入規格與上下文-load-spec-context" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-載入規格與上下文-load-spec-context">Step 3: 載入規格與上下文 (Load Spec &amp; Context)</h2>
+<ul>
+<li><strong>⚖️ 規則預載</strong>：讀取 <code>.agents/rules/</code> 目錄中的所有 <code>.md</code> 規則檔案。
+<ul>
+<li><strong>護欄</strong>：若目錄不存在或為空，<strong>停止執行</strong>並回報：「Rules directory missing. 禁止在無規則約束下執行。」</li>
+</ul></li>
 <li><strong>1:1 Spec 讀取 (No Guessing)</strong>：
 <ul>
-<li>完整讀取 <code>spec_ref</code> 檔案。</li>
+<li>完整讀取任務對應的 <code>spec_ref</code> 檔案。</li>
 <li><strong>嚴格限令</strong>：禁止「猜測」任務，必須依此檔案為唯一準則。</li>
 </ul></li>
 <li><strong>維護模式審計 (Maintenance/Audit Step)</strong>：
 <ul>
-<li><strong>重要</strong>：若專案已有既有程式碼，您<strong>必須</strong>先執行 <code>list_dir</code> 與 <code>grep_search</code> 遍歷涉及的模組。</li>
+<li>若專案已有既有程式碼，您<strong>必須</strong>先執行 <code>list_dir</code> 與 <code>grep_search</code> 遍歷涉及的模組。</li>
 <li><strong>禁令</strong>：禁止隨意修改既有的命名規範或基礎架構，除非 Spec 明文要求。</li>
 </ul></li>
 <li>讀取 <code>docs/doc-categories.md</code> 索引以獲取專案背景。</li>
 </ul>
 </section>
-<section id="step-3-實作功能-implement" class="level2">
-<h2 class="anchored" data-anchor-id="step-3-實作功能-implement">Step 3: 實作功能 (Implement)</h2>
+<section id="step-4-實作功能-implement" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-實作功能-implement">Step 4: 實作功能 (Implement)</h2>
 <ul>
 <li><p>依照 Spec 實作功能，嚴格遵守 Rules 文件中的程式碼風格。</p></li>
 <li><p>實作必須包含：功能程式碼 + 對應的單元測試／整合測試。</p></li>
@@ -288,22 +303,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol></li>
 </ul>
 </section>
-<section id="step-4-自我修復與路徑審計-self-healing-path-auditing" class="level2">
-<h2 class="anchored" data-anchor-id="step-4-自我修復與路徑審計-self-healing-path-auditing">Step 4: 自我修復與路徑審計 (Self-Healing &amp; Path Auditing)</h2>
+<section id="step-5-自我修復與路徑審計-self-healing-path-auditing" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-自我修復與路徑審計-self-healing-path-auditing">Step 5: 自我修復與路徑審計 (Self-Healing &amp; Path Auditing)</h2>
 <ul>
 <li>雖然需嚴格遵守 Spec，但身為高階 Agent，<strong>您被授權進行邏輯上的自我修復與環境適應</strong>。</li>
 <li>🛡️ <strong>機械性約束 (Allowed Paths Check)</strong>：
 <ul>
 <li>在執行 <code>git commit</code> 前，您<strong>必須</strong>執行 <code>git diff --name-only</code>。</li>
-<li><strong>嚴格限令</strong>：所有異動檔案的路徑必須位於任務包定義的 <code>allowed_paths</code> 範圍內。</li>
+<li><strong>嚴格限令</strong>：所有異動檔案的路徑必須位於 Spec 中定義的 <code>allowed_paths</code> 範圍內。</li>
 <li>若偵測到超出範圍的異動，您必須修正代碼，或在 PR 中明確說明理由並請求人類核准。</li>
 </ul></li>
 <li><strong>授權行為</strong>：您可自行加入必要的配置、微調架構或修正先前的錯誤，並將此「自主修正 (Self-Healing)」的紀錄寫入 <code>CHANGELOG.md</code>。</li>
 <li>目標：<strong>在不偏離核心功能的目標下，確保程式碼能 100% 成功執行與編譯。</strong></li>
 </ul>
 </section>
-<section id="step-5-驗證品質-validate-tdd" class="level2">
-<h2 class="anchored" data-anchor-id="step-5-驗證品質-validate-tdd">Step 5: 驗證品質 (Validate &amp; TDD)</h2>
+<section id="step-6-驗證品質-validate-tdd" class="level2">
+<h2 class="anchored" data-anchor-id="step-6-驗證品質-validate-tdd">Step 6: 驗證品質 (Validate &amp; TDD)</h2>
 <ul>
 <li><strong>TDD 三部曲</strong>：撰寫測試 → 確認失敗 (RED) → 實作功能 → 確認通過 (GREEN)。</li>
 <li><strong>80% 覆蓋率</strong>：確保單元測試 + 整合測試覆蓋率達到 80% 以上。</li>
@@ -323,16 +338,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>特殊字元 (Unicode, Emoji, SQL injection 防禦)。</li>
 </ol></li>
 <li>對照 Spec 的 Acceptance Criteria 與 Success Criteria 逐條自我檢查。</li>
-<li>若任何一條未通過，回到 Step 3 或 Step 4 修正，<strong>不得帶著失敗的測試提 PR</strong>。</li>
+<li>若任何一條未通過，回到 Step 4 或 Step 5 修正，<strong>不得帶著失敗的測試提 PR</strong>。</li>
 </ul>
 </section>
-<section id="step-6-提交-pr-submit-pull-request" class="level2">
-<h2 class="anchored" data-anchor-id="step-6-提交-pr-submit-pull-request">Step 6: 提交 PR (Submit Pull Request)</h2>
+<section id="step-7-提交-pr-submit-pull-request" class="level2">
+<h2 class="anchored" data-anchor-id="step-7-提交-pr-submit-pull-request">Step 7: 提交 PR (Submit Pull Request)</h2>
 <ul>
 <li>在確認所有測試通過、且 <code>git diff</code> 符合路徑約束後：
 <ol type="1">
 <li>在 Feature Branch 上將 <code>tracker.json</code> 中該任務的 status 改為 <code>completed</code> 並 commit。</li>
-<li>提交 PR，目標分支為任務包中指定的 <code>base_branch</code>。</li>
+<li>提交 PR，目標分支為 <code>{BASE_BRANCH}</code>。</li>
 </ol></li>
 <li><strong>PR 格式</strong>：
 <ul>
@@ -349,7 +364,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <hr>
 <blockquote class="blockquote">
-<p>🏁 <strong>Worker 的生命週期到此結束。</strong> PR 提交後，後續的 CI/CD 監控、Phase 推進與下一任務的調度，全部由 <strong>Task Dispatcher</strong> 接管。您無需等待或關心結果。</p>
+<p>🏁 <strong>Worker 的生命週期到此結束。</strong> PR 提交後，CI/CD 會自動執行測試、合併、並在所有任務完成時推進 Phase。你無需等待或關心結果。 <strong>下次被喚醒時，從 Step 1 重新開始即可。</strong></p>
 </blockquote>
 
 

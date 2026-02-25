@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="軟體工廠的總指揮，負責管理 6 個 Skills 之間的切換邏輯與執行狀態，確保流程不發生硬耦合。">
+<meta name="description" content="一次性教導者 (One-Shot Instructor)。在建廠後被喚醒一次，將調度邏輯「編譯」為結構化產出物（自動化腳本 + Worker Prompt），供使用者無限重用。本身不持續存在於運行階段。">
 
 <title>skill – Autonomous Software Factory</title>
 <style>
@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -173,18 +208,17 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#factory-orchestrator-總指揮官" id="toc-factory-orchestrator-總指揮官" class="nav-link active" data-scroll-target="#factory-orchestrator-總指揮官">🏁 Factory Orchestrator (總指揮官)</a>
+  <li><a href="#task-dispatcher-任務調度教導者" id="toc-task-dispatcher-任務調度教導者" class="nav-link active" data-scroll-target="#task-dispatcher-任務調度教導者">🎯 Task Dispatcher (任務調度教導者)</a>
   <ul class="collapse">
-  <li><a href="#指令流程" id="toc-指令流程" class="nav-link" data-scroll-target="#指令流程">📖 指令流程</a>
+  <li><a href="#角色定位編譯時教導者-compile-time-instructor" id="toc-角色定位編譯時教導者-compile-time-instructor" class="nav-link" data-scroll-target="#角色定位編譯時教導者-compile-time-instructor">⚠️ 角色定位：編譯時教導者 (Compile-Time Instructor)</a></li>
+  <li><a href="#執行流程僅執行一次" id="toc-執行流程僅執行一次" class="nav-link" data-scroll-target="#執行流程僅執行一次">📖 執行流程（僅執行一次）</a>
   <ul class="collapse">
-  <li><a href="#意圖與背景確認" id="toc-意圖與背景確認" class="nav-link" data-scroll-target="#意圖與背景確認">1. 意圖與背景確認</a></li>
-  <li><a href="#動態路徑管理" id="toc-動態路徑管理" class="nav-link" data-scroll-target="#動態路徑管理">2. 動態路徑管理</a></li>
-  <li><a href="#技術評審與模擬" id="toc-技術評審與模擬" class="nav-link" data-scroll-target="#技術評審與模擬">3. 技術評審與模擬</a></li>
-  <li><a href="#任務規格產出" id="toc-任務規格產出" class="nav-link" data-scroll-target="#任務規格產出">4. 任務規格產出</a></li>
-  <li><a href="#任務調度教導-one-shot-instruction" id="toc-任務調度教導-one-shot-instruction" class="nav-link" data-scroll-target="#任務調度教導-one-shot-instruction">5. 任務調度教導 (One-Shot Instruction)</a></li>
-  <li><a href="#模式感知接力-mode-aware-relay" id="toc-模式感知接力-mode-aware-relay" class="nav-link" data-scroll-target="#模式感知接力-mode-aware-relay">6. 模式感知接力 (Mode-Aware Relay)</a></li>
+  <li><a href="#step-1-讀取建廠產出物" id="toc-step-1-讀取建廠產出物" class="nav-link" data-scroll-target="#step-1-讀取建廠產出物">Step 1: 讀取建廠產出物</a></li>
+  <li><a href="#step-2-產出自動化調度腳本-dispatcher.py" id="toc-step-2-產出自動化調度腳本-dispatcher.py" class="nav-link" data-scroll-target="#step-2-產出自動化調度腳本-dispatcher.py">Step 2: 產出自動化調度腳本 (<code>dispatcher.py</code>)</a></li>
+  <li><a href="#step-3-產出可重複使用的-worker-prompt-核心教材" id="toc-step-3-產出可重複使用的-worker-prompt-核心教材" class="nav-link" data-scroll-target="#step-3-產出可重複使用的-worker-prompt-核心教材">Step 3: 產出可重複使用的 Worker Prompt (核心教材)</a></li>
   </ul></li>
-  <li><a href="#使用準則" id="toc-使用準則" class="nav-link" data-scroll-target="#使用準則">🛠️ 使用準則</a></li>
+  <li><a href="#產出物清單" id="toc-產出物清單" class="nav-link" data-scroll-target="#產出物清單">🛠️ 產出物清單</a></li>
+  <li><a href="#未來擴充從教導者升級為調度員" id="toc-未來擴充從教導者升級為調度員" class="nav-link" data-scroll-target="#未來擴充從教導者升級為調度員">🔮 未來擴充：從教導者升級為調度員</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -195,36 +229,92 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<section id="factory-orchestrator-總指揮官" class="level1">
-<h1>🏁 Factory Orchestrator (總指揮官)</h1>
-<p>您是軟體工廠的導航員。您的職責是根據使用者當下的進度與需求類型，指引其使用最合適的 Skill。</p>
-<section id="指令流程" class="level2">
-<h2 class="anchored" data-anchor-id="指令流程">📖 指令流程</h2>
-<section id="意圖與背景確認" class="level3">
-<h3 class="anchored" data-anchor-id="意圖與背景確認">1. 意圖與背景確認</h3>
-<p>初次啟動時，請先呼叫並引導使用者完成 <strong><a href="../../skills/requirements-analyst/SKILL.html">Requirements Analyst</a></strong>。</p>
-</section>
-<section id="動態路徑管理" class="level3">
-<h3 class="anchored" data-anchor-id="動態路徑管理">2. 動態路徑管理</h3>
-<p>根據需求分析的結果，決定下一步： - <strong>若涉及 UI/UX 畫面感</strong>：引導前往 <strong><a href="../../skills/visual-designer/SKILL.html">Visual Designer</a></strong>。 - <strong>若為純後端/API/CLI</strong>：跳過視覺設計，直接前往 <strong><a href="../../skills/architect-reviewer/SKILL.html">Architect Reviewer</a></strong>。</p>
-</section>
-<section id="技術評審與模擬" class="level3">
-<h3 class="anchored" data-anchor-id="技術評審與模擬">3. 技術評審與模擬</h3>
-<p>引導完成 <strong><a href="../../skills/architect-reviewer/SKILL.html">Architect Reviewer</a></strong> 的技術選型與沙盤推演。</p>
-</section>
-<section id="任務規格產出" class="level3">
-<h3 class="anchored" data-anchor-id="任務規格產出">4. 任務規格產出</h3>
-<p>引導 <strong><a href="../../skills/factory-iterator/SKILL.html">Factory Iterator</a></strong> 產出模組化的任務規格與 <code>tracker.json</code>。</p>
-</section>
-<section id="任務調度教導-one-shot-instruction" class="level3">
-<h3 class="anchored" data-anchor-id="任務調度教導-one-shot-instruction">5. 任務調度教導 (One-Shot Instruction)</h3>
-<p>引導 <strong><a href="../../skills/task-dispatcher/SKILL.html">Task Dispatcher</a></strong> 執行<strong>一次性</strong>教導： - 產出 <code>dispatcher.py</code> 自動化腳本（供 Cron 排程使用）。 - 產出<strong>可重複使用的 Worker Prompt</strong>（使用者只需反覆餵給 Worker 即可持續推進任務）。 - Dispatcher 完成教導後即退場。後續由「自動化腳本 + Worker + CI/CD」自動循環運作至完工。</p>
-</section>
-<section id="模式感知接力-mode-aware-relay" class="level3">
-<h3 class="anchored" data-anchor-id="模式感知接力-mode-aware-relay">6. 模式感知接力 (Mode-Aware Relay)</h3>
+<section id="task-dispatcher-任務調度教導者" class="level1">
+<h1>🎯 Task Dispatcher (任務調度教導者)</h1>
 <blockquote class="blockquote">
-<p><strong>核心問題</strong>：不是每次都從 Step 1 走到 Step 5。根據 Requirements Analyst 判定的模式，Orchestrator 必須知道「從哪裡接入、跳過什麼」。</p>
+<p><strong>你不是持續運作的調度員，你是一次性的教導者。</strong> 你被喚醒一次，產出兩份關鍵教材，然後功成身退。</p>
 </blockquote>
+<hr>
+<section id="角色定位編譯時教導者-compile-time-instructor" class="level2">
+<h2 class="anchored" data-anchor-id="角色定位編譯時教導者-compile-time-instructor">⚠️ 角色定位：編譯時教導者 (Compile-Time Instructor)</h2>
+<pre><code>❌ 運行時調度員：每次排程都需要 LLM 判斷 → 成本高、延遲大
+✅ 編譯時教導者：LLM 只被喚醒一次，產出「教材」讓 Worker 用到底 → 零 Token 運行</code></pre>
+<p>你的價值不在於「活著調度」，而在於： 1. <strong>將調度邏輯翻譯為確定性腳本</strong>，讓機器可以無腦執行。 2. <strong>將任務執行流程翻譯為可重複的 Prompt</strong>，讓 Worker 只需要被餵同一段話就能持續推進。</p>
+<hr>
+</section>
+<section id="執行流程僅執行一次" class="level2">
+<h2 class="anchored" data-anchor-id="執行流程僅執行一次">📖 執行流程（僅執行一次）</h2>
+<section id="step-1-讀取建廠產出物" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-讀取建廠產出物">Step 1: 讀取建廠產出物</h3>
+<ul>
+<li>確認 <code>tracker.json</code> 已被 Factory Iterator 產出。</li>
+<li>確認 <code>specs/tasks/*.yml</code> 任務規格已就緒。</li>
+<li>確認 <code>.agents/rules/</code> 規則目錄已初始化。</li>
+</ul>
+</section>
+<section id="step-2-產出自動化調度腳本-dispatcher.py" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-產出自動化調度腳本-dispatcher.py">Step 2: 產出自動化調度腳本 (<code>dispatcher.py</code>)</h3>
+<blockquote class="blockquote">
+<p><strong>此腳本是給「排程系統 (Cron)」用的，不是給人看的。</strong></p>
+</blockquote>
+<p>腳本必須實現以下確定性邏輯（不需要 LLM）： 1. 讀取 <code>tracker.json</code>，定位 <code>current_phase</code> 中第一個 <code>pending</code> 任務。 2. 執行 <code>git ls-remote</code> 檢查互斥鎖 (Branch-as-Lock)。 3. 若可領取：切出 Feature Branch，推送 Heartbeat Commit。 4. 輸出標準化的 Task Package（JSON 格式）。</p>
+<blockquote class="blockquote">
+<p>[!TIP] 本目錄下已有一份通用的 <a href="./dispatcher.py"><code>dispatcher.py</code></a> 模板。 在大多數情況下，此模板無需任何修改即可直接使用——它會自動從 <code>tracker.json</code> 讀取 <code>agent_name</code>，並透過 <code>git</code> 動態偵測 <code>base_branch</code>。</p>
+</blockquote>
+</section>
+<section id="step-3-產出可重複使用的-worker-prompt-核心教材" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-產出可重複使用的-worker-prompt-核心教材">Step 3: 產出可重複使用的 Worker Prompt (核心教材)</h3>
+<blockquote class="blockquote">
+<p><strong>這是本角色最關鍵的產出物。</strong> 使用者只需要把這段 Prompt 反覆餵給 Worker Agent（例如 Jules），Worker 就會自動推進任務直到完工。</p>
+</blockquote>
+<p>根據專案的具體資訊（<code>agent_name</code>、<code>base_branch</code>、<code>rules_dir</code> 路徑），產出以下格式的 Prompt：</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## 📋 Worker 自動執行 Prompt（可重複使用）</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>你是 {{AGENT_NAME}}，一個軟體工廠的執行工人。請按照以下步驟執行：</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. 讀取狀態</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取 <span class="in">`.{{AGENT_NAME}}/tracker.json`</span>。</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>找到 <span class="in">`current_phase`</span> 中第一個 <span class="in">`status == "pending"`</span> 的任務。</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若該任務的 <span class="in">`attempts`</span> &gt;= 5，停止並回報人類。</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若沒有 pending 任務，回報「所有任務已完成或等待 CI」。</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. 互斥鎖檢查</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>檢查遠端是否存在分支 <span class="in">`{AGENT_NAME}/task-{task_id}`</span>。</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若存在：檢查 PR 狀態。</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>MERGED 但 tracker 仍 pending → 停止，回報 Transaction 不一致。</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>無 PR 或 CLOSED → 刪除舊分支，重新領取。</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>OPEN → 跳過此任務。</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若不存在：領取此任務。</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. 建立工作環境</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git fetch origin &amp;&amp; git checkout {{BASE_BRANCH}} &amp;&amp; git pull`</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git checkout -b {{AGENT_NAME}}/task-{task_id}`</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git commit --allow-empty -m "chore: start {task_id}"`</span> (Heartbeat)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git push origin {{AGENT_NAME}}/task-{task_id}`</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. 載入規格</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取 <span class="in">`.agents/rules/`</span> 中的所有規則。</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取任務對應的 <span class="in">`spec_ref`</span> 檔案（位於 <span class="in">`specs/tasks/`</span> 下）。</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>嚴格依照 Spec 實作，禁止猜測。</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5. 實作與驗證</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>依照 Spec 實作功能 + 單元測試。</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>遵守認知上限：檔案 ≤ 300 行，禁止 God Object。</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>路徑審計：<span class="in">`git diff --name-only`</span> 必須全部落在 <span class="in">`allowed_paths`</span> 內。</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>TDD：Phase 1 測試 1-4 項，Phase 2+ 測試 1-8 項。</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6. 提交 PR</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>將 tracker.json 中該任務的 status 更新為 <span class="in">`completed`</span>。</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>提交 PR：<span class="in">`gh pr create --title "[{{AGENT_NAME}}] {title}" --body "..." --label "auto-merge"`</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>PR 提交後你的任務結束。CI 與 Phase 推進由自動化處理。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<blockquote class="blockquote">
+<p>[!IMPORTANT] 注意：此 Prompt 會讓 Worker「看起來」自己在做調度（讀 tracker、切 branch）。 但這些行為<strong>不是 Worker 自主決定的</strong>，而是由你（Dispatcher）編寫的指令。 <strong>知識的來源 (Source of Truth) 始終集中在 Dispatcher</strong>。Worker 只是執行者。</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="產出物清單" class="level2">
+<h2 class="anchored" data-anchor-id="產出物清單">🛠️ 產出物清單</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -233,43 +323,40 @@ ul.task-list li input[type="checkbox"] {
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;">模式</th>
-<th style="text-align: left;">既有產出物</th>
-<th style="text-align: left;">Orchestrator 路由</th>
+<th style="text-align: left;">產出物</th>
+<th style="text-align: left;">用途</th>
+<th style="text-align: left;">使用者</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><strong>🟢 CREATE</strong></td>
-<td style="text-align: left;">無</td>
-<td style="text-align: left;">完整走 Step 1 → 2 → 3 → 4 → 5（全部執行）</td>
+<td style="text-align: left;"><code>dispatcher.py</code></td>
+<td style="text-align: left;">Cron 排程腳本，自動切 branch 並輸出 Task Package</td>
+<td style="text-align: left;">排程系統 / 使用者</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><strong>🟡 CONTINUE</strong></td>
-<td style="text-align: left;">已有 <code>RFP.md</code>、<code>tracker.json</code>、部分 <code>specs/</code></td>
-<td style="text-align: left;">Step 1 (Analyst 以 CONTINUE 模式讀取既有 RFP) → Step 2 (若涉及新 UI) → Step 3 (Architect 產出 Integration Report) → Step 4 (Iterator 追加新任務至既有 tracker) → Step 5</td>
+<td style="text-align: left;"><strong>Worker Prompt</strong></td>
+<td style="text-align: left;">可重複餵給 Worker 的標準化執行指令</td>
+<td style="text-align: left;">使用者 → Worker Agent</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><strong>🔴 MAINTAIN</strong></td>
-<td style="text-align: left;">全套產出物已存在</td>
-<td style="text-align: left;">Step 1 (Analyst 以 MAINTAIN 模式限縮修改範圍) → 跳過 Step 2 → Step 3 (Architect 診斷式審查) → Step 4 (Iterator 產出修復任務) → Step 5</td>
+<td style="text-align: left;"><code>AGENT_PROTOCOL.md</code> (已存在)</td>
+<td style="text-align: left;">Worker 的完整憲法（由 Iterator 產出）</td>
+<td style="text-align: left;">Worker Agent</td>
 </tr>
 </tbody>
 </table>
-<p><strong>接力交接規則：</strong> - 在呼叫每一個 Skill 前，Orchestrator <strong>必須先偵測</strong>該 Skill 的產出物是否已存在（<code>docs/RFP.md</code>、<code>docs/design_system.md</code>、<code>docs/ADR/*.md</code>、<code>tracker.json</code>）。 - 若產出物已存在，<strong>必須</strong>將其路徑與模式標籤 (CREATE/CONTINUE/MAINTAIN) 一併傳遞給下游 Skill，讓其知道「讀取既有的、而非從零開始」。 - <strong>禁止</strong>在 CONTINUE/MAINTAIN 模式下讓任何 Skill 執行 CREATE 邏輯。</p>
+<hr>
 </section>
-</section>
-<section id="使用準則" class="level2">
-<h2 class="anchored" data-anchor-id="使用準則">🛠️ 使用準則</h2>
-<ul>
-<li><strong>元件化思維 (Component Thinking)</strong>：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。</li>
-<li><strong>禁止反向耦合</strong>：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。</li>
-<li><strong>透明化引導</strong>：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。</li>
-<li><strong>📚 文學化維護 (Literate Maintenance)</strong>：身為總指揮，您是 <strong>完全掌握整個文檔門戶 (Quarto Portal)</strong> 的唯一擁有者 (Sole Owner)。這包含根目錄的 <code>index.qmd</code>、<code>docs/*.qmd</code>、<code>_quarto.yml</code> 以及所有架構視圖。任何 Skill 邏輯的修改、ADR 的產出，都必須由您（或您指派的 Architect）反映在文件中。Worker 若發現文件與實際程式碼不符，應在 PR 中提出建議，但<strong>不得直接修改文檔</strong>。</li>
-</ul>
+<section id="未來擴充從教導者升級為調度員" class="level2">
+<h2 class="anchored" data-anchor-id="未來擴充從教導者升級為調度員">🔮 未來擴充：從教導者升級為調度員</h2>
+<blockquote class="blockquote">
+<p><strong>當前</strong>：Dispatcher 被喚醒一次，產出教材後退場。Worker 按教材自行運作。 <strong>未來（有資源時）</strong>：Dispatcher 升級為持續性 Agent，每次排程循環都活著、觀察 Worker 結果、動態調整策略。Worker 的 Protocol 完全不用改。</p>
+</blockquote>
+<p>這個抽象確保了： - 所有調度邏輯的<strong>設計權</strong>集中在 Dispatcher。 - Worker 的<strong>執行行為</strong>可以被 Dispatcher 隨時重新定義。 - 分散式 Worker 的擴充只需要修改 Dispatcher 的產出邏輯。</p>
 <hr>
 <blockquote class="blockquote">
-<p>🚀 <strong>開始執行</strong>：請先啟動 <strong><a href="../../skills/requirements-analyst/SKILL.html">Requirements Analyst</a></strong> 進行首波需求探測。</p>
+<p>🎉 <strong>完成</strong>：教材已產出。請將 Worker Prompt 交給使用者，並指引他設定 Cron 排程。</p>
 </blockquote>
 
 
