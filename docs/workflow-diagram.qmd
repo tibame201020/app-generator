@@ -15,9 +15,9 @@ digraph G {
     graph [
         rankdir=TB,
         nodesep=0.5,
-        ranksep=0.6,         // 垂直間距
-        splines=polyline,
-        pad=0.2,
+        ranksep=0.8,
+        splines=curved,      // 使用圓滑曲線
+        pad=0.3,
         bgcolor="transparent",
         center=true,
         newrank=true
@@ -36,7 +36,7 @@ digraph G {
         color="#333333",
         fontsize=12,
         width=2.5,
-        height=0.7,
+        height=0.8,
         margin=0.1
     ]
     
@@ -47,35 +47,39 @@ digraph G {
         penwidth=1.2
     ]
 
-    // --- 定義 Phase 主軸 (建立穩定的橫向間隔) ---
-    // 使用一組同 Rank 的主導節點，並給予相同的 minlen 與 weight
-    { rank=same; Orch; Arch; Iter; CI_Gate }
+    // --- 嚴格的相位定位 (由左至右) ---
+    // 建立 4 個不可見的定位點節點，強制它們在同一水平排開
+    { rank=same; Phase1_Mark; Phase2_Mark; Phase3_Mark; Phase4_Mark }
+    Phase1_Mark [shape=none, width=0, height=0, label="", style=invis]
+    Phase2_Mark [shape=none, width=0, height=0, label="", style=invis]
+    Phase3_Mark [shape=none, width=0, height=0, label="", style=invis]
+    Phase4_Mark [shape=none, width=0, height=0, label="", style=invis]
+    
+    // 強制左至右順序並加大間距
+    Phase1_Mark -> Phase2_Mark [style=invis, minlen=4]
+    Phase2_Mark -> Phase3_Mark [style=invis, minlen=4]
+    Phase3_Mark -> Phase4_Mark [style=invis, minlen=4]
 
-    // 強制橫向主軸，minlen=3 確保間距，weight 確保直線
-    Orch -> Arch [style=invis, minlen=3, weight=100]
-    Arch -> Iter [style=invis, minlen=3, weight=100]
-    Iter -> CI_Gate [style=invis, minlen=3, weight=100]
-
-    // --- Phase 1: Discovery (Group A) ---
+    // --- Phase 1: Discovery (左欄) ---
     subgraph cluster_0 {
         label = "Phase 1: Discovery";
         color = "#e8f5e9";
         style = "filled,dashed";
         fillcolor = "#f1f8e9";
         
-        // 使用 group 屬性強迫垂直節點對齊成直線
         node [group=g1]
+        { rank=same; Phase1_Mark; Human }
+        Human [shape=circle, label="👩‍💻 Human", fillcolor="#e1f5fe", width=1.0, height=1.0]
         Orch [label="🏁 Factory Orchestrator", fillcolor="#fff9c4"]
         ReqA [label="📝 Requirements Analyst"]
         D_UI [shape=diamond, label="Needs UI?", fillcolor="#ffffff"]
         VisD [label="🎨 Visual Designer", style="filled,dashed,rounded", fillcolor="#ffffff"]
         
-        Human [shape=circle, label="👩‍💻 Human", fillcolor="#e1f5fe", width=1.0, height=1.0]
         Human -> Orch -> ReqA -> D_UI
         D_UI -> VisD [label="Yes"]
     }
 
-    // --- Phase 2: Tech Design (Group B) ---
+    // --- Phase 2: Tech Design (中左欄) ---
     subgraph cluster_1 {
         label = "Phase 2: Tech Design";
         color = "#fff3e0";
@@ -83,13 +87,14 @@ digraph G {
         fillcolor = "#fff8e1";
         
         node [group=g2]
+        { rank=same; Phase2_Mark; Arch }
         Arch [label="🏛️ Architect Reviewer"]
         Sim  [label="🧠 Mental Simulation", shape=ellipse, fillcolor="#ffffff"]
         
         Arch -> Sim
     }
 
-    // --- Phase 3: Execution (Group C) ---
+    // --- Phase 3: Execution (中右欄) ---
     subgraph cluster_2 {
         label = "Phase 3: Execution";
         color = "#f3e5f5";
@@ -97,6 +102,7 @@ digraph G {
         fillcolor = "#f3e5f5";
         
         node [group=g3]
+        { rank=same; Phase3_Mark; Iter }
         Iter [label="🏭 Factory Iterator"]
         Track [label="🗄️ tracker.json", shape=note, fillcolor="#ffffff"]
         Work [label="👷 Worker Agents"]
@@ -104,7 +110,7 @@ digraph G {
         Iter -> Track -> Work
     }
 
-    // --- Phase 4: Validation (Group D) ---
+    // --- Phase 4: Validation (右欄) ---
     subgraph cluster_3 {
         label = "Phase 4: Validation";
         color = "#ffebee";
@@ -112,6 +118,7 @@ digraph G {
         fillcolor = "#fffde7";
 
         node [group=g4]
+        { rank=same; Phase4_Mark; CI_Gate }
         CI_Gate [label="🤖 CI Checker", shape=diamond, fillcolor="#ffffff"]
         Rep     [label="🩹 Self-Healing", fillcolor="#ffccbc"]
         Merg    [label="✅ Merge & Advance", fillcolor="#c8e6c9"]
@@ -120,14 +127,14 @@ digraph G {
         CI_Gate -> Rep [label="Fail"]
     }
 
-    // --- 實質跨 Phase 連接邏輯 (不參與階層計算以避免拉扯) ---
+    // --- 跨 Phase 連接邏輯 (由左至右推進) ---
     edge [constraint=false]
     D_UI -> Arch [label="No"]
     VisD -> Arch
     Sim -> Iter
     Work -> CI_Gate [label="PR Submitted"]
     
-    // 回饋迴路
+    // 回饋迴路 (曲線)
     Rep -> Work [color="#e57373", tailport=w, headport=w]
 }
 ```
