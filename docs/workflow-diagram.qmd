@@ -14,18 +14,18 @@ format:
 digraph G {
     graph [
         rankdir=LR,          // 橫向佈局
-        nodesep=0.6,
-        ranksep=1.0,
+        nodesep=0.4,
+        ranksep=0.6,
         splines=polyline, 
-        pad=0.5,
+        pad=0.2,
         bgcolor="transparent",
-        dpi=300,
+        dpi=150,           // 降低 DPI 避免基準圖過大
         center=true
     ]
     
     fontname="Arial"
-    fontsize=24
-    label="Autonomous Software Factory: Full Workflow"
+    fontsize=20
+    label="Autonomous Software Factory Workflow"
     labelloc="t"
 
     node [
@@ -34,9 +34,8 @@ digraph G {
         style="filled,rounded", 
         fillcolor="#f9f9f9", 
         color="#333333",
-        width=2.5,
-        height=0.8,
-        fontsize=14
+        fontsize=12,
+        margin=0.15
     ]
     
     edge [
