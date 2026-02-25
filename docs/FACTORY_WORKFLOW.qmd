@@ -16,7 +16,7 @@ The factory is composed of six specialized autonomous components orchestrated by
 > 旨在呈現 6 個角色間的高階協作與狀態轉移。
 
 ```{mermaid}
-graph LR
+graph TD
     User([👩‍💻 人類意圖]) --> P1[[Phase 1: Discovery]]
     P1 --> P2[[Phase 2: Tech Design]]
     P2 --> P3[[Phase 3: Task Specification]]
