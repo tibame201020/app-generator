@@ -5,48 +5,102 @@ subtitle: "The Literate State Machine of Software Production"
 
 # 🏭 Autonomous Software Factory Workflow
 
-> [!NOTE] This is an **Executable Document**. It not only describes the workflow but also serves as the real-time monitoring interface for the factory.
+> \[!NOTE\] This is an **Executable Document**. It not only describes the workflow but also serves as the real-time monitoring interface for the factory.
 
-## 🏗️ Core Architecture: Decoupling & Orchestration
+## 🏗️ Core Architecture: 6-Role Decoupled Pipeline
 
-The factory is composed of five specialized autonomous components orchestrated by a central brain. 
+The factory is composed of six specialized autonomous components orchestrated by a central brain.
 
 ### 🗺️ 戰略全景：軟體工廠生命週期
-> 旨在呈現 Phase 間的高階協作與狀態轉移。
+
+> 旨在呈現 6 個角色間的高階協作與狀態轉移。
 
 ```{mermaid}
 graph LR
     User([👩‍💻 人類意圖]) --> P1[[Phase 1: Discovery]]
     P1 --> P2[[Phase 2: Tech Design]]
-    P2 --> P3[[Phase 3: Execution]]
-    P3 --> P4[[Phase 4: Validation]]
-    P4 -- "反饋/維修" --> P3
-    P4 -- "完成" --> Done((🚀 發布))
-    
+    P2 --> P3[[Phase 3: Task Specification]]
+    P3 --> P4[[Phase 4: Dispatch]]
+    P4 --> P5[[Phase 5: Execution]]
+    P5 --> P6[[Phase 6: Validation]]
+    P6 -- "反饋/重試" --> P5
+    P6 -- "Phase 推進" --> P4
+    P6 -- "完成" --> Done((🚀 發布))
+
     style P1 fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
     style P2 fill:#fffde7,stroke:#fbc02d,color:#f57f17
     style P3 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c
-    style P4 fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style P4 fill:#fff3e0,stroke:#e65100,color:#bf360c
+    style P5 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style P6 fill:#ffebee,stroke:#c62828,color:#b71c1c
 ```
 
----
+------------------------------------------------------------------------
 
-## 📊 Live Factory Status (Experimental)
+## 🔍 戰術拆解：各階段詳細邏輯
+
+### 1. Discovery: 意圖具現化
+
+> 將模糊的自然語言轉化為可執行的視覺與功能需求。
 
 ```{mermaid}
 graph TD
-    PR[Pull Request] --> CI{CI 門戶檢測}
-    CI -- 通過 --> Merge[合併與前進]
-    CI -- 失敗 --> Repair[自我修復路徑]
-    Repair --> Worker[重回 Phase 3 執行層]
-    
-    style Merge fill:#c8e6c9,stroke:#2e7d32
-    style Repair fill:#ffccbc,stroke:#d84315
+    Start([人類輸入]) --> Orch{協作編程器}
+    Orch --> ReqA[需求分析師]
+    ReqA --> UI_Check{需要 UI?}
+    UI_Check -- 是 --> VisD[視覺設計師]
+    UI_Check -- 否 --> Arch[架構審查]
+    VisD --> Arch
 ```
+
+### 2. Tech Design → Task Specification
+
+> 確保架構內聚後，將需求拆解為模組化微型任務。
+
+```{mermaid}
+graph TD
+    In[需求藍圖] --> Arch[架構審查員]
+    Arch --> Sim[大模型腦力模擬]
+    Sim -- 簽署通過 --> Iter[工廠迭代器]
+    Iter --> Specs[(specs/*.yml)]
+    Iter --> Track[(tracker.json)]
+
+    style Sim fill:#fff9c4,stroke:#fbc02d
+    style Specs fill:#f5f5f5,stroke:#9e9e9e
+```
+
+### 3. Dispatch → Execution → Validation
+
+> Task Dispatcher 專職調度，Worker 純粹實作，CI/CD 裁決結果。
+
+```{mermaid}
+graph TD
+    Disp[任務調度官] --> Lock{互斥鎖檢查}
+    Lock -- 可領取 --> Pack[組裝任務包]
+    Lock -- 已鎖定 --> Skip[跳過]
+    Pack --> Worker[執行工人]
+    Worker -- 提交 PR --> CI{CI 門戶}
+    CI -- 通過 --> Merge[合併]
+    CI -- 失敗 --> Retry{可重試?}
+    Retry -- 是 --> Disp
+    Retry -- 否 --> Human([通知人類])
+    Merge --> Phase{Phase 完成?}
+    Phase -- 是 --> Disp
+    Phase -- 全部完成 --> Done((🚀 發布))
+
+    style Disp fill:#fff3e0,stroke:#e65100
+    style Worker fill:#e8f5e9,stroke:#2e7d32
+    style Merge fill:#c8e6c9,stroke:#2e7d32
+```
+
+------------------------------------------------------------------------
+
+## 📊 Live Factory Status (Experimental)
 
 ::: callout-tip
 ### 進度自動化監控
-以下區塊會自動搜尋專案中的 `tracker.json` 並呈現在地進度。
+
+以下區塊會自動搜尋專案中的 `tracker.json` 並呈現即時進度。
 :::
 
 ``` python
@@ -64,56 +118,19 @@ else:
     print("> ⚠️ No active tracker found. Factory is currently idle.")
 ```
 
----
+------------------------------------------------------------------------
 
-## 🔍 戰術細節與角色定義
+## 🛠️ 角色定義 (6-Role Pipeline)
 
-### 1. [Discovery: 意圖具現化](../skills/requirements-analyst/SKILL.md)
-> 將模糊的自然語言轉化為可執行的視覺與功能需求。
+| \# | 角色 | 職責 | Skill |
+|:-----------------|:-----------------|:-----------------|:-----------------|
+| 1 | [Requirements Analyst](../skills/requirements-analyst/SKILL.md) | 意圖分類與需求收集 | `requirements-analyst` |
+| 2 | [Visual Designer](../skills/visual-designer/SKILL.md) | **(可選)** 設計系統與視覺規格 | `visual-designer` |
+| 3 | [Architect Reviewer](../skills/architect-reviewer/SKILL.md) | 技術選型與沙盤推演 | `architect-reviewer` |
+| 4 | [Factory Iterator](../skills/factory-iterator/SKILL.md) | 任務拆解與規格產出 | `factory-iterator` |
+| 5 | [Task Dispatcher](../skills/task-dispatcher/SKILL.md) | **任務調度、互斥鎖、Phase 推進** | `task-dispatcher` |
+| 6 | Worker (AGENT_PROTOCOL) | 純粹實作、驗證、提交 PR | co-worker |
 
-```{mermaid}
-graph TD
-    Start([人類輸入]) --> Orch{協作編程器}
-    Orch --> ReqA[需求分析師]
-    ReqA --> UI_Check{需要 UI?}
-    UI_Check -- 是 --> VisD[視覺設計師]
-    UI_Check -- 否 --> Arch[架構審查]
-    VisD --> Arch
-    
-    subgraph SG1 ["邊界：意圖對齊"]
-        ReqA
-        VisD
-    end
-    style SG1 fill:#ffffff,stroke:#333,stroke-dasharray: 5 5
-```
+------------------------------------------------------------------------
 
-### 2. [Tech Design: 技術建模](../skills/architect-reviewer/SKILL.md)
-> 確保架構內聚、建立 ADR 並進行大模型腦力模擬。
-
-```{mermaid}
-graph TD
-    In[需求藍圖] --> Arch[架構審查員]
-    Arch --> Sim[大模型腦力模擬]
-    Sim -- 風險評估 --> Sim
-    Sim -- 簽署通過 --> Out([技術決策檔])
-    
-    style Sim fill:#fff9c4,stroke:#fbc02d
-```
-
-### 3. [Execution: 工廠迭代](../skills/factory-iterator/SKILL.md)
-> 原子化處理代碼變動，並透過 `tracker.json` 保持狀態追蹤。
-
-```{mermaid}
-graph TD
-    Dec[技術決策] --> Iter[工廠迭代器]
-    Iter --> Track[(tracker.json)]
-    Track --> Worker[執行工人 Agents]
-    Worker -- 提交 PR --> CI[CI 門戶]
-    
-    style Track fill:#f5f5f5,stroke:#9e9e9e
-    style Worker fill:#e1f5fe,stroke:#01579b
-```
-
----
-
-> [!TIP] **Literate Strategy**: By using `.qmd`, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint to be visible to the Orchestrator.
+> \[!TIP\] **Literate Strategy**: By using `.qmd`, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint.

@@ -12,8 +12,6 @@ acceptance_criteria:
   - "建立 OOO 或實作 XXX"
   - "[禁令] 絕對不可以做ＯＯＯ"
   - "[Fallback] API Key 必須設定預設值"
-  # [Phase End] 若此為該階段最後一任務，將 tracker.json 的 current_phase 更新至下一階段
-  # - "[Phase End] 更新 current_phase"
 
 # ECC-Inspired fields
 success_criteria:

@@ -1,58 +1,70 @@
 # {{AGENT_NAME}} Agent Execution Protocol
-> 每次 Schedule 觸發後，{{AGENT_NAME}} 必須依序執行以下步驟，不得跳過。
+> Worker 的唯一職責：接收任務、實作功能、驗證品質、提交 PR。
 
-## Step 1: Read Rules & State (防撞車機制)
-- **⚖️ 規則預載 (Rules First)**：在執行任何操作（包含領取鎖）前，先確認 `.agents/rules/` 目錄是否存在且不為空。
-  - **護欄 (Guard)**：若目錄不存在，您**必須**停止執行並回報：「Rules directory missing. Scaffolding may be incomplete. 禁止在無規則約束下執行。」
-  - 讀取所有 `.agents/rules/*.md`。所有後續的分支刪除或開發行為均受此規約約束。
-- 讀取 `.{{AGENT_NAME}}/tracker.json`。
-- 🛡️ **健康檢查 (Attempts Check)**：若該任務的 `attempts` >= 5，視為「持續性死鎖」，您**必須**跳過該任務並提示人類介入。
-- 🛑 **重要！物理互斥鎖 (Branch-as-Lock & Self-Healing)**：在領取任務前，您**必須**檢查遠端 (Origin) 是否已存在分支 `{{AGENT_NAME}}/task-{task_id}`：
-  1. **若不存在**：可領取。
-  2. **若已存在**：檢查其 PR 狀態（使用 `gh pr list --head {{AGENT_NAME}}/task-{task_id} --state all --json state`）。
-      - **異常狀態情境 (Issue C Fix)**：若 PR 狀態為 `MERGED` 但主線 tracker 仍為 `pending`，這代表 Transaction 不一致。**禁止自動重啟**。您必須停止執行並回報：「Critical: Transaction mismatch (PR merged but tracker pending). Human intervention required.」。
-      - **可重啟情境**：若 `gh` 返回空（無 PR 存在）或 PR 狀態為 `CLOSED`，代表該分支已失效。您**被授權強制刪除舊分支**並重新領取：`git push origin --delete {{AGENT_NAME}}/task-{task_id}`。
-      - **鎖定情境**：若 PR 狀態為 `OPEN`，代表任務由其他 Worker 處理中，請立刻跳過。
-- 若找不到可領取任務，輸出「Tasks are currently locked or in CI/CD pipeline. Halting.」並終止。
+## ⚠️ 角色聲明
 
-- **狀態及計數遞增 (State Update)**：
-  - 您領取任務後，必須切換至 Feature Branch。
-  - **初始心跳包 (Heartbeat Commit)**：
-    1. 產生空提交：`git commit --allow-empty -m "chore: start task_{task_id}"`
-    2. 立刻推送到遠端：`git push origin {{AGENT_NAME}}/task-{task_id}`
-  - **語義去噪說明**：禁止在 Feature Branch 頻繁改動 `tracker.json` 的 `in_progress` 狀態。工廠的「在途事實」完全由**分支/PR 偵測**與主線 tracker 定義。
+> **您是 Co-Worker（協作工人），不是調度員。**
+>
+> - ❌ 您**不需要**自己尋找或領取任務。
+> - ❌ 您**不需要**管理分支鎖或偵測 PR 狀態。
+> - ❌ 您**不需要**判斷 Phase 是否推進。
+> - ❌ 您**不需要**等待 CI/CD 結果。
+>
+> 以上所有調度邏輯由 **Task Dispatcher** 處理。
+> 您只需專注於：**接收 → 理解 → 實作 → 驗證 → 提交**。
 
-## Step 2: Acquire Context & Load Spec (領取與加載)
+---
+
+## Step 1: 接收任務包 (Receive Task Package)
+
+Task Dispatcher 會提供一個結構化的任務包，包含：
+
+```yaml
+task_package:
+  task_id: "task_X_1_1"
+  spec_ref: "specs/tasks/task_X_1_1.yml"
+  branch: "{{AGENT_NAME}}/task-{task_id}"
+  base_branch: "{{BASE_BRANCH}}"
+  allowed_paths: [...]
+  rules_dir: ".agents/rules/"
+  design_tokens_ref: "docs/design_system.md"
+```
+
+**您的動作：**
+- 切換至指定的 Feature Branch。
+- **⚖️ 規則預載 (Rules First)**：讀取 `rules_dir` 中的所有 `.md` 規則檔案。
+  - **護欄 (Guard)**：若目錄不存在或為空，**停止執行**並回報：「Rules directory missing. 禁止在無規則約束下執行。」
+
+## Step 2: 載入規格與上下文 (Load Spec & Context)
 - **1:1 Spec 讀取 (No Guessing)**：
   - 完整讀取 `spec_ref` 檔案。
   - **嚴格限令**：禁止「猜測」任務，必須依此檔案為唯一準則。
 - **維護模式審計 (Maintenance/Audit Step)**：
   - **重要**：若專案已有既有程式碼，您**必須**先執行 `list_dir` 與 `grep_search` 遍歷涉及的模組。
-  - **禁令**：禁止隨意修改既有的命名規範或基礎架構，除非 Spec 明文要求。您必須在腦中建立「新舊融合」的方案。
+  - **禁令**：禁止隨意修改既有的命名規範或基礎架構，除非 Spec 明文要求。
 - 讀取 `docs/doc-categories.md` 索引以獲取專案背景。
 
-
-## Step 3: Implement & Cognitive Load Limit (認知上限守則)
-- 依照 spec 實作功能，嚴格遵守 skills 文件中的程式碼風格。
+## Step 3: 實作功能 (Implement)
+- 依照 Spec 實作功能，嚴格遵守 Rules 文件中的程式碼風格。
 - 實作必須包含：功能程式碼 + 對應的單元測試／整合測試。
-- 若有架構或 Skill 邏輯變更，**必須**同步更新 `FACTORY_WORKFLOW.qmd` 與 `docs/*.qmd` 內的對應文件與 `CHANGELOG.md`。確保「文學化編程 (Literate Programming)」之同步性。
+- 若有架構或 Skill 邏輯變更，**必須**同步更新 `FACTORY_WORKFLOW.qmd` 與 `docs/*.qmd`。
 
 - 🧠 **認知上限與架構守則 (Cognitive Load & Architecture Limit)**：
   1. **檔案長度控制**：新建立或修改的檔案，長度應盡量保持在 200~300 行以內。
-  2. **反模式禁令 (Anti-Patterns Ban)**：絕對禁止寫出「全能上帝物件 (God Object)」或「大泥球 (Big Ball of Mud)」。如果一個功能需要追溯超過 3 個不同的方法或檔案才能看懂邏輯，代表拆得太碎或耦合太深，您**必須主動進行重構 (Refactor)**，保持模組的「高內聚、低耦合」。
-  3. **壞了就換 (Disposable Components)**：如果舊有的小型模組充滿 Bug 難以修復，請果斷刪除並重寫，不要疊床架屋。
+  2. **反模式禁令 (Anti-Patterns Ban)**：絕對禁止寫出「全能上帝物件 (God Object)」或「大泥球 (Big Ball of Mud)」。
+  3. **壞了就換 (Disposable Components)**：如果舊有的小型模組充滿 Bug 難以修復，請果斷刪除並重寫。
 
-## Step 4: Self-Healing & Path Auditing (自我修復與路徑審計)
+## Step 4: 自我修復與路徑審計 (Self-Healing & Path Auditing)
 - 雖然需嚴格遵守 Spec，但身為高階 Agent，**您被授權進行邏輯上的自我修復與環境適應**。
 - 🛡️ **機械性約束 (Allowed Paths Check)**：
   - 在執行 `git commit` 前，您**必須**執行 `git diff --name-only`。
-  - **嚴格限令**：所有異動檔案的路徑必須位於此任務定義的 `allowed_paths` 範圍內。
-  - 若偵測到超出範圍的異動，您必須修正代碼，或在 PR 中明確說明理由並請求人類核准權限擴張。
-- **授權行為**：您可自行加入必要的配置、微調架構或修正先前的錯誤，並將此「自主修正 (Self-Healing)」的紀錄寫入 `CHANGELOG.md` 及 PR 描述中。
-- 目標是：**在不偏離核心功能的目標下，確保程式碼能 100% 成功執行與編譯。**
+  - **嚴格限令**：所有異動檔案的路徑必須位於任務包定義的 `allowed_paths` 範圍內。
+  - 若偵測到超出範圍的異動，您必須修正代碼，或在 PR 中明確說明理由並請求人類核准。
+- **授權行為**：您可自行加入必要的配置、微調架構或修正先前的錯誤，並將此「自主修正 (Self-Healing)」的紀錄寫入 `CHANGELOG.md`。
+- 目標：**在不偏離核心功能的目標下，確保程式碼能 100% 成功執行與編譯。**
 
-## Step 5: Validate & TDD (ECC Standard)
-- **TDD 三部曲**：撰寫測試 -> 執行測試確認失敗 (RED) -> 實作功能 -> 執行測試確認通過 (GREEN)。
+## Step 5: 驗證品質 (Validate & TDD)
+- **TDD 三部曲**：撰寫測試 → 確認失敗 (RED) → 實作功能 → 確認通過 (GREEN)。
 - **80% 覆蓋率**：確保單元測試 + 整合測試覆蓋率達到 80% 以上。
 - 🛡️ **TDD 分級制 (Phase-aware Testing)**：
   - **Phase 1 (Setup)**：僅強制要求測試 1-4 項 (基礎守後)。
@@ -65,32 +77,22 @@
   6. **併發競爭 (Race Conditions)**。
   7. 極端大資料量 (10k+ items) 效能分析。
   8. 特殊字元 (Unicode, Emoji, SQL injection 防禦)。
-- 對照 spec 的 Acceptance Criteria 與 Success Criteria 逐條自我檢查。
-- 對照相關 skill 或 rule 文件末尾的 PR Checklist 逐條確認。
-- 若任何一條未通過，回到 Step 3 或 Step 4 修正，不得帶著失敗的測試提 PR。
+- 對照 Spec 的 Acceptance Criteria 與 Success Criteria 逐條自我檢查。
+- 若任何一條未通過，回到 Step 3 或 Step 4 修正，**不得帶著失敗的測試提 PR**。
 
-## Step 6: Finalize Status & Submit PR
-- 專案的主開發分支為 `{{BASE_BRANCH}}`。
-- {{AGENT_NAME}} 每次執行任務時，必須從 `{{BASE_BRANCH}}` 切出新分支：`{{AGENT_NAME}}/task-{task_id}`。
-- **重要狀態轉移 (Transaction)**：
-  - 在您確認所有測試通過、且 `git diff` 符合路徑約束後，**您必須在 Feature Branch 分支上將 `.{{AGENT_NAME}}/tracker.json` 中該任務的 status 改為 `completed` 並 commit**。
-  - **Phase 自動推進 (Issue A/B/D Fix)**：您必須判定自己是否為該階段的「最後任務」：
-    - **同步 (Sync)**：在判定前，您**必須**先執行 `git fetch origin`。
-    - **遠端讀取 (Remote Read)**：讀取主線最新狀態：`git show origin/{{BASE_BRANCH}}:.{{AGENT_NAME}}/tracker.json > /tmp/latest_tracker.json`。
-    - **判定準則**：以 `/tmp/latest_tracker.json` 為準。若其中同 Phase 的**所有其他任務**狀態皆已為 `completed`，則您確定為最後一人。
-    - **動作**：此時您必須同步將頂層的 `current_phase` 更新為下一階段（參考階段順序）。
-  - 這代表了本次任務的「交易提交」。只有 PR 被合併後，主分支的狀態才會同步更新。
-- 提交 PR 時，目標分支 (Base Branch) 必須設定為 `{{BASE_BRANCH}}`。
-- PR Title 格式：`[{{AGENT_NAME}}] {task_title}`
-- PR Description 必須包含：
-  - 對應 Task ID。
-  - 已完成的 Acceptance Criteria 列表。
-  - **路徑審計報告**：聲明所有變更均符合 `allowed_paths`。
-  - **重要**：您必須為 PR 添加 **GitHub Label `auto-merge`** 以觸發自動合併。
-  - **推薦指令**：`gh pr create --title "[{{AGENT_NAME}}] {task_title}" --body "{description}" --label "auto-merge"`。
-  - **嚴禁**僅在 PR Body 寫文字標籤，那將無法觸發 CI 裁判。
+## Step 6: 提交 PR (Submit Pull Request)
+- 在確認所有測試通過、且 `git diff` 符合路徑約束後：
+  1. 在 Feature Branch 上將 `tracker.json` 中該任務的 status 改為 `completed` 並 commit。
+  2. 提交 PR，目標分支為任務包中指定的 `base_branch`。
+- **PR 格式**：
+  - **Title**：`[{{AGENT_NAME}}] {task_title}`
+  - **Description** 必須包含：
+    - 對應 Task ID。
+    - 已完成的 Acceptance Criteria 列表。
+    - **路徑審計報告**：聲明所有變更均符合 `allowed_paths`。
+  - **必須**添加 GitHub Label `auto-merge` 以觸發自動合併。
+  - **推薦指令**：`gh pr create --title "[{{AGENT_NAME}}] {task_title}" --body "{description}" --label "auto-merge"`
 
-## Step 7: Wait for CI/CD Auto-Merge (Git as State Machine)
-- 提交 PR 後，身分驗證後的自動合併機器人會接手。
-- 如果 CI 測試通過且符合安全門檻（由具備 PAT 權限的 Bot 操作），PR 將會被 Squash Merge。
-- **由於主分支的 tracker 狀態是透過 PR 合併而成，只有 Merge 成功，該任務才算正式結束。**
+---
+
+> 🏁 **Worker 的生命週期到此結束。** PR 提交後，後續的 CI/CD 監控、Phase 推進與下一任務的調度，全部由 **Task Dispatcher** 接管。您無需等待或關心結果。

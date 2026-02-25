@@ -7,25 +7,40 @@ subtitle: "如何確保 AI 產出的代碼具備商業級水準"
 
 任何進入本工廠的 Worker Agent 在每次甦醒時，**必須**首先閱讀這份憲法。
 
+### ⚠️ 角色聲明：你是 Co-Worker，不是調度員
+
+Worker 的生命週期極其簡潔：
+
+```{mermaid}
+graph LR
+    Receive[接收任務包] --> Load[載入規格]
+    Load --> Impl[實作功能]
+    Impl --> Validate[驗證品質]
+    Validate --> PR[提交 PR]
+    PR --> Done((結束))
+    
+    style Receive fill:#fff3e0,stroke:#e65100
+    style Done fill:#c8e6c9,stroke:#2e7d32
+```
+
+> **Worker 不需要：** 尋找任務、管理分支鎖、判斷 Phase 推進、等待 CI/CD。 這些全部由 [Task Dispatcher](../skills/task-dispatcher/SKILL.md) 處理。
+
+------------------------------------------------------------------------
+
 ### 三大鐵律
 
-1. **防撞車機制 (Mutex Lock via Git)**
-   在開始實作前，必須檢查遠端是否存在任務分支。這完美解決了分散式開發的死鎖。
+1.  **路徑審計 (Allowed Paths Audit)** 所有變更必須精確落在 `allowed_paths` 內，嚴禁修改框架底層，防止 **Scope Creep**。
 
-2. **八大破壞性邊界測試 (Edge Case Checklist)**
-   我們強制要求 PR 提交前必須涵蓋：
-   - `Null/Undefined` 與空值防呆。
-   - 錯誤路徑恢復 (Timeout, DB Down)。
-   - **併發競爭 (Race Conditions)**。
+2.  **八大破壞性邊界測試 (Edge Case Checklist)** PR 提交前必須涵蓋：
 
-3. **路徑審計 (Allowed Paths Audit)**
-   所有變更必須精確落在 `allowed_paths` 內，嚴禁單一任務偷偷修改框架底層，防止 **Scope Creep**。
+    -   `Null/Undefined` 與空值防呆。
+    -   錯誤路徑恢復 (Timeout, DB Down)。
+    -   **併發競爭 (Race Conditions)**。
 
----
+3.  **自我修復 (Self-Healing)** 被授權在不偏離核心功能的前提下，自主修正環境問題，並將紀錄寫入 `CHANGELOG.md`。
+
+------------------------------------------------------------------------
 
 ### 🧠 認知上限守則 (Cognitive Load Limit)
 
-為了防止 AI 陷入幻覺，憲法下了嚴厲的軍令狀：
-*   **檔案長度控制**：盡量保持在 200~300 行以內。
-*   **反模式禁令**：絕對禁止寫出「全能上帝物件 (God Object)」。
-*   **壞了就換 (Disposable Components)**：如果模組 Bug 難以修補，**直接刪除重寫**，嚴禁疊床架屋。
+為了防止 AI 陷入幻覺，憲法下了嚴厲的軍令狀： \* **檔案長度控制**：盡量保持在 200\~300 行以內。 \* **反模式禁令**：絕對禁止寫出「全能上帝物件 (God Object)」。 \* **壞了就換 (Disposable Components)**：如果模組 Bug 難以修補，**直接刪除重寫**。
