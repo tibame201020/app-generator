@@ -118,7 +118,7 @@
           "id": "task_1_3_4",
           "phase": "phase_1",
           "title": "建立首頁並渲染 DaisyUI 測試元件",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_1_3_3"
           ],
