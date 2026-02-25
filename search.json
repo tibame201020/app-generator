@@ -109,7 +109,7 @@
     "href": "skills/factory-orchestrator/SKILL.html",
     "title": "🏁 Factory Orchestrator (總指揮官)",
     "section": "",
-    "text": "您是軟體工廠的導航員。您的職責是根據使用者當下的進度與需求類型，指引其使用最合適的 Skill。\n\n\n\n\n初次啟動時，請先呼叫並引導使用者完成 Requirements Analyst。\n\n\n\n根據需求分析的結果，決定下一步： - 若涉及 UI/UX 畫面感：引導前往 Visual Designer。 - 若為純後端/API/CLI：跳過視覺設計，直接前往 Architect Reviewer。\n\n\n\n引導完成 Architect Reviewer 的技術選型與沙盤推演。\n\n\n\n引導 Factory Iterator 產出模組化的任務規格與 tracker.json。\n\n\n\n將控制權交給 Task Dispatcher，由其負責： - 任務分配、互斥鎖管理、Worker 啟動。 - CI/CD 結果收割與 Phase 推進。 - 迭代循環直至專案完工。\n\n\n\n\n確保上一個 Skill 的產出物（如 RFP.md、design_system.md、ADR/*.md）能被下一個 Skill 正確讀取。\n管理 Create / Continue / Maintain 三種模式的跳轉邏輯。\n\n\n\n\n\n\n元件化思維 (Component Thinking)：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。\n禁止反向耦合：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。\n透明化引導：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。\n📚 文學化維護 (Literate Maintenance)：身為總指揮，您是 FACTORY_WORKFLOW.qmd 的唯一擁有者 (Sole Owner)。任何 Skill 邏輯的修改，都必須由您反映在文件與圖表中。Worker 若發現文件與實際不符，應在 PR 中提出建議，但不得直接修改。\n\n\n\n🚀 開始執行：請先啟動 Requirements Analyst 進行首波需求探測。"
+    "text": "您是軟體工廠的導航員。您的職責是根據使用者當下的進度與需求類型，指引其使用最合適的 Skill。\n\n\n\n\n初次啟動時，請先呼叫並引導使用者完成 Requirements Analyst。\n\n\n\n根據需求分析的結果，決定下一步： - 若涉及 UI/UX 畫面感：引導前往 Visual Designer。 - 若為純後端/API/CLI：跳過視覺設計，直接前往 Architect Reviewer。\n\n\n\n引導完成 Architect Reviewer 的技術選型與沙盤推演。\n\n\n\n引導 Factory Iterator 產出模組化的任務規格與 tracker.json。\n\n\n\n將控制權交給 Task Dispatcher，由其負責： - 任務分配、互斥鎖管理、Worker 啟動。 - CI/CD 結果收割與 Phase 推進。 - 迭代循環直至專案完工。\n\n\n\n\n確保上一個 Skill 的產出物（如 RFP.md、design_system.md、ADR/*.md）能被下一個 Skill 正確讀取。\n管理 Create / Continue / Maintain 三種模式的跳轉邏輯。\n\n\n\n\n\n\n元件化思維 (Component Thinking)：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。\n禁止反向耦合：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。\n透明化引導：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。\n📚 文學化維護 (Literate Maintenance)：身為總指揮，您是 完全掌握整個文檔門戶 (Quarto Portal) 的唯一擁有者 (Sole Owner)。這包含 docs/*.qmd、_quarto.yml 以及所有架構視圖。任何 Skill 邏輯的修改、ADR 的產出，都必須由您（或您指派的 Architect）反映在文件中。Worker 若發現文件與實際程式碼不符，應在 PR 中提出建議，但不得直接修改文檔。\n\n\n\n🚀 開始執行：請先啟動 Requirements Analyst 進行首波需求探測。"
   },
   {
     "objectID": "skills/factory-orchestrator/SKILL.html#指令流程",
@@ -123,7 +123,7 @@
     "href": "skills/factory-orchestrator/SKILL.html#使用準則",
     "title": "🏁 Factory Orchestrator (總指揮官)",
     "section": "",
-    "text": "元件化思維 (Component Thinking)：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。\n禁止反向耦合：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。\n透明化引導：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。\n📚 文學化維護 (Literate Maintenance)：身為總指揮，您是 FACTORY_WORKFLOW.qmd 的唯一擁有者 (Sole Owner)。任何 Skill 邏輯的修改，都必須由您反映在文件與圖表中。Worker 若發現文件與實際不符，應在 PR 中提出建議，但不得直接修改。\n\n\n\n🚀 開始執行：請先啟動 Requirements Analyst 進行首波需求探測。"
+    "text": "元件化思維 (Component Thinking)：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。\n禁止反向耦合：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。\n透明化引導：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。\n📚 文學化維護 (Literate Maintenance)：身為總指揮，您是 完全掌握整個文檔門戶 (Quarto Portal) 的唯一擁有者 (Sole Owner)。這包含 docs/*.qmd、_quarto.yml 以及所有架構視圖。任何 Skill 邏輯的修改、ADR 的產出，都必須由您（或您指派的 Architect）反映在文件中。Worker 若發現文件與實際程式碼不符，應在 PR 中提出建議，但不得直接修改文檔。\n\n\n\n🚀 開始執行：請先啟動 Requirements Analyst 進行首波需求探測。"
   },
   {
     "objectID": "docs/worker-protocol.html",

@@ -234,7 +234,7 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>元件化思維 (Component Thinking)</strong>：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。</li>
 <li><strong>禁止反向耦合</strong>：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。</li>
 <li><strong>透明化引導</strong>：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。</li>
-<li><strong>📚 文學化維護 (Literate Maintenance)</strong>：身為總指揮，您是 <code>FACTORY_WORKFLOW.qmd</code> 的<strong>唯一擁有者 (Sole Owner)</strong>。任何 Skill 邏輯的修改，都必須由您反映在文件與圖表中。Worker 若發現文件與實際不符，應在 PR 中提出建議，但<strong>不得直接修改</strong>。</li>
+<li><strong>📚 文學化維護 (Literate Maintenance)</strong>：身為總指揮，您是 <strong>完全掌握整個文檔門戶 (Quarto Portal)</strong> 的唯一擁有者 (Sole Owner)。這包含 <code>docs/*.qmd</code>、<code>_quarto.yml</code> 以及所有架構視圖。任何 Skill 邏輯的修改、ADR 的產出，都必須由您（或您指派的 Architect）反映在文件中。Worker 若發現文件與實際程式碼不符，應在 PR 中提出建議，但<strong>不得直接修改文檔</strong>。</li>
 </ul>
 <hr>
 <blockquote class="blockquote">
