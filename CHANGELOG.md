@@ -20,3 +20,4 @@ All notable changes to this project will be documented in this file.
 - Task 1.3.4: Created Home Page and rendered DaisyUI Test Component.
 - Task 1.4.3: Created docker-compose.yml for full stack orchestration with MinIO and Volume mounts.
 - Task 2.1.1: Implemented Project and Conversation JPA Entities using Snowflake ID Generator.
+- Task 2.1.2: Created Spring Data JPA Repositories for Project and Conversation with ordering support.
