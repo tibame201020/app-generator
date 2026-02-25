@@ -207,7 +207,8 @@ ul.task-list li input[type="checkbox"] {
 <li>從模板產生 <code>.{{AGENT_NAME}}/tracker.json</code> 與 <code>AGENT_PROTOCOL.md</code>。</li>
 <li><strong>視覺規範注入</strong>：將 <code>RFP.md</code> 內的 Design Tokens 寫入任務規格中。</li>
 <li><strong>規則目錄初始化</strong>：確保 <code>.agents/rules/</code> 目錄存在且包含基本編碼守則。</li>
-<li><strong>文檔骨架建立</strong>：若 <code>docs/FACTORY_WORKFLOW.qmd</code> 不存在，從模板產生初始版本，確保 Worker 執行時此文件已存在。</li>
+<li><strong>文檔骨架建立</strong>：若 <code>docs/FACTORY_WORKFLOW.qmd</code> 不存在，從模板產生初始版本。</li>
+<li><strong>CI/CD 技術棧適配</strong>：讀取 Architect Reviewer 產出的 <code>docs/ADR/*.md</code>，根據專案選型（如 Next.js、Spring Boot、Django 等），<strong>替換</strong> <code>auto-merge.yml</code> 和 <code>phase-bump.yml</code> 模板中的 Backend Tests / Frontend Checks 區塊。禁止留下與實際技術棧不符的 CI 指令。</li>
 </ul>
 </section>
 <section id="step-2-任務拆解與模組化-intent-aware-modular-micro-tasking" class="level3">

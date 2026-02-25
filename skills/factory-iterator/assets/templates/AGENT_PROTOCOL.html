@@ -226,7 +226,7 @@ ul.task-list li input[type="checkbox"] {
 <li>檢查遠端是否已存在分支 <code>{AGENT_NAME}/task-{task_id}</code>：
 <ul>
 <li><strong>不存在</strong> → 可領取。</li>
-<li><strong>已存在</strong> → 檢查 PR 狀態（<code>gh pr list --head {{AGENT_NAME}}/task-{task_id} --state all --json state</code>）：</li>
+<li><strong>已存在</strong> → 檢查 PR 狀態（<code>gh pr list --head {{AGENT_NAME}}/task-{task_id} --state all --json state,statusCheckRollup</code>）：</li>
 </ul></li>
 </ol>
 <table class="caption-top table">
@@ -254,12 +254,23 @@ ul.task-list li input[type="checkbox"] {
 <td style="text-align: left;">刪除舊分支，重新領取</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><code>OPEN</code></td>
+<td style="text-align: left;"><code>OPEN</code> + CI 通過或進行中</td>
 <td style="text-align: left;">🔒 鎖定中</td>
-<td style="text-align: left;">跳過此任務</td>
+<td style="text-align: left;">跳過此任務，等待合併</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>OPEN</code> + CI <strong>失敗</strong></td>
+<td style="text-align: left;">🔁 失敗恢復</td>
+<td style="text-align: left;">執行以下恢復流程 ⬇️</td>
 </tr>
 </tbody>
 </table>
+<p><strong>CI 失敗恢復流程：</strong></p>
+<pre><code>1. 關閉失敗的 PR：gh pr close {{AGENT_NAME}}/task-{task_id}
+2. 刪除遠端分支：git push origin --delete {{AGENT_NAME}}/task-{task_id}
+3. 遞增 tracker.json 中該任務的 attempts（+1）
+4. 若 attempts &gt;= 5 → 停止，回報人類：「任務 {task_id} 已連續失敗 5 次，需要人工介入。」
+5. 若 attempts &lt; 5 → 重新領取此任務（回到本步驟的「不存在 → 可領取」路徑）</code></pre>
 <ol start="2" type="1">
 <li><p>領取任務後：</p>
 <pre><code>git fetch origin
