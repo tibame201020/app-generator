@@ -177,7 +177,7 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#agent_protocol.md-工人憲法" id="toc-agent_protocol.md-工人憲法" class="nav-link active" data-scroll-target="#agent_protocol.md-工人憲法">📜 AGENT_PROTOCOL.md (工人憲法)</a>
   <ul class="collapse">
-  <li><a href="#角色聲明你是-co-worker不是調度員" id="toc-角色聲明你是-co-worker不是調度員" class="nav-link" data-scroll-target="#角色聲明你是-co-worker不是調度員">⚠️ 角色聲明：你是 Co-Worker，不是調度員</a></li>
+  <li><a href="#角色聲明你是被指導的執行者" id="toc-角色聲明你是被指導的執行者" class="nav-link" data-scroll-target="#角色聲明你是被指導的執行者">⚠️ 角色聲明：你是被指導的執行者</a></li>
   <li><a href="#三大鐵律" id="toc-三大鐵律" class="nav-link" data-scroll-target="#三大鐵律">三大鐵律</a></li>
   <li><a href="#認知上限守則-cognitive-load-limit" id="toc-認知上限守則-cognitive-load-limit" class="nav-link" data-scroll-target="#認知上限守則-cognitive-load-limit">🧠 認知上限守則 (Cognitive Load Limit)</a></li>
   </ul></li>
@@ -190,7 +190,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../docs/FACTORY_WORKFLOW.html">📖 技術手冊</a></li><li class="breadcrumb-item"><a href="../docs/worker-protocol.html">👷 工人憲法與行事準則</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">👷 工人憲法與行事準則</h1>
-<p class="subtitle lead">如何確保 AI 產出的代碼具備商業級水準</p>
+<p class="subtitle lead">Dispatcher 教導的自服務執行者</p>
 </div>
 
 
@@ -210,22 +210,41 @@ ul.task-list li input[type="checkbox"] {
 <section id="agent_protocol.md-工人憲法" class="level2">
 <h2 class="anchored" data-anchor-id="agent_protocol.md-工人憲法">📜 AGENT_PROTOCOL.md (工人憲法)</h2>
 <p>任何進入本工廠的 Worker Agent 在每次甦醒時，<strong>必須</strong>首先閱讀這份憲法。</p>
-<section id="角色聲明你是-co-worker不是調度員" class="level3">
-<h3 class="anchored" data-anchor-id="角色聲明你是-co-worker不是調度員">⚠️ 角色聲明：你是 Co-Worker，不是調度員</h3>
-<p>Worker 的生命週期極其簡潔：</p>
+<section id="角色聲明你是被指導的執行者" class="level3">
+<h3 class="anchored" data-anchor-id="角色聲明你是被指導的執行者">⚠️ 角色聲明：你是被指導的執行者</h3>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>本協議由 <strong>Task Dispatcher (教導者)</strong> 編寫。Worker 遵循的每一步，都是 Dispatcher 的指令。 Worker 看起來「自己在找任務、管分支」，但這些行為來自 Dispatcher 的標準化流程，不是 Worker 自主決定的。</p>
+</div>
+</div>
+<p>Worker 的完整生命週期（由 Dispatcher 教導）：</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
 <pre class="mermaid mermaid-js">graph LR
-    Receive[接收任務包] --&gt; Load[載入規格]
-    Load --&gt; Impl[實作功能]
-    Impl --&gt; Validate[驗證品質]
-    Validate --&gt; PR[提交 PR]
+    Read[讀取 Tracker] --&gt; Lock{互斥鎖檢查}
+    Lock -- 可領取 --&gt; Branch[切 Branch]
+    Lock -- CI 失敗 --&gt; Recover[關 PR + 重試]
+    Lock -- 鎖定中 --&gt; Skip[跳過]
+    Branch --&gt; Spec[載入規格]
+    Spec --&gt; Impl[實作功能]
+    Recover --&gt; Branch
+    Impl --&gt; Test[驗證品質]
+    Test --&gt; PR[提交 PR]
     PR --&gt; Done((結束))
-    
-    style Receive fill:#fff3e0,stroke:#e65100
+
+    style Read fill:#fff3e0,stroke:#e65100
+    style Recover fill:#ffebee,stroke:#c62828
     style Done fill:#c8e6c9,stroke:#2e7d32
 </pre>
 </div>
@@ -233,28 +252,33 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<blockquote class="blockquote">
-<p><strong>Worker 不需要：</strong> 尋找任務、管理分支鎖、判斷 Phase 推進、等待 CI/CD。 這些全部由 <a href="../skills/task-dispatcher/SKILL.html">Task Dispatcher</a> 處理。</p>
-</blockquote>
 <hr>
 </section>
 <section id="三大鐵律" class="level3">
 <h3 class="anchored" data-anchor-id="三大鐵律">三大鐵律</h3>
 <ol type="1">
-<li><p><strong>路徑審計 (Allowed Paths Audit)</strong> 所有變更必須精確落在 <code>allowed_paths</code> 內，嚴禁修改框架底層，防止 <strong>Scope Creep</strong>。</p></li>
-<li><p><strong>八大破壞性邊界測試 (Edge Case Checklist)</strong> PR 提交前必須涵蓋：</p>
+<li><p><strong>路徑審計 (Allowed Paths Audit)</strong> 所有變更必須精確落在 <code>allowed_paths</code> 內，嚴禁修改框架底層，防止 Scope Creep。</p></li>
+<li><p><strong>TDD 分級制 (Phase-Aware Testing)</strong></p>
 <ul>
-<li><code>Null/Undefined</code> 與空值防呆。</li>
-<li>錯誤路徑恢復 (Timeout, DB Down)。</li>
-<li><strong>併發競爭 (Race Conditions)</strong>。</li>
+<li>Phase 1：基礎測試 1-4 項</li>
+<li>Phase 2+：全面涵蓋 8 項破壞性邊界測試（Null、空值、Race Conditions、大資料量等）</li>
 </ul></li>
-<li><p><strong>自我修復 (Self-Healing)</strong> 被授權在不偏離核心功能的前提下，自主修正環境問題，並將紀錄寫入 <code>CHANGELOG.md</code>。</p></li>
+<li><p><strong>自我修復 + CI 失敗恢復 (Self-Healing)</strong></p>
+<ul>
+<li>被授權在不偏離核心功能的前提下，自主修正環境問題。</li>
+<li>偵測到 CI 失敗的 PR 時，自動關閉 → 遞增 <code>attempts</code> → 重試。</li>
+<li><code>attempts</code> ≥ 5 次 → 熔斷，呼救人類。</li>
+</ul></li>
 </ol>
 <hr>
 </section>
 <section id="認知上限守則-cognitive-load-limit" class="level3">
 <h3 class="anchored" data-anchor-id="認知上限守則-cognitive-load-limit">🧠 認知上限守則 (Cognitive Load Limit)</h3>
-<p>為了防止 AI 陷入幻覺，憲法下了嚴厲的軍令狀： * <strong>檔案長度控制</strong>：盡量保持在 200~300 行以內。 * <strong>反模式禁令</strong>：絕對禁止寫出「全能上帝物件 (God Object)」。 * <strong>壞了就換 (Disposable Components)</strong>：如果模組 Bug 難以修補，<strong>直接刪除重寫</strong>。</p>
+<ul>
+<li><strong>檔案長度控制</strong>：盡量保持在 200~300 行以內。</li>
+<li><strong>反模式禁令</strong>：絕對禁止寫出「全能上帝物件 (God Object)」。</li>
+<li><strong>壞了就換 (Disposable Components)</strong>：如果模組 Bug 難以修補，<strong>直接刪除重寫</strong>。</li>
+</ul>
 
 
 </section>

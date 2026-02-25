@@ -461,23 +461,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="even">
 <td style="text-align: left;">4</td>
 <td style="text-align: left;"><a href="../skills/factory-iterator/SKILL.html">Factory Iterator</a></td>
-<td style="text-align: left;">任務拆解與規格產出</td>
+<td style="text-align: left;">任務拆解、規格產出、CI 技術棧適配</td>
 <td style="text-align: left;"><code>factory-iterator</code></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">5</td>
 <td style="text-align: left;"><a href="../skills/task-dispatcher/SKILL.html">Task Dispatcher</a></td>
-<td style="text-align: left;"><strong>任務調度、互斥鎖、Phase 推進</strong></td>
+<td style="text-align: left;">一次性教導者 (<code>mode: instructor</code>)：產出 Worker Prompt</td>
 <td style="text-align: left;"><code>task-dispatcher</code></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">6</td>
 <td style="text-align: left;">Worker (AGENT_PROTOCOL)</td>
-<td style="text-align: left;">純粹實作、驗證、提交 PR</td>
+<td style="text-align: left;">Dispatcher 教導的自服務執行者</td>
 <td style="text-align: left;">co-worker</td>
 </tr>
 </tbody>
 </table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>🔮 分散式 Worker 管理 (Future Feature)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>目前框架以<strong>單一 Worker 串行迭代</strong>運作。分散式 Worker 調度已規劃為未來功能，屆時只需將 Task Dispatcher 從 <code>mode: instructor</code> 升級為 <code>mode: live</code>。</p>
+</div>
+</div>
 <hr>
 <blockquote class="blockquote">
 <p>[!TIP] <strong>Literate Strategy</strong>: By using <code>.qmd</code>, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint.</p>

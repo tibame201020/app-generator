@@ -174,7 +174,13 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#changelog" id="toc-changelog" class="nav-link active" data-scroll-target="#changelog">Changelog</a>
   <ul class="collapse">
-  <li><a href="#unreleased" id="toc-unreleased" class="nav-link" data-scroll-target="#unreleased">[Unreleased]</a></li>
+  <li><a href="#unreleased---2026-02-25" id="toc-unreleased---2026-02-25" class="nav-link" data-scroll-target="#unreleased---2026-02-25">[Unreleased] - 2026-02-25</a>
+  <ul class="collapse">
+  <li><a href="#architecture-6-role-responsibility-segregation" id="toc-architecture-6-role-responsibility-segregation" class="nav-link" data-scroll-target="#architecture-6-role-responsibility-segregation">🏗️ Architecture: 6-Role Responsibility Segregation</a></li>
+  <li><a href="#cicd" id="toc-cicd" class="nav-link" data-scroll-target="#cicd">🔧 CI/CD</a></li>
+  <li><a href="#documentation" id="toc-documentation" class="nav-link" data-scroll-target="#documentation">📚 Documentation</a></li>
+  <li><a href="#deferred" id="toc-deferred" class="nav-link" data-scroll-target="#deferred">🔮 Deferred</a></li>
+  </ul></li>
   <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section">[0.1.0] - 2026-02-22</a></li>
   </ul></li>
   </ul>
@@ -189,24 +195,46 @@ ul.task-list li input[type="checkbox"] {
 <section id="changelog" class="level1">
 <h1>Changelog</h1>
 <p>All notable changes to this project will be documented in this file.</p>
-<section id="unreleased" class="level2">
-<h2 class="anchored" data-anchor-id="unreleased">[Unreleased]</h2>
+<section id="unreleased---2026-02-25" class="level2">
+<h2 class="anchored" data-anchor-id="unreleased---2026-02-25">[Unreleased] - 2026-02-25</h2>
+<section id="architecture-6-role-responsibility-segregation" class="level3">
+<h3 class="anchored" data-anchor-id="architecture-6-role-responsibility-segregation">🏗️ Architecture: 6-Role Responsibility Segregation</h3>
 <ul>
-<li><strong>Initiator 雙腦架構重構</strong>：將架構決策 (Architect) 與任務規劃 (Planner) 物理分離。</li>
-<li><strong>Claude Agent Skills 規範化</strong>：遷移至官方 <code>skills/</code> 巢狀包結構，支援漸進式揭露。</li>
-<li><strong>Factory 2.0 機械約束</strong>：引入 <code>allowed_paths</code> 路徑審計機制，防止 AI 程式碼漂移。</li>
-<li><strong>CI 安全強化</strong>：<code>auto-merge.yml</code> 升級為 <code>PAT_TOKEN</code> 並加入初期 Scaffolding Guard。</li>
-<li><strong>冷啟動自動化</strong>：Initiator 現在會自動初始化 <code>docs/</code> 索引與占位文件。</li>
-<li><strong>環境自愈</strong>：建立 <code>docs/ENVIRONMENT_FIX.md</code> 提供常見錯誤修復指引。</li>
-<li><strong>死鎖自愈系統</strong>：實作 Branch-as-Lock 互斥鎖，並引進 Cleanup Arbitrator (<agent>-cleanup.yml) 統一解決 CI 失敗死鎖與 Phantom Branch。</agent></li>
-<li><strong>Spec 1:1 映射</strong>：重新定義 Planner Spec，實作一任務一 YAML 映射 (specs/tasks/)，徹底降低 Worker 代碼漂移風險。</li>
-<li><strong>事務安全 (Transaction Consistency)</strong>：強化 Arbitrator Git 容錯 (Pull-before-Commit)，確保 Push 主線成功後才允許清理遠端分支資源。</li>
+<li><strong>引入 Task Dispatcher</strong>：新增 <code>task-dispatcher</code> Skill，定位為「一次性教導者 (mode: instructor)」。產出可重複使用的 Worker Prompt，使用者反覆餵給 Worker 即可推進全部任務。</li>
+<li><strong>Factory Orchestrator 升級</strong>：重構為 6-Role 管線總指揮，新增 Mode-Aware Relay（CREATE / CONTINUE / MAINTAIN 三模式跳轉路由表）。</li>
+<li><strong>Factory Iterator 收束</strong>：移除所有調度與 CI/CD 部署邏輯，聚焦於任務拆解與規格產出。新增 CI/CD 技術棧適配責任。</li>
+<li><strong>AGENT_PROTOCOL 重寫</strong>：Worker 從「被動接收任務包」轉為「Dispatcher 教導的自服務執行者」。新增 CI 失敗恢復流程（關 PR → 遞增 attempts → 重試）。</li>
 </ul>
+</section>
+<section id="cicd" class="level3">
+<h3 class="anchored" data-anchor-id="cicd">🔧 CI/CD</h3>
+<ul>
+<li><strong>Phase Bump 獨立化</strong>：從 <code>auto-merge.yml</code> 抽出 Phase 推進邏輯，新建 <code>phase-bump.yml</code>（觸發條件：<code>push to main</code>）。修復了 Phase Bump commit 與 Squash Merge 競爭 tracker.json 的致命時序 bug。</li>
+<li><strong>Task Status Guard</strong>：新增 CI 步驟，從 PR 分支名稱萃取 task_id，驗證 tracker.json 中該任務的 status 是否為 <code>completed</code>。</li>
+<li><strong>CI 失敗恢復</strong>：Worker 現在能偵測 PR OPEN + CI 失敗的狀態，自動關閉失敗 PR 並重試。</li>
+<li><strong><code>attempts</code> 計數器啟用</strong>：Worker 在 CI 失敗恢復流程中主動遞增 <code>attempts</code>，≥ 5 次則熔斷並呼救人類。</li>
+</ul>
+</section>
+<section id="documentation" class="level3">
+<h3 class="anchored" data-anchor-id="documentation">📚 Documentation</h3>
+<ul>
+<li><strong>Quarto Portal 所有權</strong>：Orchestrator 正式成為 <code>index.qmd</code>、<code>docs/*.qmd</code>、<code>_quarto.yml</code> 的唯一擁有者 (Sole Owner)。Worker 不得直接修改文檔。</li>
+<li><strong>README 全面重寫</strong>：對標 6-Role 架構、Dispatcher 教導者模式、CI 自動化流程。</li>
+<li><strong>FACTORY_WORKFLOW.qmd 更新</strong>：新增 Dispatcher 教導者 Callout、初次部署說明、CI 失敗恢復 Mermaid 圖表。</li>
+<li><strong>worker-protocol.qmd 更新</strong>：對標 Dispatcher 教導的自服務模式。</li>
+</ul>
+</section>
+<section id="deferred" class="level3">
+<h3 class="anchored" data-anchor-id="deferred">🔮 Deferred</h3>
+<ul>
+<li><strong>分散式 Worker 調度</strong>：已抽象至 Task Dispatcher 的 <code>mode: live</code> 升級路徑。所有調度邏輯集中在 Dispatcher，未來擴充不影響其他 Skill。</li>
+</ul>
+</section>
 </section>
 <section id="section" class="level2">
 <h2 class="anchored" data-anchor-id="section">[0.1.0] - 2026-02-22</h2>
 <ul>
-<li>Initiated project boilerplate and AI Agent protocols. …</li>
+<li>Initiated project boilerplate and AI Agent protocols.</li>
 </ul>
 
 

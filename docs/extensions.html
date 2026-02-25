@@ -172,10 +172,12 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#解耦的藝術.agentsextensions" id="toc-解耦的藝術.agentsextensions" class="nav-link active" data-scroll-target="#解耦的藝術.agentsextensions">解耦的藝術：<code>.agents/extensions/</code></a>
+  <li><a href="#解耦的藝術worker-agnostic-prompt" id="toc-解耦的藝術worker-agnostic-prompt" class="nav-link active" data-scroll-target="#解耦的藝術worker-agnostic-prompt">解耦的藝術：Worker-Agnostic Prompt</a>
   <ul class="collapse">
-  <li><a href="#如何撰寫您自己的-worker-extension" id="toc-如何撰寫您自己的-worker-extension" class="nav-link" data-scroll-target="#如何撰寫您自己的-worker-extension">如何撰寫您自己的 Worker Extension？</a></li>
+  <li><a href="#接入方式" id="toc-接入方式" class="nav-link" data-scroll-target="#接入方式">接入方式</a></li>
+  <li><a href="#若使用者需要自動化觸發" id="toc-若使用者需要自動化觸發" class="nav-link" data-scroll-target="#若使用者需要自動化觸發">若使用者需要自動化觸發</a></li>
   </ul></li>
+  <li><a href="#未來分散式-worker-管理" id="toc-未來分散式-worker-管理" class="nav-link" data-scroll-target="#未來分散式-worker-管理">🔮 未來：分散式 Worker 管理</a></li>
   </ul>
 </nav>
     </div>
@@ -185,7 +187,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../docs/FACTORY_WORKFLOW.html">📖 技術手冊</a></li><li class="breadcrumb-item"><a href="../docs/extensions.html">🔌 擴充與外掛指南</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">🔌 擴充與外掛指南</h1>
-<p class="subtitle lead">極致解耦的插頭與插座設計</p>
+<p class="subtitle lead">如何接入不同的 Worker Agent</p>
 </div>
 
 
@@ -202,21 +204,73 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="解耦的藝術.agentsextensions" class="level2">
-<h2 class="anchored" data-anchor-id="解耦的藝術.agentsextensions">解耦的藝術：<code>.agents/extensions/</code></h2>
-<p>無人值守軟體工廠框架的設計哲學是 <strong>「插頭與插座」</strong>。架構師只負責把插座 (<code>tracker.json</code>) 做好，至於是哪一個廠牌的機器人插進來，框架並不在意。</p>
-<section id="如何撰寫您自己的-worker-extension" class="level3">
-<h3 class="anchored" data-anchor-id="如何撰寫您自己的-worker-extension">如何撰寫您自己的 Worker Extension？</h3>
-<p>如果您擁有內部的 LLM 工具（例如 <code>CorpBot</code>），您可以輕鬆將其接入：</p>
-<ol type="1">
-<li><strong>建立腳本</strong>：在 <code>.agents/extensions/</code> 中新增膠水腳本 <code>corpbot-trigger.py</code>。</li>
-<li><strong>實作介面邏輯</strong>：該腳本只需要做一件事：<strong>觸發 CorpBot 的 API 或 CLI</strong>。</li>
-<li><strong>動態注入</strong>：在 <code>factory-iterator</code> 建廠時，指定工人名稱即可。</li>
-</ol>
-<p>這就是 <strong>Plug and Play</strong> 帶來的強大擴充性，確保框架能適應任何新一代的 Developer Agents。</p>
-
-
+<section id="解耦的藝術worker-agnostic-prompt" class="level2">
+<h2 class="anchored" data-anchor-id="解耦的藝術worker-agnostic-prompt">解耦的藝術：Worker-Agnostic Prompt</h2>
+<p>本框架的設計哲學是 <strong>Worker-Agnostic（工人無關性）</strong>。Task Dispatcher 產出的 Worker Prompt 對所有 LLM Agent 通用——不管你用的是 Jules、Devin、Cursor Agent 還是自研的 CorpBot，只要它能操作 Git 和執行程式碼，就能接入這座工廠。</p>
+<section id="接入方式" class="level3">
+<h3 class="anchored" data-anchor-id="接入方式">接入方式</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Worker</th>
+<th style="text-align: left;">觸發方式</th>
+<th style="text-align: left;">說明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Jules</strong></td>
+<td style="text-align: left;">Web GUI / API</td>
+<td style="text-align: left;">直接將 Worker Prompt 貼入 Jules 介面或透過 API 傳送</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Devin</strong></td>
+<td style="text-align: left;">Web GUI / API</td>
+<td style="text-align: left;">同上，適用 Devin 的任務建立介面</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Cursor Agent</strong></td>
+<td style="text-align: left;">IDE Prompt</td>
+<td style="text-align: left;">在 Cursor 中開啟專案目錄，將 Prompt 送入 Agent 模式</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>自研 Agent</strong></td>
+<td style="text-align: left;">Any</td>
+<td style="text-align: left;">只要能執行 <code>git</code>, <code>gh</code> CLI 並遵循 AGENT_PROTOCOL.md 即可</td>
+</tr>
+</tbody>
+</table>
 </section>
+<section id="若使用者需要自動化觸發" class="level3">
+<h3 class="anchored" data-anchor-id="若使用者需要自動化觸發">若使用者需要自動化觸發</h3>
+<p>Task Dispatcher 可協助產出專屬的 API 觸發腳本。詳見 <a href="../skills/task-dispatcher/SKILL.html">Task Dispatcher SKILL.md</a> 的 Step 3。</p>
+<hr>
+</section>
+</section>
+<section id="未來分散式-worker-管理" class="level2">
+<h2 class="anchored" data-anchor-id="未來分散式-worker-管理">🔮 未來：分散式 Worker 管理</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>規劃中的功能 (Future Feature)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>分散式 Worker 調度 (Distributed Worker Scheduling)</strong> 是規劃中的未來功能，不包含在目前版本中。</p>
+<p>目前框架以<strong>單一 Worker 串行迭代</strong>運作。所有調度邏輯已抽象至 Task Dispatcher，未來擴充時只需將 Dispatcher 從 <code>mode: instructor</code>（一次性教導）升級為 <code>mode: live</code>（持續性調度），其餘 5 個 Skill 完全不受影響。</p>
+<p>可能的擴充方向： - 多 Worker 並行執行不同 Phase 的任務 - Worker 負載均衡與健康監控 - 分散式互斥鎖升級（從 Branch-as-Lock 到 Advisory Lock）</p>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
