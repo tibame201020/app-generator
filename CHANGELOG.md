@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 - Initiated project boilerplate and AI Agent protocols.
 - Task 1.4.1: Created Backend Dockerfile with multi-stage build.
+- Task 1.4.2: Created Dockerfile for Frontend (Vite + React) development with hot-reload support.
 - Task 1.1.1: Initialized Spring Boot 3 project skeleton and Maven settings.
 - Task 1.1.2: Configured application.yml with server port 8080 and enabled Java 21 Virtual Threads.
 - Task 1.1.3: Configured H2 Database Memory mode and JPA dependencies.
