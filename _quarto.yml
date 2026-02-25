@@ -19,7 +19,6 @@ website:
       - section: "📖 技術手冊"
         contents:
           - docs/FACTORY_WORKFLOW.qmd
-          - docs/workflow-diagram.qmd
           - docs/principles.qmd
           - docs/worker-protocol.qmd
           - docs/extensions.qmd
