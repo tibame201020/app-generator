@@ -5,66 +5,115 @@ subtitle: "The Literate State Machine of Software Production"
 
 # 🏭 Autonomous Software Factory Workflow
 
-> \[!NOTE\] This is an **Executable Document**. It not only describes the workflow but also serves as the real-time monitoring interface for the factory.
+> [!NOTE] This is an **Executable Document**. It not only describes the workflow but also serves as the real-time monitoring interface for the factory.
 
 ## 🏗️ Core Architecture: Decoupling & Orchestration
 
-The factory is composed of five specialized autonomous components orchestrated by a central brain.
+The factory is composed of five specialized autonomous components orchestrated by a central brain. 
 
-::: callout-important
-### 🔍 視覺化地圖
+### 🗺️ 戰略全景：軟體工廠生命週期
+> 旨在呈現 Phase 間的高階協作與狀態轉移。
 
-由於產線流程較為複雜，我已將「完整決策藍圖」移至獨立頁面以獲得最佳顯示效果。
+```{mermaid}
+graph LR
+    User([👩‍💻 人類意圖]) --> P1[[Phase 1: Discovery]]
+    P1 --> P2[[Phase 2: Tech Design]]
+    P2 --> P3[[Phase 3: Execution]]
+    P3 --> P4[[Phase 4: Validation]]
+    P4 -- "反饋/維修" --> P3
+    P4 -- "完成" --> Done((🚀 發布))
+    
+    style P1 fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
+    style P2 fill:#fffde7,stroke:#fbc02d,color:#f57f17
+    style P3 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c
+    style P4 fill:#ffebee,stroke:#c62828,color:#b71c1c
+```
 
-[➡️ 點此開啟「全螢幕流程藍圖」](workflow-diagram.qmd){.btn .btn-primary .btn-lg role="button"}
-:::
+---
 
 ## 📊 Live Factory Status (Experimental)
 
-This section demonstrates the Power of Quarto: reading the actual `.jules/tracker.json` (if it exists) to show real-time progress.
+```{mermaid}
+graph TD
+    PR[Pull Request] --> CI{CI 門戶檢測}
+    CI -- 通過 --> Merge[合併與前進]
+    CI -- 失敗 --> Repair[自我修復路徑]
+    Repair --> Worker[重回 Phase 3 執行層]
+    
+    style Merge fill:#c8e6c9,stroke:#2e7d32
+    style Repair fill:#ffccbc,stroke:#d84315
+```
 
 ::: callout-tip
-### How it works
-
-The following block uses Python to parse the project state and render a progress summary directly into this document.
+### 進度自動化監控
+以下區塊會自動搜尋專案中的 `tracker.json` 並呈現在地進度。
 :::
 
 ``` python
 import json
 import os
+import glob
 
-tracker_path = ".jules/tracker.json"
-if os.path.exists(tracker_path):
+tracker_files = glob.glob(".*/tracker.json")
+if tracker_files:
+    tracker_path = tracker_files[0]
     with open(tracker_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     print(f"**Current Phase:** {data.get('current_phase', 'N/A')}")
-    # Additional logic to render progress bars can go here
 else:
     print("> ⚠️ No active tracker found. Factory is currently idle.")
 ```
 
-## 🛠️ Role Definitions
+---
 
-### 1. [Factory Orchestrator](../skills/factory-orchestrator/SKILL.md)
+## 🔍 戰術細節與角色定義
 
-The central navigator. Manages state transitions and input/output flow between components.
+### 1. [Discovery: 意圖具現化](../skills/requirements-analyst/SKILL.md)
+> 將模糊的自然語言轉化為可執行的視覺與功能需求。
 
-### 2. [Requirements Analyst](../skills/requirements-analyst/SKILL.md)
+```{mermaid}
+graph TD
+    Start([人類輸入]) --> Orch{協作編程器}
+    Orch --> ReqA[需求分析師]
+    ReqA --> UI_Check{需要 UI?}
+    UI_Check -- 是 --> VisD[視覺設計師]
+    UI_Check -- 否 --> Arch[架構審查]
+    VisD --> Arch
+    
+    subgraph SG1 ["邊界：意圖對齊"]
+        ReqA
+        VisD
+    end
+    style SG1 fill:#ffffff,stroke:#333,stroke-dasharray: 5 5
+```
 
-Specializes in intent classification (`Create`, `Continue`, `Maintain`) and baseline requirement gathering.
+### 2. [Tech Design: 技術建模](../skills/architect-reviewer/SKILL.md)
+> 確保架構內聚、建立 ADR 並進行大模型腦力模擬。
 
-### 3. [Visual Designer](../skills/visual-designer/SKILL.md)
+```{mermaid}
+graph TD
+    In[需求藍圖] --> Arch[架構審查員]
+    Arch --> Sim[大模型腦力模擬]
+    Sim -- 風險評估 --> Sim
+    Sim -- 簽署通過 --> Out([技術決策檔])
+    
+    style Sim fill:#fff9c4,stroke:#fbc02d
+```
 
-**Optional.** Activated only for UI-heavy payloads. Generates Design Tokens and Layout specs.
+### 3. [Execution: 工廠迭代](../skills/factory-iterator/SKILL.md)
+> 原子化處理代碼變動，並透過 `tracker.json` 保持狀態追蹤。
 
-### 4. [Architect Reviewer](../skills/architect-reviewer/SKILL.md)
+```{mermaid}
+graph TD
+    Dec[技術決策] --> Iter[工廠迭代器]
+    Iter --> Track[(tracker.json)]
+    Track --> Worker[執行工人 Agents]
+    Worker -- 提交 PR --> CI[CI 門戶]
+    
+    style Track fill:#f5f5f5,stroke:#9e9e9e
+    style Worker fill:#e1f5fe,stroke:#01579b
+```
 
-Handles ADR generation and defensive simulation.
+---
 
-### 5. [Factory Iterator](../skills/factory-iterator/SKILL.md)
-
-Generates the `tracker.json` and micro-task specs for workers.
-
-------------------------------------------------------------------------
-
-> \[!TIP\] **Literate Strategy**: By using `.qmd`, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint to be visible to the Orchestrator. :::: :::::
+> [!TIP] **Literate Strategy**: By using `.qmd`, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint to be visible to the Orchestrator.

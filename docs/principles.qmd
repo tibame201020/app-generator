@@ -14,9 +14,9 @@ subtitle: "為什麼我們不需要資料庫？"
 ::: callout-important
 ### 流轉機制
 
-1.  **\[領取\]** AI 工人切換出新分支 (Branch)。
-2.  **\[宣稱完工\]** AI 在該分支將 tracker 中的狀態改為 `"completed"` 並提交 PR。
-3.  **\[仲裁\]** 全自動 CI/CD 擔任裁判。測試失敗則主分支 (Main) 狀態永遠停在 `"pending"`。
+1.  **\[領取\]** AI 工人檢查遠端分支。若無人執行，則切換出新分支 `task-{id}`。
+2.  **\[宣稱完工\]** AI 完成實作後，在分支內更新 `tracker.json` 將狀態改為 `"completed"` 並提交 PR。
+3.  **\[仲裁\]** CI/CD 擔任裁判。通過測試後自動合併，主分支的 `tracker.json` 才會真正更新。測試失敗則主分支進度永遠鎖定。
 :::
 
 這形成了一個完美的 **無伺服器防呆機制** 以及 **自動退回 (Rollback) 與重試 (Retry) 機制**。
@@ -31,7 +31,7 @@ subtitle: "為什麼我們不需要資料庫？"
 
 -   **職責**：戰略中心。
 -   **改版優化**：現在由 5 個獨立技能組成的 Orchestrator 負責調度。
--   **產出物**：`tracker.json`、`specs/*.yml` 與 ADR 紀錄。
+-   **產出物**：`.antigravity/tracker.json`、強型別規格書與架構決策 (ADR)。
 
 ### 2. 工人代理人 (The Worker)
 
