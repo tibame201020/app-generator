@@ -130,13 +130,18 @@ else:
 ## 🛠️ 角色定義 (6-Role Pipeline)
 
 | \# | 角色 | 職責 | Skill |
-|:-----------------|:-----------------|:-----------------|:-----------------|
+|:--|:--|:--|:--|
 | 1 | [Requirements Analyst](../skills/requirements-analyst/SKILL.md) | 意圖分類與需求收集 | `requirements-analyst` |
 | 2 | [Visual Designer](../skills/visual-designer/SKILL.md) | **(可選)** 設計系統與視覺規格 | `visual-designer` |
 | 3 | [Architect Reviewer](../skills/architect-reviewer/SKILL.md) | 技術選型與沙盤推演 | `architect-reviewer` |
-| 4 | [Factory Iterator](../skills/factory-iterator/SKILL.md) | 任務拆解與規格產出 | `factory-iterator` |
-| 5 | [Task Dispatcher](../skills/task-dispatcher/SKILL.md) | **任務調度、互斥鎖、Phase 推進** | `task-dispatcher` |
-| 6 | Worker (AGENT_PROTOCOL) | 純粹實作、驗證、提交 PR | co-worker |
+| 4 | [Factory Iterator](../skills/factory-iterator/SKILL.md) | 任務拆解、規格產出、CI 技術棧適配 | `factory-iterator` |
+| 5 | [Task Dispatcher](../skills/task-dispatcher/SKILL.md) | 一次性教導者 (`mode: instructor`)：產出 Worker Prompt | `task-dispatcher` |
+| 6 | Worker (AGENT_PROTOCOL) | Dispatcher 教導的自服務執行者 | co-worker |
+
+::: callout-note
+#### 🔮 分散式 Worker 管理 (Future Feature)
+目前框架以**單一 Worker 串行迭代**運作。分散式 Worker 調度已規劃為未來功能，屆時只需將 Task Dispatcher 從 `mode: instructor` 升級為 `mode: live`。
+:::
 
 ------------------------------------------------------------------------
 

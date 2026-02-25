@@ -1,81 +1,119 @@
 # 🏭 Autonomous Software Factory Framework
 > **「這不是一個代碼生成器，這是一座無人值守的軟體工廠。」**
 
-這套框架將「大型軟體開發」抽象化為兩組獨立的 AI Agent (架構師與工人) 以及一個基於 Git 的無伺服器狀態機。
-你只需要扮演「發包者 (Product Owner)」，把模糊的願景丟給架構師，剩下的建廠、拆票、寫扣、除錯與合併，全部交由工廠自動流轉。
+這套框架將「大型軟體開發」抽象化為 **6 個解耦的 AI Skill** 和一個基於 Git 的無伺服器狀態機。
+你只需要扮演「發包者 (Product Owner)」，把模糊的願景丟給框架。規劃、拆票、寫扣、測試與合併，全部交由工廠自動流轉。
 
 ---
 
-## ✨ 核心特色 (Why this framework?)
+## ✨ 核心特色
 
-*   **🧠 極限解耦 (Decoupling)**：架構師的大腦 (Skills) 與生產線的藍圖 (Templates) 完美分離。修改框架不影響 AI 行為，修改 AI 行為不怕弄壞框架。
-*   **🛡️ 絕對防爆 (Defensive Engineering)**：人類不需要看 Log。所有 Agent 產出的代碼必須發送 Pull Request，過不了 GitHub Actions CI/CD 自動測試的 PR，絕對無法進入主分支。
-*   **🗄️ Git as a State Machine (無伺服器狀態)**：放棄傳統的資料庫，將任務狀態 (Pending/In Progress/Completed) 綁定於主分支的 `tracker.json`。只要 PR 沒被合併，狀態機就會卡死，形成天然的 **Self-Healing (自我修復迴圈)**。
-*   **🧱 認知上限與樂高法 (Cognitive Load Limit)**：嚴格約束 AI 工人「檔案長度不得超過 300 行」、「壞了直接丟掉重寫」。杜絕 AI 產生出連自己都看不懂的義大利麵程式碼。
+| 特色 | 說明 |
+|:---|:---|
+| 🧠 **6-Role 解耦管線** | 需求分析 → 視覺設計 → 架構審查 → 任務拆解 → 調度教導 → 工人執行，各角色嚴格單一職責 |
+| 🎯 **教導者模式 (Instructor Pattern)** | Task Dispatcher 只喚醒一次，產出「可重複使用的 Worker Prompt」。執行階段零 LLM 調度成本 |
+| 🛡️ **絕對防爆 CI/CD** | 所有 PR 必須通過 GitHub Actions 測試 + Task Status Guard，Worker 無法繞過 |
+| 🗄️ **Git as State Machine** | `tracker.json` 即狀態機。Phase 推進由獨立 CI workflow 自動處理 |
+| 🧱 **認知上限守則** | 嚴禁 God Object、檔案 ≤ 300 行、壞了就換不修 |
+| 🔁 **自我修復迴圈** | CI 失敗 → Worker 自動關 PR → 遞增 attempts → 重試（≥ 5 次呼救人類）|
 
 ---
 
-## ⚡ 快速啟動 (Quick Start)
+## ⚡ 快速啟動
 
 ### 1. 準備工廠地基
-先將這個框架作為你的範本 (Template)，並在你的本地端或 GitHub Codespaces 開啟：
 ```bash
-git clone https://github.com/your-username/autonomous-software-factory.git my-new-app
+git clone https://github.com/your-username/app-generator.git my-new-app
 cd my-new-app
 ```
 
-### 2. 喚醒架構師 (The Initiator)
-打開你偏好的 AI 工具 (如 Claude Code, Cursor, 或是任何掛載這包資料夾的 LLM)，並丟入起手式：
-> 👉 **「請讀取 `skills/factory-initiator/SKILL.md`，你現在是 Factory Initiator 啟動器，我們準備開工。」**
+### 2. 喚醒總指揮 (Orchestrator)
+打開你偏好的 AI 工具（Claude Code、Cursor、Jules 等），輸入：
+> 👉 **「請讀取 `skills/factory-orchestrator/SKILL.md`，你是 Factory Orchestrator 總指揮官，我們準備開工。」**
 
-接下來，啟動器會透過 **「雙腦架構 (Dual-Brain)」** 引導你：
-1. **Architect (架構決策)**：高階技術選型、ADR 與安全禁令。
-2. **Planner (任務規劃)**：將願景拆解為具備 `allowed_paths` 約束的微型任務。
-3. **Mental Simulation (沙盤推演)**：預判執行風險。
-4. **Scaffolding (建廠部署)**：產出最終藍圖。
+Orchestrator 會依序引導你走過 5 個階段：
+1. **Requirements Analyst** — 需求探測與意圖分類
+2. **Visual Designer** *(可選)* — Design Tokens 與 Wireframe
+3. **Architect Reviewer** — 技術選型與 ADR 產出
+4. **Factory Iterator** — 任務拆解、CI/CD 適配、建廠部署
+5. **Task Dispatcher** — 產出可重複使用的 Worker Prompt
 
 ### 3. 放牛吃草 (Unleash the Worker)
-當架構師產出 `.worker/tracker.json` 與所有規格書後，他的任務就結束了。
-接下來，你的自動化腳本或排程服務會定時喚醒 **工人 Agent**，工人會自己讀取 tracker，開始切分支、寫程式、發 PR，直到整個專案自動完成！
+Dispatcher 會給你一段 **Worker Prompt**。
+把這段 Prompt 反覆餵給你的 Worker Agent（例如 Jules），Worker 會自動：
+- 讀取 `tracker.json` 尋找任務
+- 切 branch、實作、測試、提 PR
+- CI 自動 merge + 自動推進 Phase
+
+**直到專案完工為止。**
+
+觸發方式由你決定：Web GUI、API、Cron、n8n 隨便你。
 
 ---
 
-## 🏗️ 核心架構流轉圖
+## 🏗️ 架構流轉圖
 
 ```mermaid
 sequenceDiagram
     participant Human as 👩‍💻 Product Owner
-    participant Initiator as 🧠 Initiator Architect
+    participant LLM as 🧠 LLM Pipeline (一次性)
     participant Git as 🗄️ Git (Main Branch)
     participant Worker as 👷 Worker Agent
-    participant CI as 🤖 GitHub Actions CI
+    participant CI as 🤖 GitHub Actions
 
-    Human->>Initiator: 給出模糊需求
-    Initiator->>Git: 產出 tracker.json & specs/*.yml (建廠藍圖)
-    
-    loop 自動化生產迴圈 (Schedule)
-        Worker->>Git: 讀取第一個 pending task
-        Worker->>Worker: 實作 (遵守 Cognitive Load Limit)
-        Worker->>Git: Push `worker/task-1` 並發送 PR
-        Git->>CI: 觸發自動測試
-        
-        alt 🟢 測試通過 (Pass)
-            CI->>Git: Squash Merge!
-            Note over Git: tracker.json 更新為 completed
-        else 🔴 測試失敗 (Fail)
-            CI-->>Worker: Block Merge (退回)
-            Note over Git: tracker 依然為 pending，等待下次喚醒
+    Human->>LLM: 給出模糊需求
+    LLM->>Git: 產出 tracker.json, specs/*.yml, Worker Prompt
+    LLM-->>Human: 交付 Worker Prompt
+
+    loop 自動化生產迴圈
+        Human->>Worker: 餵入 Worker Prompt
+        Worker->>Git: 讀取 tracker → 切 branch → 實作 → 提 PR
+        Git->>CI: 觸發 auto-merge.yml
+        alt 🟢 CI 通過
+            CI->>Git: Squash Merge
+            Git->>CI: 觸發 phase-bump.yml
+            CI->>Git: 若 Phase 完成 → 自動推進
+        else 🔴 CI 失敗
+            Note over Worker: 下次喚醒時自動關 PR、重試
         end
     end
 ```
 
 ---
 
-## 📚 工廠操作與進階指南 (Documentation)
+## 📁 專案結構
 
-準備好深度客製化你的軟體工廠了嗎？請參閱以下文檔：
+```
+├── skills/                          # AI Skill 定義（Prompt 工程）
+│   ├── factory-orchestrator/        # 總指揮官
+│   ├── requirements-analyst/        # 需求分析師
+│   ├── visual-designer/             # 視覺設計師
+│   ├── architect-reviewer/          # 架構審查員
+│   ├── factory-iterator/            # 任務拆解器 + 模板
+│   │   └── assets/templates/        # AGENT_PROTOCOL, auto-merge.yml, phase-bump.yml
+│   └── task-dispatcher/             # 任務調度教導者
+├── docs/                            # Quarto 文檔門戶
+│   ├── FACTORY_WORKFLOW.qmd         # 戰略全景與即時進度
+│   ├── worker-protocol.qmd          # 工人行為準則
+│   ├── extensions.qmd               # 擴充指南
+│   └── principles.qmd              # 設計原則
+├── README.md                        # ← 你現在在這裡
+└── CHANGELOG.md
+```
 
-1. [**核心概念與狀態機 (Core Concepts)**](docs/01-core-concepts.md) - 深入了解 `tracker.json` 為什麼是這座工廠的心臟。
-2. [**與架構師溝通 (The Initiator Role)**](docs/02-role-initiator.md) - 解密由三個 Markdown 組成的強逼供大腦。
-3. [**工人行事曆與憲法 (The Worker Role)**](docs/03-role-worker.md) - 了解八大破壞性邊界測試與防撞車機制。
-4. [**擴充與外掛指南 (Extensions API)**](docs/04-extensions-api.md) - 如何讓 Devin 或是 AutoCoder 也能成為你的工人。
+---
+
+## 🔮 Roadmap
+
+> [!NOTE]
+> **分散式 Worker 管理 (Distributed Worker Scheduling)** 是規劃中的未來功能。
+> 目前框架以**單一 Worker 串行迭代**運作，所有調度邏輯已抽象至 Task Dispatcher，
+> 未來擴充時只需將 Dispatcher 從 `mode: instructor` 升級為 `mode: live`，其餘 Skill 完全不受影響。
+
+---
+
+## 📚 延伸閱讀
+
+- [Factory Workflow Blueprint](docs/FACTORY_WORKFLOW.qmd) — 6-Role 管線的完整架構圖與即時進度
+- [Worker Protocol](docs/worker-protocol.qmd) — 工人憲法與邊界測試清單
+- [Extensions Guide](docs/extensions.qmd) — 如何接入 Jules、Devin 等 Worker Agent
