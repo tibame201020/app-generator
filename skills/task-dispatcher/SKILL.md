@@ -1,5 +1,6 @@
 ---
 name: task-dispatcher
+mode: instructor  # 未來可升級為 mode: live（持續性調度員）
 description: 一次性教導者 (One-Shot Instructor)。在建廠後被喚醒一次，將調度邏輯「編譯」為結構化產出物（自動化腳本 + Worker Prompt），供使用者無限重用。本身不持續存在於運行階段。
 ---
 
@@ -41,8 +42,11 @@ description: 一次性教導者 (One-Shot Instructor)。在建廠後被喚醒一
 4. 輸出標準化的 Task Package（JSON 格式）。
 
 > [!TIP]
-> 本目錄下已有一份通用的 [`dispatcher.py`](./dispatcher.py) 模板。
-> 在大多數情況下，此模板無需任何修改即可直接使用——它會自動從 `tracker.json` 讀取 `agent_name`，並透過 `git` 動態偵測 `base_branch`。
+> 本目錄下已有一份 [`dispatcher.py`](./dispatcher.py) **模板**。
+> 模板中使用 `{{AGENT_NAME}}`、`{{BASE_BRANCH}}` 等佔位符。
+> 你的工作是根據使用者在前面階段提供的資訊（Agent 名稱、主分支名稱等），
+> **將佔位符替換為硬編碼的值**，產出一份「零配置、拿來就跑」的成品腳本。
+> 禁止使用任何動態偵測邏輯（如 `git rev-parse`）。所有值必須是確定性的。
 
 ### Step 3: 產出可重複使用的 Worker Prompt (核心教材)
 
