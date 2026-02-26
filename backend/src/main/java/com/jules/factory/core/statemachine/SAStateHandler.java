@@ -93,6 +93,11 @@ public class SAStateHandler implements StateHandler {
         }
     }
 
+    @Override
+    public AgentRole getResponsibleRole() {
+        return AgentRole.SA;
+    }
+
     private void saveConversation(Project project, String text) {
         Conversation conversation = new Conversation(
                 snowflakeIdGenerator.nextId(),

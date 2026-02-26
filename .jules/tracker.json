@@ -225,7 +225,7 @@
           "id": "task_2_2_5",
           "phase": "phase_2",
           "title": "實作 Guard 條件 (判斷是否需 User 回應)",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_2_2_3",
             "task_2_2_4"
