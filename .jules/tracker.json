@@ -195,7 +195,7 @@
           "id": "task_2_2_2",
           "phase": "phase_2",
           "title": "實作 StateMachineEngine 介面與 BaseContext",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_2_2_1"
           ],

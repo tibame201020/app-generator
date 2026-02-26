@@ -22,3 +22,4 @@ All notable changes to this project will be documented in this file.
 - Task 2.1.1: Implemented Project and Conversation JPA Entities using Snowflake ID Generator.
 - Task 2.1.2: Created Spring Data JPA Repositories for Project and Conversation with ordering support.
 - Task 2.2.1: Defined AgentRole Enum (USER, PM, UIUX, SA, PG, SYSTEM) and ProjectState Enum (REQUIREMENT_GATHERING, ARCHITECTURE_DESIGN, IMPLEMENTATION, REVIEW).
+- Task 2.2.2: Implemented StateMachineEngine interface and StateContext record for managing agent state transitions.
