@@ -1,5 +1,6 @@
 package com.jules.factory.core.statemachine;
 
+import com.jules.factory.domain.enums.AgentRole;
 import com.jules.factory.domain.enums.ProjectState;
 
 /**
@@ -26,4 +27,13 @@ public interface StateHandler {
      * @param context The context containing the project ID and current messages.
      */
     void handle(StateContext context);
+
+    /**
+     * Returns the AgentRole responsible for this state.
+     * Used for guard conditions to prevent the agent from replying to itself
+     * if it was the last one to speak (waiting for user input).
+     *
+     * @return The responsible AgentRole.
+     */
+    AgentRole getResponsibleRole();
 }

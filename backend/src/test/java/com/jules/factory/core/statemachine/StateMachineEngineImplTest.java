@@ -1,6 +1,8 @@
 package com.jules.factory.core.statemachine;
 
+import com.jules.factory.domain.entity.Conversation;
 import com.jules.factory.domain.entity.Project;
+import com.jules.factory.domain.enums.AgentRole;
 import com.jules.factory.domain.enums.ProjectState;
 import com.jules.factory.domain.repository.ProjectRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +30,8 @@ class StateMachineEngineImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         engine = new StateMachineEngineImpl(Collections.singletonList(stateHandler), projectRepository);
+        // Default behavior: Handler is responsible for PM role
+        lenient().when(stateHandler.getResponsibleRole()).thenReturn(AgentRole.PM);
     }
 
     @Test
@@ -40,6 +44,7 @@ class StateMachineEngineImplTest {
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
         when(stateHandler.supports(ProjectState.REQUIREMENT_GATHERING)).thenReturn(true);
 
+        // No messages, should proceed
         StateContext context = new StateContext(projectId, Collections.emptyList());
         engine.processEvent(context);
 
@@ -71,5 +76,69 @@ class StateMachineEngineImplTest {
         engine.processEvent(context);
 
         verify(stateHandler, never()).handle(any());
+    }
+
+    @Test
+    void processEvent_ShouldBlock_IfLastMessageFromResponsibleRole() {
+        Long projectId = 1L;
+        Project project = new Project();
+        project.setId(projectId);
+        project.setStatus(ProjectState.REQUIREMENT_GATHERING);
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(stateHandler.supports(ProjectState.REQUIREMENT_GATHERING)).thenReturn(true);
+        when(stateHandler.getResponsibleRole()).thenReturn(AgentRole.PM);
+
+        Conversation lastMsg = new Conversation();
+        lastMsg.setSenderRole(AgentRole.PM.name());
+        StateContext context = new StateContext(projectId, Collections.singletonList(lastMsg));
+
+        engine.processEvent(context);
+
+        // Should NOT call handle
+        verify(stateHandler, never()).handle(any());
+    }
+
+    @Test
+    void processEvent_ShouldProceed_IfLastMessageFromUser() {
+        Long projectId = 1L;
+        Project project = new Project();
+        project.setId(projectId);
+        project.setStatus(ProjectState.REQUIREMENT_GATHERING);
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(stateHandler.supports(ProjectState.REQUIREMENT_GATHERING)).thenReturn(true);
+        when(stateHandler.getResponsibleRole()).thenReturn(AgentRole.PM);
+
+        Conversation lastMsg = new Conversation();
+        lastMsg.setSenderRole(AgentRole.USER.name());
+        StateContext context = new StateContext(projectId, Collections.singletonList(lastMsg));
+
+        engine.processEvent(context);
+
+        // Should call handle
+        verify(stateHandler).handle(context);
+    }
+
+    @Test
+    void processEvent_ShouldProceed_IfLastMessageFromOtherRole() {
+        Long projectId = 1L;
+        Project project = new Project();
+        project.setId(projectId);
+        project.setStatus(ProjectState.REQUIREMENT_GATHERING);
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(stateHandler.supports(ProjectState.REQUIREMENT_GATHERING)).thenReturn(true);
+        when(stateHandler.getResponsibleRole()).thenReturn(AgentRole.PM);
+
+        // Last message from SA (handoff)
+        Conversation lastMsg = new Conversation();
+        lastMsg.setSenderRole(AgentRole.SA.name());
+        StateContext context = new StateContext(projectId, Collections.singletonList(lastMsg));
+
+        engine.processEvent(context);
+
+        // Should call handle
+        verify(stateHandler).handle(context);
     }
 }

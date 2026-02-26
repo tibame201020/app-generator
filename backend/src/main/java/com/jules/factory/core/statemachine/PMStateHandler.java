@@ -79,6 +79,11 @@ public class PMStateHandler implements StateHandler {
         }
     }
 
+    @Override
+    public AgentRole getResponsibleRole() {
+        return AgentRole.PM;
+    }
+
     private void saveConversation(Project project, String text) {
         Conversation conversation = new Conversation(
                 snowflakeIdGenerator.nextId(),

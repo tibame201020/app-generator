@@ -1,6 +1,8 @@
 package com.jules.factory.core.statemachine;
 
+import com.jules.factory.domain.entity.Conversation;
 import com.jules.factory.domain.entity.Project;
+import com.jules.factory.domain.enums.AgentRole;
 import com.jules.factory.domain.repository.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,18 @@ public class StateMachineEngineImpl implements StateMachineEngine {
         if (handler == null) {
             logger.warn("No handler found for state: {} in project: {}", project.getStatus(), projectId);
             return;
+        }
+
+        // Guard Check: Block if waiting for user input
+        AgentRole responsibleRole = handler.getResponsibleRole();
+        List<Conversation> messages = context.currentMessages();
+
+        if (messages != null && !messages.isEmpty()) {
+            Conversation lastMsg = messages.get(messages.size() - 1);
+            if (responsibleRole.name().equals(lastMsg.getSenderRole())) {
+                logger.info("Project {} is waiting for user input (Last sender: {}). Halting execution.", projectId, lastMsg.getSenderRole());
+                return;
+            }
         }
 
         logger.info("Processing event for Project: {} in State: {} using Handler: {}",
