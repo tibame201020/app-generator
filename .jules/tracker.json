@@ -236,7 +236,7 @@
           "id": "task_2_3_1",
           "phase": "phase_2",
           "title": "實作 ProjectController 與 Chat API",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_2_2_5"
           ],
