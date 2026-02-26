@@ -262,7 +262,7 @@
           "id": "task_3_1_1",
           "phase": "phase_3",
           "title": "實作 LLMPromptTemplateBuilder",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_1_2_1"
           ],
