@@ -30,3 +30,7 @@ minio:
   access-key: ${MINIO_ACCESS_KEY:mock_access_key}
   secret-key: ${MINIO_SECRET_KEY:mock_secret_key}
   bucket-name: ${MINIO_BUCKET_NAME:jules-bucket}
+
+app:
+  workspace:
+    root: ${APP_WORKSPACE_ROOT:./workspace}
