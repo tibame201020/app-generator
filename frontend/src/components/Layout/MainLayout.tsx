@@ -1,4 +1,5 @@
 import React from 'react';
+import { SystemStatusPanel } from '../Status/SystemStatusPanel';
 
 interface MainLayoutProps {
   sidebar?: React.ReactNode;
@@ -32,8 +33,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ sidebar, children, statu
       </div>
 
       {/* Status Bar */}
-      <div className="h-6 bg-blue-600 flex items-center px-2 text-xs select-none text-white justify-between">
-        {statusBar}
+      <div className="h-6 bg-blue-600 flex items-center px-2 text-xs select-none text-white justify-between relative">
+        <div className="flex-1 flex items-center overflow-hidden mr-4">
+           {statusBar}
+        </div>
+        <div className="flex-shrink-0">
+           <SystemStatusPanel />
+        </div>
       </div>
     </div>
   );

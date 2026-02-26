@@ -19,9 +19,11 @@ public class ProjectImportService {
     private final GitService gitService;
     private final ProjectRepository projectRepository;
     private final AnalysisService analysisService;
+    private final MetricsService metricsService;
 
     @Async
     public void importProjectAsync(UUID projectId) {
+        metricsService.incrementImportTotal();
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectId));
 
@@ -37,6 +39,7 @@ public class ProjectImportService {
             project.setImportStatus(ImportStatus.SUCCESS);
             project.setGitRepoPath(bareRepoPath.toString());
             projectRepository.save(project);
+            metricsService.incrementImportSuccess();
 
             log.info("Import success for project {}. Triggering analysis.", projectId);
 
@@ -45,6 +48,7 @@ public class ProjectImportService {
 
         } catch (Exception e) {
             log.error("Import failed for project {}", projectId, e);
+            metricsService.incrementImportFailed();
             project.setImportStatus(ImportStatus.FAILED);
             project.setImportFailureReason(e.getMessage());
             projectRepository.save(project);

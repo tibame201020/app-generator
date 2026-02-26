@@ -32,10 +32,13 @@ public class AnalysisService {
     private final ProjectRepository projectRepository;
     private final ProjectAnalysisRepository projectAnalysisRepository;
     private final GitService gitService;
+    private final MetricsService metricsService;
 
     @Async
     @Transactional
     public void analyzeProject(UUID projectId) {
+        metricsService.incrementAnalysisTotal();
+        long startTime = System.currentTimeMillis();
         log.info("Starting analysis for project {}", projectId);
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectId));
@@ -61,10 +64,13 @@ public class AnalysisService {
             analysis.setAnalysisJson(result);
             projectAnalysisRepository.save(analysis);
 
-            log.info("Analysis completed for project {}", projectId);
+            long duration = System.currentTimeMillis() - startTime;
+            metricsService.recordAnalysisSuccess(duration);
+            log.info("Analysis completed for project {} in {}ms", projectId, duration);
 
         } catch (Exception e) {
             log.error("Analysis failed for project {}", projectId, e);
+            metricsService.incrementAnalysisFailed();
         } finally {
             if (tempWorkspace != null) {
                 try {

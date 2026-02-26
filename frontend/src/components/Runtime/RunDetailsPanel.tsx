@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTaskStore, Task } from '../../stores/useTaskStore';
-import { useWorkflowRunStore, WorkflowRun } from '../../stores/useWorkflowRunStore';
+import { useWorkflowRunStore } from '../../stores/useWorkflowRunStore';
 import { Play, RotateCcw, CheckCircle, XCircle, Clock, Loader2, ChevronDown, ChevronRight, Terminal, FileText, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
 
@@ -35,21 +35,15 @@ export const RunDetailsPanel: React.FC<RunDetailsPanelProps> = ({ projectId }) =
     let interval: NodeJS.Timeout;
     if (currentRun && currentRun.status === 'RUNNING') {
         interval = setInterval(async () => {
-             // Refresh runs list to get updated status
              await fetchRuns(projectId);
-             // Also refresh current run details specifically if needed (fetchRuns updates list but currentRun ref might be stale if store logic is simple)
-             // The store `fetchRuns` updates `runs` array. `currentRun` is separate state.
-             // We need to sync them or just fetch current run.
-             // Actually `useWorkflowRunStore` has `fetchRun`.
              const updatedRun = await fetchRun(currentRun.id);
              if (updatedRun && updatedRun.status !== 'RUNNING') {
-                 // Status changed, maybe refresh tasks one last time
                  fetchTasksByRun(updatedRun.id);
              }
         }, 2000);
     }
     return () => clearInterval(interval);
-  }, [currentRun?.status, currentRun?.id, projectId]);
+  }, [currentRun?.status, currentRun?.id, projectId, fetchRuns, fetchRun, fetchTasksByRun]);
 
   const handleStartRun = async () => {
     try {

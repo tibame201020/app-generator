@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { PackageDTO, ClassDTO, AnalysisResultDTO } from '../../types';
+import { ClassDTO, AnalysisResultDTO } from '../../types';
 import { getAnalysis, triggerAnalysis } from '../../services/projectService';
 import { RefreshCw, Package, FileCode, Box, Layers } from 'lucide-react';
 

@@ -77,6 +77,18 @@
 			<groupId>com.github.docker-java</groupId>
 			<artifactId>docker-java-transport-httpclient5</artifactId>
 			<version>${docker-java.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.httpcomponents.client5</groupId>
+					<artifactId>httpclient5</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- Explicitly include httpclient5 to resolve classpath issues -->
+		<dependency>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
+			<version>5.3</version>
 		</dependency>
 
 		<!-- AST Parsing -->
