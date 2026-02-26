@@ -26,6 +26,7 @@ public class LlmAgentExecutionService {
         log.info("Executing LLM Task: {} (Type: {})", task.getTaskName(), task.getAgentType());
 
         try {
+            agentTaskService.setInputContext(task.getId(), inputContext);
             agentTaskService.startTask(task.getId());
 
             // 1. Prepare Prompt

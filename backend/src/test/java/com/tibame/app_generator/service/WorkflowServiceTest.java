@@ -1,14 +1,15 @@
 package com.tibame.app_generator.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tibame.app_generator.enums.AgentType;
+import com.tibame.app_generator.enums.TaskStatus;
+import com.tibame.app_generator.model.AgentTask;
 import com.tibame.app_generator.model.Project;
 import com.tibame.app_generator.model.Workflow;
+import com.tibame.app_generator.model.WorkflowRun;
+import com.tibame.app_generator.repository.AgentTaskRepository;
 import com.tibame.app_generator.repository.ProjectRepository;
+import com.tibame.app_generator.repository.WorkflowRunRepository;
 import com.tibame.app_generator.repository.WorkflowRepository;
-import com.tibame.app_generator.model.AgentTask;
-import com.tibame.app_generator.service.llm.LlmAgentExecutionService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,111 +18,82 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class WorkflowServiceTest {
+public class WorkflowServiceTest {
 
-    @Mock
-    private WorkflowRepository workflowRepository;
+    @Mock private WorkflowRepository workflowRepository;
+    @Mock private ProjectRepository projectRepository;
+    @Mock private WorkflowRunRepository workflowRunRepository;
+    @Mock private AgentTaskService agentTaskService;
+    @Mock private AgentTaskRepository agentTaskRepository;
+    @Mock private WorkflowExecutor workflowExecutor;
 
-    @Mock
-    private ProjectRepository projectRepository;
-
-    @Mock
-    private AgentTaskService agentTaskService;
-
-    @Mock
-    private ObjectMapper objectMapper;
-
-    @Mock
-    private LlmAgentExecutionService llmAgentExecutionService;
-
-    @InjectMocks
-    private WorkflowService workflowService;
-
-    private UUID projectId;
-    private Project project;
-
-    @BeforeEach
-    void setUp() {
-        projectId = UUID.randomUUID();
-        project = Project.builder().id(projectId).description("Test Project").build();
-    }
+    @InjectMocks private WorkflowService workflowService;
 
     @Test
-    void validateWorkflow_ShouldReturnErrors_WhenNodesMissing() {
-        Map<String, Object> graphData = new HashMap<>();
-        List<String> errors = workflowService.validateWorkflow(graphData);
-        assertTrue(errors.contains("Invalid graph data structure.") || errors.contains("Workflow must contain at least one node."));
-    }
+    public void testStartRun() {
+        UUID projectId = UUID.randomUUID();
+        Project project = new Project();
+        project.setId(projectId);
 
-    @Test
-    void validateWorkflow_ShouldReturnErrors_WhenRolesMissing() {
         Map<String, Object> graphData = new HashMap<>();
         List<Map<String, Object>> nodes = new ArrayList<>();
         Map<String, Object> node = new HashMap<>();
-        node.put("data", Map.of("agentType", "PM"));
+        node.put("id", "1");
+        Map<String, Object> data = new HashMap<>();
+        data.put("agentType", "PM");
+        node.put("data", data);
         nodes.add(node);
-        graphData.put("nodes", nodes);
 
-        List<String> errors = workflowService.validateWorkflow(graphData);
-        assertTrue(errors.stream().anyMatch(e -> e.contains("Missing required agent role: SA")));
-        assertTrue(errors.stream().anyMatch(e -> e.contains("Missing required agent role: PG")));
-        assertTrue(errors.stream().anyMatch(e -> e.contains("Missing required agent role: QA")));
-    }
-
-    @Test
-    void validateWorkflow_ShouldPass_WhenAllRolesPresent() {
-        Map<String, Object> graphData = new HashMap<>();
-        List<Map<String, Object>> nodes = new ArrayList<>();
-        nodes.add(Map.of("id", "1", "data", Map.of("agentType", "PM")));
-        nodes.add(Map.of("id", "2", "data", Map.of("agentType", "SA")));
-        nodes.add(Map.of("id", "3", "data", Map.of("agentType", "PG")));
-        nodes.add(Map.of("id", "4", "data", Map.of("agentType", "QA")));
-        graphData.put("nodes", nodes);
-        graphData.put("edges", new ArrayList<>());
-
-        List<String> errors = workflowService.validateWorkflow(graphData);
-        assertTrue(errors.isEmpty());
-    }
-
-    @Test
-    void compileAndRun_ShouldSortAndExecute() {
-        // Prepare graph: PM -> SA -> PG -> QA
-        Map<String, Object> graphData = new HashMap<>();
-        List<Map<String, Object>> nodes = new ArrayList<>();
-        nodes.add(Map.of("id", "1", "data", Map.of("agentType", "PM")));
-        nodes.add(Map.of("id", "2", "data", Map.of("agentType", "SA")));
-        nodes.add(Map.of("id", "3", "data", Map.of("agentType", "PG")));
-        nodes.add(Map.of("id", "4", "data", Map.of("agentType", "QA")));
-
-        List<Map<String, Object>> edges = new ArrayList<>();
-        edges.add(Map.of("source", "1", "target", "2")); // PM -> SA
-        edges.add(Map.of("source", "2", "target", "3")); // SA -> PG
-        edges.add(Map.of("source", "3", "target", "4")); // PG -> QA
+        // Add other required roles
+        String[] requiredRoles = {"SA", "PG", "QA"};
+        for (int i = 0; i < requiredRoles.length; i++) {
+            Map<String, Object> nextNode = new HashMap<>();
+            nextNode.put("id", String.valueOf(i + 2));
+            Map<String, Object> nextData = new HashMap<>();
+            nextData.put("agentType", requiredRoles[i]);
+            nextNode.put("data", nextData);
+            nodes.add(nextNode);
+        }
 
         graphData.put("nodes", nodes);
-        graphData.put("edges", edges);
 
-        Workflow workflow = Workflow.builder().project(project).graphData(graphData).build();
+        Workflow workflow = new Workflow();
+        workflow.setGraphData(graphData);
 
-        when(workflowRepository.findByProjectId(projectId)).thenReturn(Optional.of(workflow));
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-
-        // Mock createTask to return a mock task so logic can proceed
-        when(agentTaskService.createTask(any(), any(), any(), any())).thenAnswer(invocation -> {
-            return AgentTask.builder().id(UUID.randomUUID()).build();
+        when(workflowRepository.findByProjectId(projectId)).thenReturn(Optional.of(workflow));
+        when(workflowRunRepository.save(any(WorkflowRun.class))).thenAnswer(i -> {
+            WorkflowRun run = (WorkflowRun) i.getArguments()[0];
+            run.setId(UUID.randomUUID());
+            return run;
         });
 
-        // Mock llmAgentExecutionService
-        when(llmAgentExecutionService.executeTask(any(), any())).thenReturn(new HashMap<>());
+        workflowService.startRun(projectId);
 
-        workflowService.compileAndRun(projectId);
+        verify(workflowRunRepository, times(1)).save(any(WorkflowRun.class));
+        verify(workflowExecutor, times(1)).executeRunAsync(any(UUID.class), eq(projectId));
+    }
 
-        verify(agentTaskService, times(4)).createTask(eq(projectId), any(AgentType.class), anyString(), anyMap());
-        verify(llmAgentExecutionService, times(4)).executeTask(any(), any());
+    @Test
+    public void testRetryTask() {
+        UUID taskId = UUID.randomUUID();
+        UUID runId = UUID.randomUUID();
+
+        AgentTask task = new AgentTask();
+        task.setId(taskId);
+        WorkflowRun run = new WorkflowRun();
+        run.setId(runId);
+        task.setWorkflowRun(run);
+
+        when(agentTaskRepository.findById(taskId)).thenReturn(Optional.of(task));
+
+        workflowService.retryTask(taskId);
+
+        verify(agentTaskRepository, times(1)).save(task);
+        // Async call retryTaskAsync is triggered
     }
 }

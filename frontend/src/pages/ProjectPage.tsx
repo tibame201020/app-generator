@@ -7,7 +7,7 @@ import { WorkflowCanvas } from '../components/Workflow/WorkflowCanvas';
 import { StatusBar } from '../components/Status/StatusBar';
 import { ProjectToolbar } from '../components/Runtime/ProjectToolbar';
 import { PreviewPane } from '../components/Runtime/PreviewPane';
-import { TaskPanel } from '../components/Runtime/TaskPanel';
+import { RunDetailsPanel } from '../components/Runtime/RunDetailsPanel';
 import { useProjectStore } from '../stores/useProjectStore';
 import { useEditorStore } from '../stores/useEditorStore';
 import { useRuntimeStore } from '../stores/useRuntimeStore';
@@ -69,7 +69,7 @@ const ProjectPage: React.FC = () => {
 
           {isTaskPanelVisible && (
             <div className="h-64 min-h-[160px] max-h-[50%] border-t border-gray-700 bg-gray-900 overflow-hidden shrink-0">
-               <TaskPanel projectId={projectId} />
+               <RunDetailsPanel projectId={projectId} />
             </div>
           )}
         </div>

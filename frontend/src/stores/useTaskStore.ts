@@ -6,11 +6,16 @@ export type TaskStatus = 'PENDING' | 'RUNNING' | 'SUCCESS' | 'FAIL';
 export interface Task {
   id: string;
   projectId: string;
+  workflowRunId?: string;
   agentType: string;
   taskName: string;
   status: TaskStatus;
   progressPct: number;
   logContent: string;
+  inputContext?: any;
+  contextData?: any;
+  retryCount?: number;
+  errorDetails?: string;
   createdAt: string;
 }
 
@@ -31,6 +36,7 @@ interface TaskState {
 
   setConnectionStatus: (status: 'connected' | 'disconnected' | 'connecting') => void;
   fetchTasks: (projectId: string) => Promise<void>;
+  fetchTasksByRun: (runId: string) => Promise<void>;
   handleEvent: (event: TaskEvent) => void;
 }
 
@@ -51,6 +57,25 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     } catch (error) {
         console.error('Failed to fetch tasks', error);
     }
+  },
+
+  fetchTasksByRun: async (runId) => {
+      try {
+          const response = await axios.get(`/api/runs/${runId}/tasks`);
+          const newTasks = response.data.reduce((acc: Record<string, Task>, task: Task) => {
+              acc[task.id] = task;
+              return acc;
+          }, {});
+
+          set((state) => ({
+              tasks: {
+                  ...state.tasks,
+                  ...newTasks
+              }
+          }));
+      } catch (error) {
+          console.error('Failed to fetch run tasks', error);
+      }
   },
 
   handleEvent: (event) => {
@@ -80,6 +105,11 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         newTask.progressPct = event.progress;
     }
 
+    // Update context
+    if (event.payload) {
+        newTask.contextData = event.payload;
+    }
+
     // Append log
     if (event.message) {
          newTask.logContent = newTask.logContent ? newTask.logContent + '\n' + event.message : event.message;
@@ -99,6 +129,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             break;
         case 'FAILED':
             newTask.status = 'FAIL';
+            newTask.errorDetails = event.message;
             break;
     }
 

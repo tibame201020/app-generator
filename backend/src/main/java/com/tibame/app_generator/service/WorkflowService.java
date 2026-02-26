@@ -1,21 +1,23 @@
 package com.tibame.app_generator.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tibame.app_generator.enums.AgentType;
+import com.tibame.app_generator.enums.TaskStatus;
 import com.tibame.app_generator.model.AgentTask;
 import com.tibame.app_generator.model.Project;
 import com.tibame.app_generator.model.Workflow;
+import com.tibame.app_generator.model.WorkflowRun;
+import com.tibame.app_generator.repository.AgentTaskRepository;
 import com.tibame.app_generator.repository.ProjectRepository;
+import com.tibame.app_generator.repository.WorkflowRunRepository;
 import com.tibame.app_generator.repository.WorkflowRepository;
-import com.tibame.app_generator.service.llm.LlmAgentExecutionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +26,9 @@ public class WorkflowService {
 
     private final WorkflowRepository workflowRepository;
     private final ProjectRepository projectRepository;
-    private final AgentTaskService agentTaskService;
-    private final ObjectMapper objectMapper;
-    private final LlmAgentExecutionService llmAgentExecutionService;
+    private final WorkflowRunRepository workflowRunRepository;
+    private final AgentTaskRepository agentTaskRepository;
+    private final WorkflowExecutor workflowExecutor;
 
     @Transactional
     public Workflow saveWorkflow(UUID projectId, Map<String, Object> graphData) {
@@ -53,7 +55,6 @@ public class WorkflowService {
         }
 
         List<Map<String, Object>> nodes = (List<Map<String, Object>>) graphData.get("nodes");
-        // Edges might be empty if it's a single node workflow
 
         if (nodes == null || nodes.isEmpty()) {
             errors.add("Workflow must contain at least one node.");
@@ -68,7 +69,6 @@ public class WorkflowService {
             }
         }
 
-        // Check required roles: PM, SA, PG, QA
         for (AgentType type : AgentType.values()) {
             if (!presentTypes.contains(type.name())) {
                  errors.add("Missing required agent role: " + type.name());
@@ -78,113 +78,115 @@ public class WorkflowService {
         return errors;
     }
 
-    @Async
-    public void compileAndRun(UUID projectId) {
+    @Transactional
+    public WorkflowRun startRun(UUID projectId) {
         Workflow workflow = getWorkflow(projectId);
         List<String> validationErrors = validateWorkflow(workflow.getGraphData());
         if (!validationErrors.isEmpty()) {
             throw new IllegalStateException("Workflow validation failed: " + validationErrors);
         }
 
-        // Initialize execution context with Project Description
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectId));
 
-        Map<String, Object> executionContext = new HashMap<>();
-        if (project.getDescription() != null) {
-            executionContext.put("description", project.getDescription());
+        WorkflowRun run = WorkflowRun.builder()
+                .project(project)
+                .status(TaskStatus.RUNNING)
+                .startedAt(ZonedDateTime.now())
+                .build();
+
+        run = workflowRunRepository.save(run);
+
+        // Trigger async execution via executor
+        workflowExecutor.executeRunAsync(run.getId(), projectId);
+
+        return run;
+    }
+
+    @Async
+    public void compileAndRun(UUID projectId) {
+        // Deprecated: Delegates to startRun but ignores return
+        startRun(projectId);
+    }
+
+    @Transactional
+    public void resumeRun(UUID runId) {
+        WorkflowRun run = workflowRunRepository.findById(runId)
+                .orElseThrow(() -> new IllegalArgumentException("Run not found: " + runId));
+
+        if (run.getStatus() == TaskStatus.RUNNING) {
+             throw new IllegalStateException("Run is already running.");
         }
 
-        List<Map<String, Object>> nodes = (List<Map<String, Object>>) workflow.getGraphData().get("nodes");
-        List<Map<String, Object>> edges = (List<Map<String, Object>>) workflow.getGraphData().get("edges");
-        if (edges == null) edges = new ArrayList<>();
+        List<AgentTask> tasks = agentTaskRepository.findByWorkflowRun_IdOrderByCreatedAtAsc(runId);
+        AgentTask failedTask = tasks.stream()
+                .filter(t -> t.getStatus() == TaskStatus.FAIL)
+                .findFirst()
+                .orElse(null);
 
-        // Topological Sort
-        List<Map<String, Object>> sortedNodes = topologicalSort(nodes, edges);
-
-        // Execute sequentially
-        for (Map<String, Object> node : sortedNodes) {
-             Map<String, Object> data = (Map<String, Object>) node.get("data");
-             String agentTypeStr = (String) data.get("agentType");
-             String label = (String) data.get("label");
-
-             AgentType agentType;
-             try {
-                 agentType = AgentType.valueOf(agentTypeStr);
-             } catch (IllegalArgumentException e) {
-                 log.error("Invalid agent type: {}", agentTypeStr);
-                 continue;
-             }
-
-             // Create Task
-             AgentTask task = agentTaskService.createTask(projectId, agentType, label != null ? label : agentType.name() + " Task", data);
-
-             // Run Task (Synchronously inside this Async method)
-             // We pass the accumulated context (previous outputs) as input to the current task
-             try {
-                 Map<String, Object> result = llmAgentExecutionService.executeTask(task, executionContext);
-
-                 // Update context for next steps
-                 if (result != null) {
-                     executionContext.putAll(result);
-                 }
-             } catch (Exception e) {
-                 log.error("Execution failed for task: {}", task.getId(), e);
-                 // Stop workflow execution on failure?
-                 // Yes, usually. The task itself is already marked failed by executeTask.
-                 break;
-             }
+        if (failedTask != null) {
+            retryTask(failedTask.getId());
+        } else {
+            // If no failed task, maybe it was interrupted?
+            // If status is FAIL but no failed task, maybe system crash.
+            // We should try to find the last task and see if we can resume.
+            log.warn("No failed task found to resume for run {}", runId);
+            // If we want to support resuming interrupted runs (e.g. server restart), we'd need to check which tasks are PENDING or RUNNING and restart them.
+            // For now, simpler to just say "No failed task".
         }
     }
 
-    private List<Map<String, Object>> topologicalSort(List<Map<String, Object>> nodes, List<Map<String, Object>> edges) {
-        // Build adjacency list
-        Map<String, List<String>> adj = new HashMap<>();
-        Map<String, Integer> inDegree = new HashMap<>();
-        Map<String, Map<String, Object>> nodeMap = new HashMap<>();
+    @Transactional
+    public void retryTask(UUID taskId) {
+        AgentTask task = agentTaskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalArgumentException("Task not found: " + taskId));
 
-        for (Map<String, Object> node : nodes) {
-            String id = (String) node.get("id");
-            nodeMap.put(id, node);
-            adj.put(id, new ArrayList<>());
-            inDegree.put(id, 0);
+        WorkflowRun run = task.getWorkflowRun();
+        if (run == null) {
+            throw new IllegalStateException("Task is not associated with a workflow run.");
         }
 
-        for (Map<String, Object> edge : edges) {
-            String source = (String) edge.get("source");
-            String target = (String) edge.get("target");
-            if (adj.containsKey(source) && inDegree.containsKey(target)) {
-                adj.get(source).add(target);
-                inDegree.put(target, inDegree.get(target) + 1);
-            }
+        // Idempotency check
+        if (task.getStatus() == TaskStatus.RUNNING) {
+            throw new IllegalStateException("Task is already running.");
         }
 
-        Queue<String> queue = new LinkedList<>();
-        for (Map.Entry<String, Integer> entry : inDegree.entrySet()) {
-            if (entry.getValue() == 0) {
-                queue.add(entry.getKey());
-            }
+        // Reset task status
+        task.setStatus(TaskStatus.RUNNING);
+        task.setRetryCount(task.getRetryCount() + 1);
+        task.setErrorDetails(null);
+
+        // Update retry metadata
+        Map<String, Object> metadata = task.getRetryMetadata();
+        if (metadata == null) {
+            metadata = new HashMap<>();
+        }
+        Map<String, Object> entry = new HashMap<>();
+        entry.put("timestamp", ZonedDateTime.now().toString());
+        entry.put("reason", "User initiated retry"); // Hardcoded for now as we don't have user info passed
+        // entry.put("userId", userId); // If we had userId
+
+        // Use a list for history? Or just last retry?
+        // Since retryMetadata is Map, maybe we store "history" list inside.
+        List<Map<String, Object>> history = (List<Map<String, Object>>) metadata.get("history");
+        if (history == null) {
+            history = new ArrayList<>();
+        }
+        history.add(entry);
+        metadata.put("history", history);
+        metadata.put("lastRetry", entry);
+
+        task.setRetryMetadata(metadata);
+
+        agentTaskRepository.save(task);
+
+        // Update run status if needed
+        if (run.getStatus() != TaskStatus.RUNNING) {
+            run.setStatus(TaskStatus.RUNNING);
+            workflowRunRepository.save(run);
         }
 
-        List<Map<String, Object>> result = new ArrayList<>();
-        while (!queue.isEmpty()) {
-            String u = queue.poll();
-            result.add(nodeMap.get(u));
-
-            if (adj.containsKey(u)) {
-                for (String v : adj.get(u)) {
-                    inDegree.put(v, inDegree.get(v) - 1);
-                    if (inDegree.get(v) == 0) {
-                        queue.add(v);
-                    }
-                }
-            }
-        }
-
-        if (result.size() != nodes.size()) {
-            throw new IllegalStateException("Cycle detected in workflow graph");
-        }
-
-        return result;
+        // Run async via executor
+        workflowExecutor.retryTaskAsync(task.getId(), run.getId());
     }
 }

@@ -16,6 +16,7 @@ A Low-Code/No-Code tool using AI agents for system generation, featuring a VS Co
 - **Instant Preview**: Run projects in isolated Docker containers with live preview (Run/Stop/Restart controls).
 - **Agent Task Pipeline**: Real-time task execution and monitoring via WebSockets (Queue, Running, Progress, Completion).
 - **Workflow Canvas**: Visual editor for defining and executing AI agent workflows (PM -> SA -> PG -> QA).
+- **Workflow Observability**: Detailed run history, task-level inspection (logs, input context, output summary), and retry controls for failed tasks/runs.
 
 ## Getting Started
 
@@ -58,6 +59,14 @@ npm run dev
 
 The frontend will be available at `http://localhost:5173`.
 The backend runs on `http://localhost:8080`.
+
+## Workflow Run & Retry
+
+- **Inspect Runs**: View history of workflow runs in the "Runs" panel.
+- **Task Details**: Click on a task to view its logs, input context, and execution summary.
+- **Retry**:
+  - **Retry Task**: Re-execute a failed task with its original input context. If successful, the workflow automatically resumes from that point.
+  - **Retry Run**: Resume a failed workflow run from the last failed task.
 
 ## Development
 
