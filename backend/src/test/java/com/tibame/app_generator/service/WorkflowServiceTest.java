@@ -7,6 +7,7 @@ import com.tibame.app_generator.model.Workflow;
 import com.tibame.app_generator.repository.ProjectRepository;
 import com.tibame.app_generator.repository.WorkflowRepository;
 import com.tibame.app_generator.model.AgentTask;
+import com.tibame.app_generator.service.llm.LlmAgentExecutionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +36,9 @@ class WorkflowServiceTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private LlmAgentExecutionService llmAgentExecutionService;
+
     @InjectMocks
     private WorkflowService workflowService;
 
@@ -44,7 +48,7 @@ class WorkflowServiceTest {
     @BeforeEach
     void setUp() {
         projectId = UUID.randomUUID();
-        project = Project.builder().id(projectId).build();
+        project = Project.builder().id(projectId).description("Test Project").build();
     }
 
     @Test
@@ -105,19 +109,19 @@ class WorkflowServiceTest {
         Workflow workflow = Workflow.builder().project(project).graphData(graphData).build();
 
         when(workflowRepository.findByProjectId(projectId)).thenReturn(Optional.of(workflow));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
 
         // Mock createTask to return a mock task so logic can proceed
         when(agentTaskService.createTask(any(), any(), any(), any())).thenAnswer(invocation -> {
             return AgentTask.builder().id(UUID.randomUUID()).build();
         });
 
-        // Mock runTaskSimulation internals (startTask, updateProgress, completeTask)
-        // Since runTaskSimulation is private, we can't mock it directly, but we mock the dependencies it calls.
+        // Mock llmAgentExecutionService
+        when(llmAgentExecutionService.executeTask(any(), any())).thenReturn(new HashMap<>());
 
         workflowService.compileAndRun(projectId);
 
         verify(agentTaskService, times(4)).createTask(eq(projectId), any(AgentType.class), anyString(), anyMap());
-        verify(agentTaskService, times(4)).startTask(any());
-        verify(agentTaskService, times(4)).completeTask(any(), any());
+        verify(llmAgentExecutionService, times(4)).executeTask(any(), any());
     }
 }

@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -73,5 +74,18 @@ class WorkflowControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(graphData)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    void runWorkflow_ShouldStartExecution() throws Exception {
+        UUID projectId = UUID.randomUUID();
+        // workflowService.compileAndRun returns void
+
+        mockMvc.perform(post("/api/projects/{projectId}/workflow/run", projectId)
+                        .with(csrf()))
+                .andExpect(status().isAccepted());
+
+        verify(workflowService).compileAndRun(projectId);
     }
 }

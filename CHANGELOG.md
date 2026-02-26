@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.9.0] - 2026-02-25
+
+### Added
+- **LLM Agent Execution**:
+  - Implement `LlmAgentExecutionService` using LangChain4j for executing agent tasks.
+  - Create `AgentPromptTemplate` enum with structured JSON prompts for PM, SA, PG, QA roles.
+  - Integrate LLM execution into `WorkflowService`, replacing simulation with real AI calls.
+  - Persist task artifacts and execution summaries to `AgentTask` context.
+  - Add robust failure handling, timeouts, and retries for LLM calls.
+- **Configuration**:
+  - Add `LlmProperties` and `LlmConfig` for environment-driven LLM settings (OpenAI).
+- **Testing**:
+  - Add `LlmAgentExecutionServiceTest` for unit testing prompt generation and execution logic.
+  - Update `WorkflowServiceTest` to verify integration with the execution service.
+  - Add `WorkflowControllerTest` for endpoint verification.
+
 ## [0.8.0] - 2026-02-24
 
 ### Added

@@ -24,3 +24,10 @@ platform:
     workspaces-path: ./data/workspaces
   docker:
     host: unix:///var/run/docker.sock # Windows 下需確認 Docker Desktop 設定
+  llm:
+    provider: openai
+    api-key: ${OPENAI_API_KEY:demo}
+    model-name: gpt-4o
+    timeout: 60
+    max-retries: 3
+    temperature: 0.7
