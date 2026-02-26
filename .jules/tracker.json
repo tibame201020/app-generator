@@ -215,7 +215,7 @@
           "id": "task_2_2_4",
           "phase": "phase_2",
           "title": "實作 SA 狀態轉移邏輯 (SAState)",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_2_2_2"
           ],
