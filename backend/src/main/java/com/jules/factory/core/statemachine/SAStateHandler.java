@@ -1,5 +1,7 @@
 package com.jules.factory.core.statemachine;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jules.factory.common.util.SnowflakeIdGenerator;
 import com.jules.factory.domain.entity.Conversation;
 import com.jules.factory.domain.entity.Project;
@@ -7,8 +9,15 @@ import com.jules.factory.domain.enums.AgentRole;
 import com.jules.factory.domain.enums.ProjectState;
 import com.jules.factory.domain.repository.ConversationRepository;
 import com.jules.factory.domain.repository.ProjectRepository;
+import com.jules.factory.dto.ArchitectureProposal;
+import com.jules.factory.service.llm.PromptTemplateBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,13 +31,22 @@ public class SAStateHandler implements StateHandler {
     private final ProjectRepository projectRepository;
     private final ConversationRepository conversationRepository;
     private final SnowflakeIdGenerator snowflakeIdGenerator;
+    private final ChatModel chatModel;
+    private final PromptTemplateBuilder promptTemplateBuilder;
+    private final ObjectMapper objectMapper;
 
     public SAStateHandler(ProjectRepository projectRepository,
                           ConversationRepository conversationRepository,
-                          SnowflakeIdGenerator snowflakeIdGenerator) {
+                          SnowflakeIdGenerator snowflakeIdGenerator,
+                          ChatModel chatModel,
+                          PromptTemplateBuilder promptTemplateBuilder,
+                          ObjectMapper objectMapper) {
         this.projectRepository = projectRepository;
         this.conversationRepository = conversationRepository;
         this.snowflakeIdGenerator = snowflakeIdGenerator;
+        this.chatModel = chatModel;
+        this.promptTemplateBuilder = promptTemplateBuilder;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -77,18 +95,36 @@ public class SAStateHandler implements StateHandler {
             } else {
                 // First time SA speaks (e.g. after PM transition)
                 logger.info("SA proposing architecture for project: {}", projectId);
-                String dummyJson = """
-                        {
-                          "proposed_architecture": {
-                            "backend": "Spring Boot 3",
-                            "frontend": "React + TypeScript",
-                            "database": "PostgreSQL",
-                            "message_queue": "RabbitMQ",
-                            "ai_integration": "Spring AI"
-                          }
-                        }
-                        """;
-                saveConversation(project, dummyJson);
+
+                // 1. Prepare Converter
+                BeanOutputConverter<ArchitectureProposal> converter = new BeanOutputConverter<>(ArchitectureProposal.class);
+                String formatInstructions = converter.getFormat();
+
+                // 2. Build Prompt
+                String saTask = "Review the requirements gathered by PM and propose a technical architecture. " +
+                        "You MUST output the result in strict JSON format matching the schema below.\n" +
+                        formatInstructions;
+
+                List<Message> promptMessages = promptTemplateBuilder.buildFullPrompt(AgentRole.SA, messages, saTask);
+                Prompt prompt = new Prompt(promptMessages);
+
+                // 3. Call LLM
+                try {
+                    ChatResponse response = chatModel.call(prompt);
+                    String content = response.getResult().getOutput().getContent();
+
+                    // 4. Parse (Validation)
+                    ArchitectureProposal proposal = converter.convert(content);
+
+                    // 5. Serialize back to JSON string for storage
+                    String proposalJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(proposal);
+                    saveConversation(project, proposalJson);
+
+                } catch (Exception e) {
+                    logger.error("Failed to generate architecture proposal for project: {}", projectId, e);
+                    // Fallback or retry logic could be added here. For now, we might save the error or retry manually.
+                    saveConversation(project, "Error generating architecture proposal. Please try again.");
+                }
             }
         }
     }

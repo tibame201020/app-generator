@@ -283,7 +283,7 @@
           "id": "task_3_1_3",
           "phase": "phase_3",
           "title": "整合 Spring AI 呼叫至 SA 節點",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_2_2_4",
             "task_3_1_1"

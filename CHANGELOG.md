@@ -30,3 +30,4 @@ All notable changes to this project will be documented in this file.
 - Task 2.4.1: Wrote docs/backend/state_machine.md with detailed architecture, roles, and state diagrams.
 - Task 3.1.1: Implemented PromptTemplateBuilder for centralized System Prompt management (PM, SA) and conversation history construction.
 - Task 3.1.2: Integrated Spring AI ChatModel into PMStateHandler for interactive requirement gathering with LLM. Added [REQUIREMENTS_GATHERED] token for state transition.
+- Task 3.1.3: Integrated Spring AI with Structured Output in SAStateHandler to enforce valid JSON architecture proposals using BeanOutputConverter.
