@@ -205,7 +205,7 @@
           "id": "task_2_2_3",
           "phase": "phase_2",
           "title": "實作 PM 狀態轉移邏輯 (PMState)",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_2_2_2"
           ],

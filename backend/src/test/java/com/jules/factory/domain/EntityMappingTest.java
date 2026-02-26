@@ -3,6 +3,7 @@ package com.jules.factory.domain;
 import com.jules.factory.common.util.SnowflakeIdGenerator;
 import com.jules.factory.domain.entity.Conversation;
 import com.jules.factory.domain.entity.Project;
+import com.jules.factory.domain.enums.ProjectState;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -40,6 +41,7 @@ public class EntityMappingTest {
         Project foundProject = entityManager.find(Project.class, projectId);
         assertThat(foundProject).isNotNull();
         assertThat(foundProject.getName()).isEqualTo("Test Project");
+        assertThat(foundProject.getStatus()).isEqualTo(ProjectState.REQUIREMENT_GATHERING);
         assertThat(foundProject.getCreatedAt()).isNotNull();
 
         // Retrieve Conversation
