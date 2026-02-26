@@ -246,7 +246,7 @@
           "id": "task_2_4_1",
           "phase": "phase_2",
           "title": "撰寫 docs/backend/state_machine.md 文件",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_2_3_1"
           ],
