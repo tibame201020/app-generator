@@ -1,6 +1,9 @@
 package com.jules.factory.domain.entity;
 
+import com.jules.factory.domain.enums.ProjectState;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -18,6 +21,9 @@ public class Project {
 
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    private ProjectState status;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -33,6 +39,9 @@ public class Project {
 
     @PrePersist
     protected void onCreate() {
+        if (this.status == null) {
+            this.status = ProjectState.REQUIREMENT_GATHERING;
+        }
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -66,6 +75,14 @@ public class Project {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public ProjectState getStatus() {
+        return status;
+    }
+
+    public void setStatus(ProjectState status) {
+        this.status = status;
     }
 
     public LocalDateTime getCreatedAt() {

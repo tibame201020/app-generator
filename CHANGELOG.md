@@ -23,3 +23,4 @@ All notable changes to this project will be documented in this file.
 - Task 2.1.2: Created Spring Data JPA Repositories for Project and Conversation with ordering support.
 - Task 2.2.1: Defined AgentRole Enum (USER, PM, UIUX, SA, PG, SYSTEM) and ProjectState Enum (REQUIREMENT_GATHERING, ARCHITECTURE_DESIGN, IMPLEMENTATION, REVIEW).
 - Task 2.2.2: Implemented StateMachineEngine interface and StateContext record for managing agent state transitions.
+- Task 2.2.3: Implemented PM State Logic with PMStateHandler and StateMachineEngineImpl. Added status field to Project entity (Self-Healing).
