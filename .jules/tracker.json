@@ -294,7 +294,7 @@
           "id": "task_3_1_4",
           "phase": "phase_3",
           "title": "實作 PG 產生程式碼的 File I/O 服務",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_1_1_1"
           ],
