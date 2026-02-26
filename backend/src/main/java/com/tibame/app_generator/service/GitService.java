@@ -267,6 +267,33 @@ public class GitService {
     }
 
     /**
+     * 從遠端 Repository 克隆到本地 Bare Repository。
+     *
+     * @param remoteUrl 遠端 Repository URL
+     * @param destinationBareRepoPath 目標 Bare Repo 路徑
+     */
+    public void cloneFromRemote(String remoteUrl, Path destinationBareRepoPath) throws GitAPIException, IOException {
+        if (Files.exists(destinationBareRepoPath)) {
+            // 如果目錄已存在，檢查是否為有效的 Git Repo
+            if (Files.isDirectory(destinationBareRepoPath) && Files.list(destinationBareRepoPath).count() > 0) {
+                 log.warn("Target path exists and is not empty: {}", destinationBareRepoPath);
+            }
+        } else {
+             Files.createDirectories(destinationBareRepoPath.getParent());
+        }
+
+        log.info("Cloning from {} to {}", remoteUrl, destinationBareRepoPath);
+
+        try (Git git = Git.cloneRepository()
+                .setURI(remoteUrl)
+                .setDirectory(destinationBareRepoPath.toFile())
+                .setBare(true)
+                .call()) {
+            log.info("Cloned successfully to {}", destinationBareRepoPath);
+        }
+    }
+
+    /**
      * 讀取 Bare Repository 中指定檔案的內容。
      *
      * @param userId    使用者 ID
@@ -306,7 +333,7 @@ public class GitService {
     /**
      * 遞迴刪除目錄（用於清理暫存工作區）
      */
-    private void deleteDirectoryRecursively(Path path) throws IOException {
+    public void deleteDirectoryRecursively(Path path) throws IOException {
         if (Files.exists(path)) {
             Files.walk(path)
                     .sorted(Comparator.reverseOrder())
