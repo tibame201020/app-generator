@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
-import { Play, Square, RefreshCw, LayoutTemplate, Code } from 'lucide-react';
+import { Play, Square, RefreshCw, LayoutTemplate, Code, Layers } from 'lucide-react';
 import { useRuntimeStore } from '../../stores/useRuntimeStore';
 
 interface ProjectToolbarProps {
   projectId: string;
   onTogglePreview: () => void;
   isPreviewVisible: boolean;
-  viewMode: 'code' | 'workflow';
-  onViewModeChange: (mode: 'code' | 'workflow') => void;
+  viewMode: 'code' | 'workflow' | 'analysis';
+  onViewModeChange: (mode: 'code' | 'workflow' | 'analysis') => void;
 }
 
 export const ProjectToolbar: React.FC<ProjectToolbarProps> = ({
@@ -88,6 +88,16 @@ export const ProjectToolbar: React.FC<ProjectToolbarProps> = ({
           >
             <LayoutTemplate size={14} />
             <span>Workflow</span>
+          </button>
+          <button
+            onClick={() => onViewModeChange('analysis')}
+            className={`px-2 py-1 rounded flex items-center gap-1 text-xs font-medium transition-colors ${
+              viewMode === 'analysis' ? 'bg-gray-700 text-white shadow-sm' : 'text-gray-400 hover:text-white'
+            }`}
+            title="Analysis View"
+          >
+            <Layers size={14} />
+            <span>Analysis</span>
           </button>
       </div>
 

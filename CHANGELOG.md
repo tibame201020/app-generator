@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- **Project Import**: Added functionality to import projects from remote Git repositories.
+- **Code Analysis**: Implemented AST-based Java code analysis (Packages, Classes, Methods, Fields, Dependencies) with a new Analysis View.
 - **Workflow Observability**: Implemented `WorkflowRun` entity and `RunDetailsPanel` for end-to-end workflow monitoring.
 - **Retry Controls**: Added API endpoints and UI for retrying failed tasks and resuming failed runs.
 - **Task Context Persistence**: `AgentTask` now stores `inputContext` and `contextData` (output) snapshots to enable safe retries.

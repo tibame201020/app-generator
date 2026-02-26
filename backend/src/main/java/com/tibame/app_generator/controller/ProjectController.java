@@ -2,6 +2,7 @@ package com.tibame.app_generator.controller;
 
 import com.tibame.app_generator.dto.CreateProjectRequest;
 import com.tibame.app_generator.dto.FileTreeNode;
+import com.tibame.app_generator.dto.ImportProjectRequest;
 import com.tibame.app_generator.model.Project;
 import com.tibame.app_generator.service.DockerService;
 import com.tibame.app_generator.service.ProjectService;
@@ -52,6 +53,23 @@ public class ProjectController {
         } catch (GitAPIException | IOException e) {
             return ResponseEntity.internalServerError()
                     .body(Map.of("error", "Failed to initialize git repository: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * 匯入專案。
+     * POST /api/projects/import?userId={userId}
+     */
+    @PostMapping("/import")
+    public ResponseEntity<?> importProject(
+            @RequestParam UUID userId,
+            @RequestBody ImportProjectRequest request) {
+        try {
+            Project project = projectService.importProject(userId, request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(project);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Failed to import project: " + e.getMessage()));
         }
     }
 

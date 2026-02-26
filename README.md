@@ -11,7 +11,9 @@ A Low-Code/No-Code tool using AI agents for system generation, featuring a VS Co
 ## Features
 
 - **Project Management**: Create, list, and manage projects.
+- **Import Project**: Import existing projects from remote Git repositories.
 - **Git Integration**: Every project is a Git repository.
+- **Code Analysis**: AST-based analysis of Java projects (Packages, Classes, Methods, Fields, Dependencies).
 - **Web IDE**: VS Code-style editor with file tree and code editing.
 - **Instant Preview**: Run projects in isolated Docker containers with live preview (Run/Stop/Restart controls).
 - **Agent Task Pipeline**: Real-time task execution and monitoring via WebSockets (Queue, Running, Progress, Completion).

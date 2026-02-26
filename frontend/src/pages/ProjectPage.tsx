@@ -4,6 +4,7 @@ import { MainLayout } from '../components/Layout/MainLayout';
 import { FileTree } from '../components/FileExplorer/FileTree';
 import { CodeEditor } from '../components/Editor/CodeEditor';
 import { WorkflowCanvas } from '../components/Workflow/WorkflowCanvas';
+import { AnalysisPanel } from '../components/Analysis/AnalysisPanel';
 import { StatusBar } from '../components/Status/StatusBar';
 import { ProjectToolbar } from '../components/Runtime/ProjectToolbar';
 import { PreviewPane } from '../components/Runtime/PreviewPane';
@@ -27,7 +28,7 @@ const ProjectPage: React.FC = () => {
 
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [isTaskPanelVisible] = useState(true);
-  const [viewMode, setViewMode] = useState<'code' | 'workflow'>('code');
+  const [viewMode, setViewMode] = useState<'code' | 'workflow' | 'analysis'>('code');
 
   useEffect(() => {
     if (projectId) {
@@ -62,8 +63,10 @@ const ProjectPage: React.FC = () => {
           <div className="flex-1 overflow-hidden h-full relative">
             {viewMode === 'code' ? (
                 <CodeEditor projectId={projectId} />
-            ) : (
+            ) : viewMode === 'workflow' ? (
                 <WorkflowCanvas />
+            ) : (
+                <AnalysisPanel projectId={projectId} />
             )}
           </div>
 

@@ -1,6 +1,8 @@
 package com.tibame.app_generator.service;
 
 import com.tibame.app_generator.dto.FileTreeNode;
+import com.tibame.app_generator.dto.ImportProjectRequest;
+import com.tibame.app_generator.enums.ImportStatus;
 import com.tibame.app_generator.model.Project;
 import com.tibame.app_generator.model.User;
 import com.tibame.app_generator.repository.ProjectRepository;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +29,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final GitService gitService;
+    private final ProjectImportService projectImportService;
 
     /**
      * 建立新專案：寫入 DB 並初始化 Git Bare Repository。
@@ -58,6 +62,42 @@ public class ProjectService {
 
         log.info("Created project '{}' (id={}) with git repo at: {}",
                 name, project.getId(), repoPath);
+
+        return project;
+    }
+
+    /**
+     * 匯入外部 Git 專案。
+     *
+     * @param userId  使用者 ID
+     * @param request 匯入請求
+     * @return 建立的 Project 實體（狀態為 CLONING）
+     */
+    @Transactional
+    public Project importProject(UUID userId, ImportProjectRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        Project project = Project.builder()
+                .user(user)
+                .name(request.getName())
+                .description(request.getDescription())
+                .gitRepoPath("") // 暫置
+                .remoteRepoUrl(request.getRemoteRepoUrl())
+                .defaultBranch(request.getDefaultBranch() != null ? request.getDefaultBranch() : "main")
+                .importStatus(ImportStatus.PENDING)
+                .build();
+
+        project = projectRepository.save(project);
+
+        // 設定初始 gitRepoPath (雖然還沒 clone，但路徑是確定的)
+        Path bareRepoPath = gitService.getBareRepoPath(userId, project.getId());
+        project.setGitRepoPath(bareRepoPath.toString());
+        project.setImportStatus(ImportStatus.CLONING);
+        project = projectRepository.save(project);
+
+        // 非同步觸發 clone & analysis
+        projectImportService.importProjectAsync(project.getId());
 
         return project;
     }

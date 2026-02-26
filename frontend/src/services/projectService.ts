@@ -1,5 +1,5 @@
 import api from './api';
-import { Project, FileNode, FileContent } from '../types';
+import { Project, FileNode, FileContent, AnalysisResultDTO } from '../types';
 
 export const getProjects = async (userId: string): Promise<Project[]> => {
   const response = await api.get<Project[]>('/projects', { params: { userId } });
@@ -37,4 +37,18 @@ export const restartProject = async (projectId: string): Promise<void> => {
 export const getProjectStatus = async (projectId: string): Promise<any> => {
   const response = await api.get(`/projects/${projectId}/status`);
   return response.data;
+};
+
+export const importProject = async (userId: string, remoteRepoUrl: string, name: string): Promise<Project> => {
+    const response = await api.post<Project>('/projects/import', { remoteRepoUrl, name }, { params: { userId } });
+    return response.data;
+};
+
+export const getAnalysis = async (projectId: string): Promise<AnalysisResultDTO> => {
+    const response = await api.get<AnalysisResultDTO>(`/projects/${projectId}/analysis`);
+    return response.data;
+};
+
+export const triggerAnalysis = async (projectId: string): Promise<void> => {
+    await api.post(`/projects/${projectId}/analysis`);
 };
