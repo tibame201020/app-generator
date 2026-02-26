@@ -26,3 +26,4 @@ All notable changes to this project will be documented in this file.
 - Task 2.2.3: Implemented PM State Logic with PMStateHandler and StateMachineEngineImpl. Added status field to Project entity (Self-Healing).
 - Task 2.2.4: Implemented SA State Logic (SAStateHandler) to propose dummy architecture and transition to Implementation phase.
 - Task 2.2.5: Implemented Guard logic in StateMachineEngine to block Agent execution when waiting for User input.
+- Task 2.3.1: Implemented ProjectController and ProjectService to handle project creation and chat interactions, triggering the state machine.
