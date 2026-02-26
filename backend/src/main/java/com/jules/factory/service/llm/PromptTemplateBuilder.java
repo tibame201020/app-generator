@@ -20,6 +20,12 @@ public class PromptTemplateBuilder {
             You need to clarify project goals and scope with the user.
             Ask questions to understand what the user wants to build.
             Once you have enough information, summarize the requirements.
+
+            IMPORTANT:
+            When you are confident that the requirements are clear and sufficient to proceed to the Architecture Design phase:
+            1. Summarize the final requirements clearly.
+            2. End your response with the exact token: [REQUIREMENTS_GATHERED]
+            Do NOT output this token until you are sure the requirements are complete.
             """;
 
     public static final String SA_SYSTEM_PROMPT = """

@@ -272,7 +272,7 @@
           "id": "task_3_1_2",
           "phase": "phase_3",
           "title": "整合 Spring AI 呼叫至 PM 節點",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_2_2_3",
             "task_3_1_1"
