@@ -6,6 +6,7 @@ import com.tibame.app_generator.enums.AgentType;
 import com.tibame.app_generator.enums.TaskStatus;
 import com.tibame.app_generator.model.AgentTask;
 import com.tibame.app_generator.model.Project;
+import com.tibame.app_generator.model.WorkflowRun;
 import com.tibame.app_generator.repository.AgentTaskRepository;
 import com.tibame.app_generator.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +30,17 @@ public class AgentTaskService {
 
     @Transactional
     public AgentTask createTask(UUID projectId, AgentType agentType, String taskName, Map<String, Object> contextData) {
+        return createTask(projectId, null, agentType, taskName, contextData);
+    }
+
+    @Transactional
+    public AgentTask createTask(UUID projectId, WorkflowRun workflowRun, AgentType agentType, String taskName, Map<String, Object> contextData) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectId));
 
         AgentTask task = AgentTask.builder()
                 .project(project)
+                .workflowRun(workflowRun)
                 .agentType(agentType)
                 .taskName(taskName)
                 .status(TaskStatus.PENDING)
@@ -81,6 +88,13 @@ public class AgentTaskService {
     }
 
     @Transactional
+    public void setInputContext(UUID taskId, Map<String, Object> inputContext) {
+        AgentTask task = getTask(taskId);
+        task.setInputContext(inputContext);
+        agentTaskRepository.save(task);
+    }
+
+    @Transactional
     public void completeTask(UUID taskId, String resultMessage) {
         AgentTask task = getTask(taskId);
         task.setStatus(TaskStatus.SUCCESS);
@@ -97,6 +111,7 @@ public class AgentTaskService {
     public void failTask(UUID taskId, String errorMessage) {
         AgentTask task = getTask(taskId);
         task.setStatus(TaskStatus.FAIL);
+        task.setErrorDetails(errorMessage);
         String currentLog = task.getLogContent() == null ? "" : task.getLogContent();
         task.setLogContent(currentLog + "\nERROR: " + errorMessage);
         agentTaskRepository.save(task);

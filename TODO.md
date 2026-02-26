@@ -46,6 +46,11 @@
     - [x] 實作 `PM Agent` 功能定義 Prompt
     - [x] 實作 `PG Agent` 代碼生成與修改 Prompt (基礎版本)
 
+## 第四階段之二：可觀測性與重試 (Phase 4.5: Observability & Retry)
+- [x] 實作 `WorkflowRun` 實體與生命週期管理
+- [x] 實作 `RunDetailsPanel` (任務列表、日誌、狀態)
+- [x] 實作安全重試機制 (Task Retry, Run Resume)
+
 ## 第五階段：既有專案匯入與 AST 分析 (Phase 5: Import & AST Analysis)
 - [ ] 實作 `ASTAnalyzer`:
     - [ ] Java 專案結構掃描 (JavaParser)

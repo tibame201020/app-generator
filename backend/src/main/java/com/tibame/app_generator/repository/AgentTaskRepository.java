@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface AgentTaskRepository extends JpaRepository<AgentTask, UUID> {
     List<AgentTask> findByProject_Id(UUID projectId);
+    List<AgentTask> findByWorkflowRun_IdOrderByCreatedAtAsc(UUID workflowRunId);
 }

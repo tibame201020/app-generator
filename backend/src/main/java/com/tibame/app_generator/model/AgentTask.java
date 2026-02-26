@@ -31,6 +31,10 @@ public class AgentTask {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workflow_run_id")
+    private WorkflowRun workflowRun;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "agent_type", nullable = false, length = 50)
     private AgentType agentType;
@@ -47,12 +51,27 @@ public class AgentTask {
     @Column(name = "context_data", columnDefinition = "jsonb")
     private Map<String, Object> contextData;
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "input_context", columnDefinition = "jsonb")
+    private Map<String, Object> inputContext;
+
     @Column(name = "log_content", columnDefinition = "TEXT")
     private String logContent;
 
     @Column(name = "progress_pct")
     @Builder.Default
     private Integer progressPct = 0;
+
+    @Column(name = "retry_count")
+    @Builder.Default
+    private Integer retryCount = 0;
+
+    @Column(name = "error_details", columnDefinition = "TEXT")
+    private String errorDetails;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "retry_metadata", columnDefinition = "jsonb")
+    private Map<String, Object> retryMetadata;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
