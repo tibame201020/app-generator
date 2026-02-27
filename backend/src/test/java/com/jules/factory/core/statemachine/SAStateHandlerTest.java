@@ -22,6 +22,7 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.converter.BeanOutputConverter;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +50,9 @@ class SAStateHandlerTest {
     @Mock
     private PromptTemplateBuilder promptTemplateBuilder;
 
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private SAStateHandler handler;
@@ -56,7 +60,7 @@ class SAStateHandlerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        handler = new SAStateHandler(projectRepository, conversationRepository, snowflakeIdGenerator, chatModel, promptTemplateBuilder, objectMapper);
+        handler = new SAStateHandler(projectRepository, conversationRepository, snowflakeIdGenerator, chatModel, promptTemplateBuilder, objectMapper, eventPublisher);
     }
 
     @Test

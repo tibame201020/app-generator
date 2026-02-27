@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,12 +25,15 @@ class StateMachineEngineImplTest {
     @Mock
     private StateHandler stateHandler;
 
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     private StateMachineEngineImpl engine;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        engine = new StateMachineEngineImpl(Collections.singletonList(stateHandler), projectRepository);
+        engine = new StateMachineEngineImpl(Collections.singletonList(stateHandler), projectRepository, eventPublisher);
         // Default behavior: Handler is responsible for PM role
         lenient().when(stateHandler.getResponsibleRole()).thenReturn(AgentRole.PM);
     }

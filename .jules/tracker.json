@@ -304,7 +304,7 @@
           "id": "task_3_2_1",
           "phase": "phase_3",
           "title": "使用 Spring Cloud Stream 實作 Agent 廣播機制",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_1_2_3"
           ],

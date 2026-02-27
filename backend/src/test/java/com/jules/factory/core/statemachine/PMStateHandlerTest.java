@@ -17,6 +17,7 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,12 +45,15 @@ class PMStateHandlerTest {
     @Mock
     private PromptTemplateBuilder promptTemplateBuilder;
 
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     private PMStateHandler handler;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        handler = new PMStateHandler(projectRepository, conversationRepository, snowflakeIdGenerator, chatModel, promptTemplateBuilder);
+        handler = new PMStateHandler(projectRepository, conversationRepository, snowflakeIdGenerator, chatModel, promptTemplateBuilder, eventPublisher);
     }
 
     @Test

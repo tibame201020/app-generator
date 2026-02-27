@@ -2,6 +2,7 @@ package com.jules.factory.core.statemachine;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jules.factory.common.event.AgentMessageEvent;
 import com.jules.factory.common.util.SnowflakeIdGenerator;
 import com.jules.factory.domain.entity.Conversation;
 import com.jules.factory.domain.entity.Project;
@@ -18,6 +19,7 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.converter.BeanOutputConverter;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -34,19 +36,22 @@ public class SAStateHandler implements StateHandler {
     private final ChatModel chatModel;
     private final PromptTemplateBuilder promptTemplateBuilder;
     private final ObjectMapper objectMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     public SAStateHandler(ProjectRepository projectRepository,
                           ConversationRepository conversationRepository,
                           SnowflakeIdGenerator snowflakeIdGenerator,
                           ChatModel chatModel,
                           PromptTemplateBuilder promptTemplateBuilder,
-                          ObjectMapper objectMapper) {
+                          ObjectMapper objectMapper,
+                          ApplicationEventPublisher eventPublisher) {
         this.projectRepository = projectRepository;
         this.conversationRepository = conversationRepository;
         this.snowflakeIdGenerator = snowflakeIdGenerator;
         this.chatModel = chatModel;
         this.promptTemplateBuilder = promptTemplateBuilder;
         this.objectMapper = objectMapper;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -110,8 +115,16 @@ public class SAStateHandler implements StateHandler {
 
                 // 3. Call LLM
                 try {
+                    eventPublisher.publishEvent(new AgentMessageEvent(
+                            projectId, AgentRole.SA, "THINKING", "Drafting system architecture proposal..."
+                    ));
+
                     ChatResponse response = chatModel.call(prompt);
                     String content = response.getResult().getOutput().getContent();
+
+                    eventPublisher.publishEvent(new AgentMessageEvent(
+                            projectId, AgentRole.SA, "SPEAKING", "Architecture proposal ready."
+                    ));
 
                     // 4. Parse (Validation)
                     ArchitectureProposal proposal = converter.convert(content);

@@ -1,11 +1,13 @@
 package com.jules.factory.core.statemachine;
 
+import com.jules.factory.common.event.AgentMessageEvent;
 import com.jules.factory.domain.entity.Conversation;
 import com.jules.factory.domain.entity.Project;
 import com.jules.factory.domain.enums.AgentRole;
 import com.jules.factory.domain.repository.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,10 +27,12 @@ public class StateMachineEngineImpl implements StateMachineEngine {
 
     private final List<StateHandler> stateHandlers;
     private final ProjectRepository projectRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public StateMachineEngineImpl(List<StateHandler> stateHandlers, ProjectRepository projectRepository) {
+    public StateMachineEngineImpl(List<StateHandler> stateHandlers, ProjectRepository projectRepository, ApplicationEventPublisher eventPublisher) {
         this.stateHandlers = stateHandlers;
         this.projectRepository = projectRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -66,6 +70,14 @@ public class StateMachineEngineImpl implements StateMachineEngine {
 
         logger.info("Processing event for Project: {} in State: {} using Handler: {}",
                 projectId, project.getStatus(), handler.getClass().getSimpleName());
+
+        // Notify that the engine is engaging a specific role
+        eventPublisher.publishEvent(new AgentMessageEvent(
+                projectId,
+                handler.getResponsibleRole(),
+                "ACTIVATED",
+                "Agent " + handler.getResponsibleRole() + " is now handling the project in state " + project.getStatus()
+        ));
 
         handler.handle(context);
     }
