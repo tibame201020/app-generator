@@ -1,5 +1,6 @@
 package com.jules.factory.core.statemachine;
 
+import com.jules.factory.common.event.AgentMessageEvent;
 import com.jules.factory.common.util.SnowflakeIdGenerator;
 import com.jules.factory.domain.entity.Conversation;
 import com.jules.factory.domain.entity.Project;
@@ -14,6 +15,7 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -29,17 +31,20 @@ public class PMStateHandler implements StateHandler {
     private final SnowflakeIdGenerator snowflakeIdGenerator;
     private final ChatModel chatModel;
     private final PromptTemplateBuilder promptTemplateBuilder;
+    private final ApplicationEventPublisher eventPublisher;
 
     public PMStateHandler(ProjectRepository projectRepository,
                           ConversationRepository conversationRepository,
                           SnowflakeIdGenerator snowflakeIdGenerator,
                           ChatModel chatModel,
-                          PromptTemplateBuilder promptTemplateBuilder) {
+                          PromptTemplateBuilder promptTemplateBuilder,
+                          ApplicationEventPublisher eventPublisher) {
         this.projectRepository = projectRepository;
         this.conversationRepository = conversationRepository;
         this.snowflakeIdGenerator = snowflakeIdGenerator;
         this.chatModel = chatModel;
         this.promptTemplateBuilder = promptTemplateBuilder;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -82,6 +87,10 @@ public class PMStateHandler implements StateHandler {
             // User responded. Call LLM.
             logger.info("User input received. Calling LLM for project: {}", projectId);
 
+            eventPublisher.publishEvent(new AgentMessageEvent(
+                    projectId, AgentRole.PM, "THINKING", "Analyzing user requirements..."
+            ));
+
             // Construct Prompt
             List<Message> promptMessages = promptTemplateBuilder.buildFullPrompt(AgentRole.PM, messages, null);
             Prompt prompt = new Prompt(promptMessages);
@@ -89,6 +98,10 @@ public class PMStateHandler implements StateHandler {
             // Call LLM
             ChatResponse response = chatModel.call(prompt);
             String responseText = response.getResult().getOutput().getContent();
+
+            eventPublisher.publishEvent(new AgentMessageEvent(
+                    projectId, AgentRole.PM, "SPEAKING", "Response generated."
+            ));
 
             // Check for completion token
             if (responseText.contains("[REQUIREMENTS_GATHERED]")) {
