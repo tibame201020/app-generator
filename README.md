@@ -34,12 +34,26 @@ A Low-Code/No-Code tool using AI agents for system generation, featuring a VS Co
 - **Concurrency Guard**: Prevents multiple analysis jobs from running simultaneously for the same project.
 - **Dashboard**: View real-time status, metadata metrics, and recent operation logs in the "Analysis" panel.
 
+## Resilient Workflow Execution
+
+### Automatic Retries
+The workflow engine includes a robust retry mechanism for transient failures (e.g., LLM timeouts, network glitches).
+- **Max Retries**: Default 3 attempts per task.
+- **Backoff Strategy**: Exponential backoff (initial delay 5s, factor 2.0).
+- **Status**: Tasks waiting for retry display a `RETRY_WAIT` status and an orange refresh icon.
+- **History**: Detailed attempt history (timestamp, error message) is available in the task summary view.
+
+### Manual Controls
+- **Retry Task**: Manually trigger a retry for any failed task. This resets the retry counter and forces a new execution attempt.
+- **Retry Run**: Resume a failed workflow run from the last failed step.
+
 ## Troubleshooting
 
 ### Common Issues
 - **Import Stuck in Cloning**: Check backend logs for Git timeout or network issues. The system auto-recovers on restart, or you can manually trigger "Sync".
 - **Analysis Failed**: Often due to unparseable Java syntax. Check the "Analysis Failure Reason" in the dashboard.
 - **Database JSON Errors**: The system uses a custom converter for JSON data in H2/PostgreSQL. Ensure your database dialect is correctly configured in `application.yml`.
+- **Task Retries**: If a task fails repeatedly, check the "Retry History" in the task summary. Persistent failures (e.g., invalid prompt) may require manual intervention or code changes.
 
 ## Getting Started
 

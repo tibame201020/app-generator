@@ -127,7 +127,7 @@ public class AgentTaskService {
         return agentTaskRepository.findByProject_Id(projectId);
     }
 
-    private void publishEvent(AgentTask task, TaskEventType type, String message) {
+    public void publishEvent(AgentTask task, TaskEventType type, String message) {
         TaskEventDTO event = TaskEventDTO.builder()
                 .type(type)
                 .projectId(task.getProject().getId())
