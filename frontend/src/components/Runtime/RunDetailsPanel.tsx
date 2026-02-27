@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTaskStore, Task } from '../../stores/useTaskStore';
 import { useWorkflowRunStore } from '../../stores/useWorkflowRunStore';
+import { useProjectStore } from '../../stores/useProjectStore';
 import { Play, RotateCcw, CheckCircle, XCircle, Clock, Loader2, ChevronDown, ChevronRight, Terminal, FileText, AlertTriangle, RefreshCw } from 'lucide-react';
 import axios from 'axios';
 
@@ -11,6 +12,8 @@ interface RunDetailsPanelProps {
 export const RunDetailsPanel: React.FC<RunDetailsPanelProps> = ({ projectId }) => {
   const { runs, currentRun, fetchRuns, fetchRun, startRun, retryRun, setCurrentRun } = useWorkflowRunStore();
   const { tasks, fetchTasksByRun, connectionStatus } = useTaskStore();
+  const { canRun } = useProjectStore();
+  const allowedToRun = canRun();
 
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
 
@@ -37,10 +40,6 @@ export const RunDetailsPanel: React.FC<RunDetailsPanelProps> = ({ projectId }) =
         interval = setInterval(async () => {
              // Refresh runs list to get updated status
              await fetchRuns(projectId);
-             // Also refresh current run details specifically if needed (fetchRuns updates list but currentRun ref might be stale if store logic is simple)
-             // The store `fetchRuns` updates `runs` array. `currentRun` is separate state.
-             // We need to sync them or just fetch current run.
-             // Actually `useWorkflowRunStore` has `fetchRun`.
              const updatedRun = await fetchRun(currentRun.id);
              if (updatedRun && updatedRun.status !== 'RUNNING') {
                  // Status changed, maybe refresh tasks one last time
@@ -52,6 +51,7 @@ export const RunDetailsPanel: React.FC<RunDetailsPanelProps> = ({ projectId }) =
   }, [currentRun?.status, currentRun?.id, projectId]);
 
   const handleStartRun = async () => {
+    if (!allowedToRun) return;
     try {
         await startRun(projectId);
     } catch (e) {
@@ -60,7 +60,7 @@ export const RunDetailsPanel: React.FC<RunDetailsPanelProps> = ({ projectId }) =
   };
 
   const handleRetryRun = async () => {
-      if (!currentRun) return;
+      if (!currentRun || !allowedToRun) return;
       try {
           await retryRun(currentRun.id);
       } catch (e) {
@@ -104,7 +104,9 @@ export const RunDetailsPanel: React.FC<RunDetailsPanelProps> = ({ projectId }) =
             {currentRun?.status === 'FAIL' && (
                 <button
                     onClick={handleRetryRun}
-                    className="flex items-center gap-1 px-2 py-1 text-xs bg-orange-600 hover:bg-orange-700 rounded text-white transition-colors"
+                    disabled={!allowedToRun}
+                    className="flex items-center gap-1 px-2 py-1 text-xs bg-orange-600 hover:bg-orange-700 rounded text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title={allowedToRun ? "Retry Run" : "Permission Denied"}
                 >
                     <RotateCcw size={12} />
                     Retry Run
@@ -112,7 +114,9 @@ export const RunDetailsPanel: React.FC<RunDetailsPanelProps> = ({ projectId }) =
             )}
             <button
                 onClick={handleStartRun}
-                className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 rounded text-white transition-colors"
+                disabled={!allowedToRun}
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 rounded text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title={allowedToRun ? "New Run" : "Permission Denied"}
             >
                 <Play size={12} />
                 New Run
@@ -134,6 +138,7 @@ export const RunDetailsPanel: React.FC<RunDetailsPanelProps> = ({ projectId }) =
             task={task}
             isExpanded={expandedTaskId === task.id}
             onToggle={() => setExpandedTaskId(expandedTaskId === task.id ? null : task.id)}
+            allowedToRetry={allowedToRun}
           />
         ))}
       </div>
@@ -145,15 +150,16 @@ interface TaskItemProps {
     task: Task;
     isExpanded: boolean;
     onToggle: () => void;
+    allowedToRetry: boolean;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, isExpanded, onToggle }) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, isExpanded, onToggle, allowedToRetry }) => {
     const [selectedTab, setSelectedTab] = useState<'log' | 'summary' | 'error'>('log');
     const [isRetrying, setIsRetrying] = useState(false);
 
     const handleRetryTask = async (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (isRetrying) return;
+        if (isRetrying || !allowedToRetry) return;
         setIsRetrying(true);
         try {
             await axios.post(`/api/tasks/${task.id}/retry`);
@@ -197,9 +203,9 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isExpanded, onToggle }) => {
                             {task.status === 'FAIL' && (
                                 <button
                                     onClick={handleRetryTask}
-                                    className={`p-1 hover:bg-gray-600 rounded text-orange-400 ${isRetrying ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                    title="Retry Task"
-                                    disabled={isRetrying}
+                                    className={`p-1 hover:bg-gray-600 rounded text-orange-400 ${isRetrying || !allowedToRetry ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    title={allowedToRetry ? "Retry Task" : "Permission Denied"}
+                                    disabled={isRetrying || !allowedToRetry}
                                 >
                                     {isRetrying ? <Loader2 size={12} className="animate-spin"/> : <RotateCcw size={12} />}
                                 </button>

@@ -13,6 +13,7 @@ import { useProjectStore } from '../stores/useProjectStore';
 import { useEditorStore } from '../stores/useEditorStore';
 import { useRuntimeStore } from '../stores/useRuntimeStore';
 import { useTaskWebSocket } from '../hooks/useTaskWebSocket';
+import { MembersTab } from '../components/Project/MembersTab';
 
 const ProjectPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -23,18 +24,20 @@ const ProjectPage: React.FC = () => {
   const loadFileTree = useProjectStore((state) => state.loadFileTree);
   const selectedFile = useProjectStore((state) => state.selectedFile);
   const loadFile = useEditorStore((state) => state.loadFile);
+  const fetchUserRole = useProjectStore((state) => state.fetchUserRole);
 
   const { previewUrl } = useRuntimeStore();
 
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [isTaskPanelVisible] = useState(true);
-  const [viewMode, setViewMode] = useState<'code' | 'workflow' | 'analysis'>('code');
+  const [viewMode, setViewMode] = useState<'code' | 'workflow' | 'analysis' | 'settings'>('code');
 
   useEffect(() => {
     if (projectId) {
       loadFileTree(projectId);
+      fetchUserRole(projectId);
     }
-  }, [projectId, loadFileTree]);
+  }, [projectId, loadFileTree, fetchUserRole]);
 
   useEffect(() => {
     if (projectId && selectedFile) {
@@ -65,12 +68,14 @@ const ProjectPage: React.FC = () => {
                 <CodeEditor projectId={projectId} />
             ) : viewMode === 'workflow' ? (
                 <WorkflowCanvas />
-            ) : (
+            ) : viewMode === 'analysis' ? (
                 <AnalysisPanel projectId={projectId} />
+            ) : (
+                <MembersTab projectId={projectId} />
             )}
           </div>
 
-          {isTaskPanelVisible && (
+          {isTaskPanelVisible && viewMode !== 'settings' && (
             <div className="h-64 min-h-[160px] max-h-[50%] border-t border-gray-700 bg-gray-900 overflow-hidden shrink-0">
                <RunDetailsPanel projectId={projectId} />
             </div>
