@@ -28,3 +28,4 @@ All notable changes to this project will be documented in this file.
 - Task 2.2.5: Implemented Guard logic in StateMachineEngine to block Agent execution when waiting for User input.
 - Task 2.3.1: Implemented ProjectController and ProjectService to handle project creation and chat interactions, triggering the state machine.
 - Task 2.4.1: Wrote docs/backend/state_machine.md with detailed architecture, roles, and state diagrams.
+- Task 3.1.1: Implemented PromptTemplateBuilder with PM/SA System Prompts and Conversation to Spring AI Message conversion.
