@@ -29,6 +29,8 @@ describe('ProjectToolbar', () => {
         projectId="123"
         onTogglePreview={vi.fn()}
         isPreviewVisible={false}
+        viewMode="code"
+        onViewModeChange={vi.fn()}
       />
     );
 
@@ -44,6 +46,8 @@ describe('ProjectToolbar', () => {
         projectId="123"
         onTogglePreview={vi.fn()}
         isPreviewVisible={false}
+        viewMode="code"
+        onViewModeChange={vi.fn()}
       />
     );
 
@@ -60,6 +64,8 @@ describe('ProjectToolbar', () => {
         projectId="123"
         onTogglePreview={vi.fn()}
         isPreviewVisible={false}
+        viewMode="code"
+        onViewModeChange={vi.fn()}
       />
     );
 
@@ -79,6 +85,8 @@ describe('ProjectToolbar', () => {
         projectId="123"
         onTogglePreview={vi.fn()}
         isPreviewVisible={false}
+        viewMode="code"
+        onViewModeChange={vi.fn()}
       />
     );
 
