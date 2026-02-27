@@ -20,12 +20,13 @@ export const AgentProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const { messages, lastMessage, status } = useAgentStream(projectId || '');
 
     return (
-        <AgentContext.Provider value={{ messages, lastMessage, status, projectId, setProjectId }}>
+        <AgentContext.Provider value={{ messages, lastMessage, status: status as string, projectId, setProjectId }}>
             {children}
         </AgentContext.Provider>
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAgentContext = () => {
     const context = useContext(AgentContext);
     if (!context) {

@@ -35,3 +35,4 @@ All notable changes to this project will be documented in this file.
 - Task 3.2.1: Implemented Agent Broadcasting mechanism using Spring WebSocket and ApplicationEventPublisher. Agents now broadcast thinking/speaking events to /ws/agents.
 - Task 4.1.1: Implemented core UI layout components (Navbar, Sidebar, MainLayout) using DaisyUI.
 - Task 4.1.2: Implemented WebSocket Client Hook and AgentContext for real-time agent message streaming.
+- Task 4.1.3: Implemented ChatMessage component with Role-based styling, Markdown rendering, and Code Syntax Highlighting.

@@ -4,7 +4,7 @@ import type { TaskStatus } from '../../types/tracker';
 
 const StatusBadge: React.FC<{ status: TaskStatus }> = ({ status }) => {
   let badgeClass = 'badge-ghost';
-  let label = status;
+  const label = status;
 
   switch (status) {
     case 'completed':
