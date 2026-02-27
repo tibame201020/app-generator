@@ -12,6 +12,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -65,6 +66,26 @@ public class AgentTask {
     @Column(name = "retry_count")
     @Builder.Default
     private Integer retryCount = 0;
+
+    @Column(name = "max_retries")
+    @Builder.Default
+    private Integer maxRetries = 3;
+
+    @Column(name = "backoff_factor")
+    @Builder.Default
+    private Double backoffFactor = 2.0;
+
+    @Column(name = "initial_delay_seconds")
+    @Builder.Default
+    private Integer initialDelaySeconds = 5;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "attempt_history", columnDefinition = "jsonb")
+    private List<Map<String, Object>> attemptHistory;
+
+    @Column(name = "is_retryable")
+    @Builder.Default
+    private boolean isRetryable = true;
 
     @Column(name = "error_details", columnDefinition = "TEXT")
     private String errorDetails;

@@ -6,6 +6,7 @@ public enum TaskEventType {
     STEP_START,
     STEP_COMPLETE,
     PROGRESS,
+    RETRY_SCHEDULED,
     COMPLETED,
     FAILED
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTaskStore, Task } from '../../stores/useTaskStore';
 import { useWorkflowRunStore } from '../../stores/useWorkflowRunStore';
-import { Play, RotateCcw, CheckCircle, XCircle, Clock, Loader2, ChevronDown, ChevronRight, Terminal, FileText, AlertTriangle } from 'lucide-react';
+import { Play, RotateCcw, CheckCircle, XCircle, Clock, Loader2, ChevronDown, ChevronRight, Terminal, FileText, AlertTriangle, RefreshCw } from 'lucide-react';
 import axios from 'axios';
 
 interface RunDetailsPanelProps {
@@ -149,13 +149,18 @@ interface TaskItemProps {
 
 const TaskItem: React.FC<TaskItemProps> = ({ task, isExpanded, onToggle }) => {
     const [selectedTab, setSelectedTab] = useState<'log' | 'summary' | 'error'>('log');
+    const [isRetrying, setIsRetrying] = useState(false);
 
     const handleRetryTask = async (e: React.MouseEvent) => {
         e.stopPropagation();
+        if (isRetrying) return;
+        setIsRetrying(true);
         try {
             await axios.post(`/api/tasks/${task.id}/retry`);
         } catch (error) {
             console.error("Retry task failed", error);
+        } finally {
+            setIsRetrying(false);
         }
     };
 
@@ -163,6 +168,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isExpanded, onToggle }) => {
         switch (task.status) {
             case 'PENDING': return <Clock size={16} className="text-gray-400" />;
             case 'RUNNING': return <Loader2 size={16} className="text-blue-400 animate-spin" />;
+            case 'RETRY_WAIT': return <RefreshCw size={16} className="text-orange-400 animate-spin" />;
             case 'SUCCESS': return <CheckCircle size={16} className="text-green-400" />;
             case 'FAIL': return <XCircle size={16} className="text-red-400" />;
             default: return <Clock size={16} className="text-gray-400" />;
@@ -181,15 +187,21 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isExpanded, onToggle }) => {
                         <span className="text-sm font-medium text-gray-200 truncate flex items-center gap-2">
                             {task.taskName}
                             <span className="text-xs text-gray-500">({task.agentType})</span>
+                            {task.retryCount && task.retryCount > 0 && (
+                                <span className="text-xs bg-orange-900/50 text-orange-300 px-1.5 py-0.5 rounded border border-orange-800">
+                                    Retry {task.retryCount}/{task.maxRetries || 3}
+                                </span>
+                            )}
                         </span>
                         <div className="flex items-center gap-2">
                             {task.status === 'FAIL' && (
                                 <button
                                     onClick={handleRetryTask}
-                                    className="p-1 hover:bg-gray-600 rounded text-orange-400"
+                                    className={`p-1 hover:bg-gray-600 rounded text-orange-400 ${isRetrying ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     title="Retry Task"
+                                    disabled={isRetrying}
                                 >
-                                    <RotateCcw size={12} />
+                                    {isRetrying ? <Loader2 size={12} className="animate-spin"/> : <RotateCcw size={12} />}
                                 </button>
                             )}
                             <span className="text-xs text-gray-500 whitespace-nowrap">{new Date(task.createdAt).toLocaleTimeString()}</span>
@@ -243,6 +255,21 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isExpanded, onToggle }) => {
                         )}
                         {selectedTab === 'summary' && (
                             <div className="whitespace-pre-wrap">
+                                {task.attemptHistory && task.attemptHistory.length > 0 && (
+                                     <div className="mb-2 p-2 bg-orange-950/20 border border-orange-900/30 rounded">
+                                        <div className="text-orange-300 text-xs font-semibold mb-1">Retry History</div>
+                                        {task.attemptHistory.map((attempt, i) => (
+                                            <div key={i} className="text-xs text-gray-400 mb-1 border-b border-gray-800 last:border-0 pb-1 last:pb-0">
+                                                <div className="flex justify-between">
+                                                    <span className="text-orange-200">Attempt {attempt.attempt}</span>
+                                                    <span>{new Date(attempt.timestamp).toLocaleTimeString()}</span>
+                                                </div>
+                                                <div className="text-red-400 mt-0.5">{attempt.error}</div>
+                                            </div>
+                                        ))}
+                                     </div>
+                                )}
+
                                 {task.inputContext && (
                                     <div className="mb-2">
                                         <div className="text-gray-500 mb-1">Input Context:</div>
@@ -251,24 +278,9 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isExpanded, onToggle }) => {
                                         </pre>
                                     </div>
                                 )}
-                                {/* Need to find summary in contextData or assume it's merged into it?
-                                    Wait, AgentTask doesn't expose output directly, only contextData (accumulated).
-                                    Ideally we'd want just the output of *this* task.
-                                    The `contextData` on `Task` entity is just `contextData`.
-                                    Which gets updated.
-                                    Actually `createTask` sets initial `contextData`.
-                                    `updateContext` updates it.
-                                    So `contextData` on the task entity represents the configuration + result?
-                                    Actually `contextData` on `Task` entity is NOT updated by `AgentTaskService.updateContext`.
-                                    Wait, `AgentTaskService.updateContext` loads task, updates map, saves task.
-                                    So yes, `contextData` accumulates the result.
 
-                                    If we want to show just the summary, we can look for "summary" key in contextData?
-                                    Usually we put summary in `summary` field of the result.
-                                */}
                                 <div className="text-gray-500 mb-1">Task Data (Config + Output):</div>
                                 <pre className="bg-gray-950 p-1 rounded overflow-x-auto">
-                                    {/* Usually contextData is a map. If it has 'summary', show it prominently? */}
                                     {JSON.stringify(task.contextData || {}, null, 2)}
                                 </pre>
                             </div>

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-export type TaskStatus = 'PENDING' | 'RUNNING' | 'SUCCESS' | 'FAIL';
+export type TaskStatus = 'PENDING' | 'RUNNING' | 'SUCCESS' | 'FAIL' | 'RETRY_WAIT';
 
 export interface Task {
   id: string;
@@ -15,12 +15,16 @@ export interface Task {
   inputContext?: any;
   contextData?: any;
   retryCount?: number;
+  maxRetries?: number;
+  backoffFactor?: number;
+  attemptHistory?: Array<{timestamp: string, error: string, attempt: number}>;
+  isRetryable?: boolean;
   errorDetails?: string;
   createdAt: string;
 }
 
 export interface TaskEvent {
-  type: 'QUEUED' | 'RUNNING' | 'STEP_START' | 'STEP_COMPLETE' | 'PROGRESS' | 'COMPLETED' | 'FAILED';
+  type: 'QUEUED' | 'RUNNING' | 'STEP_START' | 'STEP_COMPLETE' | 'PROGRESS' | 'COMPLETED' | 'FAILED' | 'RETRY_SCHEDULED';
   projectId: string;
   taskId: string;
   taskName: string;
@@ -130,6 +134,11 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         case 'FAILED':
             newTask.status = 'FAIL';
             newTask.errorDetails = event.message;
+            break;
+        case 'RETRY_SCHEDULED':
+            newTask.status = 'RETRY_WAIT';
+            // We could update retry history here if payload contained it,
+            // but usually we rely on next fetch or we can assume it's just a status update
             break;
     }
 
