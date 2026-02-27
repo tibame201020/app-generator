@@ -1,4 +1,6 @@
-{
+import type { Tracker } from '../types/tracker';
+
+export const trackerData: Tracker = {
   "project": "Jules Software Factory",
   "current_phase": "Phase 1: Foundation & Specs",
   "phases": [
@@ -320,7 +322,7 @@
           "id": "task_4_1_1",
           "phase": "phase_4",
           "title": "實作 Layout (Navbar, Sidebar)",
-          "status": "completed",
+          "status": "in_progress",
           "depends_on": [
             "task_1_3_4"
           ],
@@ -369,4 +371,4 @@
       ]
     }
   ]
-}
+};

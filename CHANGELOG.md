@@ -33,3 +33,4 @@ All notable changes to this project will be documented in this file.
 - Task 3.1.3: Integrated Spring AI with Structured Output in SAStateHandler to enforce valid JSON architecture proposals using BeanOutputConverter.
 - Task 3.1.4: Implemented WorkspaceFileService for saving generated code to local file system (Docker volume) and uploading to MinIO, including path traversal protection and public URL generation.
 - Task 3.2.1: Implemented Agent Broadcasting mechanism using Spring WebSocket and ApplicationEventPublisher. Agents now broadcast thinking/speaking events to /ws/agents.
+- Task 4.1.1: Implemented core UI layout components (Navbar, Sidebar, MainLayout) using DaisyUI.
