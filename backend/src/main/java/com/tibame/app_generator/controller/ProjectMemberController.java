@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -71,6 +72,38 @@ public class ProjectMemberController {
     public ResponseEntity<?> removeMember(@PathVariable UUID projectId, @PathVariable UUID userId) {
         ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(projectId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        // Guard: Cannot remove the last Admin
+        if (member.getRole() == ProjectRole.ADMIN) {
+            long adminCount = projectMemberRepository.findByProjectId(projectId).stream()
+                    .filter(m -> m.getRole() == ProjectRole.ADMIN)
+                    .count();
+            if (adminCount <= 1) {
+                return ResponseEntity.badRequest().body("Cannot remove the last Admin");
+            }
+        }
+
+        projectMemberRepository.delete(member);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<?> leaveProject(
+            @PathVariable UUID projectId,
+            @AuthenticationPrincipal User user) {
+
+        ProjectMember member = projectMemberRepository.findByProjectIdAndUserId(projectId, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        // Guard: Last admin cannot leave
+        if (member.getRole() == ProjectRole.ADMIN) {
+            long adminCount = projectMemberRepository.findByProjectId(projectId).stream()
+                    .filter(m -> m.getRole() == ProjectRole.ADMIN)
+                    .count();
+            if (adminCount <= 1) {
+                return ResponseEntity.badRequest().body("The last Admin cannot leave the project. Transfer ownership or add another Admin first.");
+            }
+        }
 
         projectMemberRepository.delete(member);
         return ResponseEntity.ok().build();
