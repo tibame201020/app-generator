@@ -350,7 +350,7 @@
           "id": "task_4_1_4",
           "phase": "phase_4",
           "title": "實作 Agent 內部討論視窗 (Internal Team Chat)",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_4_1_3"
           ],
