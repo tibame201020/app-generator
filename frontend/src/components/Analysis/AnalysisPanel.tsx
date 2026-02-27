@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { PackageDTO, ClassDTO, AnalysisResultDTO } from '../../types';
+import { ClassDTO, AnalysisResultDTO } from '../../types';
 import { getAnalysis, triggerAnalysis } from '../../services/projectService';
 import { RefreshCw, Package, FileCode, Box, Layers } from 'lucide-react';
+import { ProjectStatusCard } from '../Status/ProjectStatusCard';
 
 interface AnalysisPanelProps {
   projectId: string;
@@ -43,7 +44,11 @@ export const AnalysisPanel: React.FC<AnalysisPanelProps> = ({ projectId }) => {
   };
 
   return (
-    <div className="flex h-full bg-gray-900 text-white">
+    <div className="flex flex-col h-full bg-gray-900 text-white">
+      <div className="px-4 pt-4">
+        <ProjectStatusCard projectId={projectId} />
+      </div>
+      <div className="flex flex-1 overflow-hidden">
       {/* Sidebar: Packages & Classes */}
       <div className="w-1/3 border-r border-gray-700 flex flex-col">
         <div className="p-4 border-b border-gray-700 flex justify-between items-center bg-gray-800">
@@ -177,6 +182,7 @@ export const AnalysisPanel: React.FC<AnalysisPanelProps> = ({ projectId }) => {
             <p>Select a class to view details</p>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

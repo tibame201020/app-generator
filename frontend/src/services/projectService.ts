@@ -1,5 +1,5 @@
 import api from './api';
-import { Project, FileNode, FileContent, AnalysisResultDTO } from '../types';
+import { Project, FileNode, FileContent, AnalysisResultDTO, ProjectStatusDTO } from '../types';
 
 export const getProjects = async (userId: string): Promise<Project[]> => {
   const response = await api.get<Project[]>('/projects', { params: { userId } });
@@ -51,4 +51,13 @@ export const getAnalysis = async (projectId: string): Promise<AnalysisResultDTO>
 
 export const triggerAnalysis = async (projectId: string): Promise<void> => {
     await api.post(`/projects/${projectId}/analysis`);
+};
+
+export const getProjectPipelineStatus = async (projectId: string): Promise<ProjectStatusDTO> => {
+    const response = await api.get<ProjectStatusDTO>(`/projects/${projectId}/pipeline-status`);
+    return response.data;
+};
+
+export const syncProject = async (projectId: string): Promise<void> => {
+    await api.post(`/projects/${projectId}/sync`);
 };

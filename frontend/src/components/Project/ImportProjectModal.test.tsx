@@ -1,7 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ImportProjectModal } from './ImportProjectModal';
-import React from 'react';
 
 describe('ImportProjectModal', () => {
   it('renders correctly', () => {

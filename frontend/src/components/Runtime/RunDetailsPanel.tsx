@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTaskStore, Task } from '../../stores/useTaskStore';
-import { useWorkflowRunStore, WorkflowRun } from '../../stores/useWorkflowRunStore';
+import { useWorkflowRunStore } from '../../stores/useWorkflowRunStore';
 import { Play, RotateCcw, CheckCircle, XCircle, Clock, Loader2, ChevronDown, ChevronRight, Terminal, FileText, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
 

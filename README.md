@@ -20,6 +20,27 @@ A Low-Code/No-Code tool using AI agents for system generation, featuring a VS Co
 - **Workflow Canvas**: Visual editor for defining and executing AI agent workflows (PM -> SA -> PG -> QA).
 - **Workflow Observability**: Detailed run history, task-level inspection (logs, input context, output summary), and retry controls for failed tasks/runs.
 
+## Project Analysis & Pipeline
+
+### Import Lifecycle
+- **Pending**: Project created, waiting for git clone.
+- **Cloning**: Asynchronously cloning remote repository. Idempotent operations prevent concurrent clones.
+- **Success/Failed**: Completion status with timestamps and failure reasons.
+- **Retry**: Use the "Sync" button to re-trigger import if failed or to pull latest changes.
+
+### Code Analysis
+- **Automatic Trigger**: Analysis runs automatically after successful import/clone.
+- **Metadata**: Tracks file count, class count, method count, and analysis duration.
+- **Concurrency Guard**: Prevents multiple analysis jobs from running simultaneously for the same project.
+- **Dashboard**: View real-time status, metadata metrics, and recent operation logs in the "Analysis" panel.
+
+## Troubleshooting
+
+### Common Issues
+- **Import Stuck in Cloning**: Check backend logs for Git timeout or network issues. The system auto-recovers on restart, or you can manually trigger "Sync".
+- **Analysis Failed**: Often due to unparseable Java syntax. Check the "Analysis Failure Reason" in the dashboard.
+- **Database JSON Errors**: The system uses a custom converter for JSON data in H2/PostgreSQL. Ensure your database dialect is correctly configured in `application.yml`.
+
 ## Getting Started
 
 ### Prerequisites
