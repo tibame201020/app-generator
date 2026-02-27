@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
-import { Play, Square, RefreshCw, LayoutTemplate, Code, Layers } from 'lucide-react';
+import { Play, Square, RefreshCw, LayoutTemplate, Code, Layers, Settings } from 'lucide-react';
 import { useRuntimeStore } from '../../stores/useRuntimeStore';
+import { useProjectStore } from '../../stores/useProjectStore';
 
 interface ProjectToolbarProps {
   projectId: string;
   onTogglePreview: () => void;
   isPreviewVisible: boolean;
-  viewMode: 'code' | 'workflow' | 'analysis';
-  onViewModeChange: (mode: 'code' | 'workflow' | 'analysis') => void;
+  viewMode: 'code' | 'workflow' | 'analysis' | 'settings';
+  onViewModeChange: (mode: 'code' | 'workflow' | 'analysis' | 'settings') => void;
 }
 
 export const ProjectToolbar: React.FC<ProjectToolbarProps> = ({
@@ -27,6 +28,9 @@ export const ProjectToolbar: React.FC<ProjectToolbarProps> = ({
     stopPolling,
     previewUrl
   } = useRuntimeStore();
+
+  const { canRun } = useProjectStore();
+  const allowedToRun = canRun();
 
   useEffect(() => {
     startPolling(projectId);
@@ -99,6 +103,16 @@ export const ProjectToolbar: React.FC<ProjectToolbarProps> = ({
             <Layers size={14} />
             <span>Analysis</span>
           </button>
+           <button
+            onClick={() => onViewModeChange('settings')}
+            className={`px-2 py-1 rounded flex items-center gap-1 text-xs font-medium transition-colors ${
+              viewMode === 'settings' ? 'bg-gray-700 text-white shadow-sm' : 'text-gray-400 hover:text-white'
+            }`}
+            title="Project Settings"
+          >
+            <Settings size={14} />
+            <span>Settings</span>
+          </button>
       </div>
 
       <div className="h-4 w-px bg-gray-700" />
@@ -107,27 +121,27 @@ export const ProjectToolbar: React.FC<ProjectToolbarProps> = ({
       <div className="flex items-center space-x-1">
         <button
           onClick={handleRun}
-          disabled={status === 'RUNNING' || status === 'STARTING' || isLoading}
+          disabled={!allowedToRun || status === 'RUNNING' || status === 'STARTING' || isLoading}
           className="p-1.5 hover:bg-gray-700 rounded text-green-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          title="Run Project"
+          title={allowedToRun ? "Run Project" : "Permission Denied"}
         >
           <Play size={16} />
         </button>
 
         <button
           onClick={handleStop}
-          disabled={status === 'STOPPED' || status === 'EXPIRED' || isLoading}
+          disabled={!allowedToRun || status === 'STOPPED' || status === 'EXPIRED' || isLoading}
           className="p-1.5 hover:bg-gray-700 rounded text-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          title="Stop Project"
+          title={allowedToRun ? "Stop Project" : "Permission Denied"}
         >
           <Square size={16} />
         </button>
 
         <button
           onClick={handleRestart}
-          disabled={status === 'STOPPED' || status === 'EXPIRED' || isLoading}
+          disabled={!allowedToRun || status === 'STOPPED' || status === 'EXPIRED' || isLoading}
           className="p-1.5 hover:bg-gray-700 rounded text-blue-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          title="Restart Project"
+          title={allowedToRun ? "Restart Project" : "Permission Denied"}
         >
           <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
         </button>

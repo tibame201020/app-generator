@@ -2,7 +2,9 @@ import api from './api';
 import { Project, FileNode, FileContent, AnalysisResultDTO, ProjectStatusDTO } from '../types';
 
 export const getProjects = async (userId: string): Promise<Project[]> => {
-  const response = await api.get<Project[]>('/projects', { params: { userId } });
+  // Backend now derives user from token, but we can keep param for compatibility if needed,
+  // though backend ignores it.
+  const response = await api.get<Project[]>('/projects');
   return response.data;
 };
 
@@ -40,7 +42,8 @@ export const getProjectStatus = async (projectId: string): Promise<any> => {
 };
 
 export const importProject = async (userId: string, remoteRepoUrl: string, name: string): Promise<Project> => {
-    const response = await api.post<Project>('/projects/import', { remoteRepoUrl, name }, { params: { userId } });
+    // Backend derives user from token
+    const response = await api.post<Project>('/projects/import', { remoteRepoUrl, name });
     return response.data;
 };
 

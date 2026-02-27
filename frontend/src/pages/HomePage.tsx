@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { getProjects, importProject } from '../services/projectService';
 import { Project } from '../types';
 import { ImportProjectModal } from '../components/Project/ImportProjectModal';
-import { Plus } from 'lucide-react';
+import { Plus, LogOut } from 'lucide-react';
+import { useAuthStore } from '../stores/useAuthStore';
 
 const HomePage: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -11,18 +12,21 @@ const HomePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
+  const { user, logout } = useAuthStore();
+
   useEffect(() => {
-    // Assuming a hardcoded user ID for now
-    const userId = '00000000-0000-0000-0000-000000000000';
+    // No longer passing userId, backend derives it from token
+    const userId = user?.id || '';
+    if (!userId) return;
+
     getProjects(userId)
       .then(setProjects)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [user]);
 
   const handleImport = async (name: string, url: string) => {
-    // hardcoded user ID
-    const userId = '00000000-0000-0000-0000-000000000000';
+    const userId = user?.id || '';
     try {
         const project = await importProject(userId, url, name);
         setProjects([...projects, project]);
@@ -34,14 +38,26 @@ const HomePage: React.FC = () => {
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white p-8">
       <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Your Projects</h1>
-          <button
-             onClick={() => setIsImportModalOpen(true)}
-             className="px-4 py-2 bg-blue-600 rounded text-white hover:bg-blue-500 transition flex items-center gap-2"
-           >
-             <Plus size={20} />
-             Import Project
-           </button>
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-bold">Your Projects</h1>
+            <span className="text-gray-400 text-sm">Welcome, {user?.username}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+               onClick={() => setIsImportModalOpen(true)}
+               className="px-4 py-2 bg-blue-600 rounded text-white hover:bg-blue-500 transition flex items-center gap-2"
+             >
+               <Plus size={20} />
+               Import Project
+             </button>
+             <button
+                onClick={logout}
+                className="px-3 py-2 bg-red-900/50 hover:bg-red-900 text-red-200 rounded transition flex items-center gap-2"
+                title="Logout"
+             >
+                <LogOut size={18} />
+             </button>
+          </div>
       </div>
 
       {loading && <div>Loading...</div>}

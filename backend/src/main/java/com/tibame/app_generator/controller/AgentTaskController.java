@@ -6,6 +6,7 @@ import com.tibame.app_generator.service.AgentTaskService;
 import com.tibame.app_generator.service.AgentTaskSimulator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,11 +22,13 @@ public class AgentTaskController {
     private final AgentTaskSimulator agentTaskSimulator;
 
     @GetMapping
+    @PreAuthorize("@projectSecurityService.isViewer(#projectId)")
     public ResponseEntity<List<AgentTask>> listTasks(@PathVariable UUID projectId) {
         return ResponseEntity.ok(agentTaskService.getTasksByProject(projectId));
     }
 
     @PostMapping("/simulate")
+    @PreAuthorize("@projectSecurityService.isMember(#projectId)")
     public ResponseEntity<?> simulateTask(@PathVariable UUID projectId) {
         AgentTask task = agentTaskService.createTask(
                 projectId,

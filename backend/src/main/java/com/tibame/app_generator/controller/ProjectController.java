@@ -4,12 +4,15 @@ import com.tibame.app_generator.dto.CreateProjectRequest;
 import com.tibame.app_generator.dto.FileTreeNode;
 import com.tibame.app_generator.dto.ImportProjectRequest;
 import com.tibame.app_generator.model.Project;
+import com.tibame.app_generator.model.User;
 import com.tibame.app_generator.service.DockerService;
 import com.tibame.app_generator.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -31,18 +34,15 @@ public class ProjectController {
 
     /**
      * 建立新專案。
-     * POST /api/projects?userId={userId}
-     * <p>
-     * 注意：MVP 階段以 query param 傳遞 userId，
-     * 後續整合 Spring Security 後改為從 Authentication 取得。
+     * POST /api/projects
      */
     @PostMapping
     public ResponseEntity<?> createProject(
-            @RequestParam UUID userId,
+            @AuthenticationPrincipal User user,
             @RequestBody CreateProjectRequest request) {
         try {
             Project project = projectService.createProject(
-                    userId, request.getName(), request.getDescription());
+                    user.getId(), request.getName(), request.getDescription());
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                     "id", project.getId(),
                     "name", project.getName(),
@@ -58,14 +58,14 @@ public class ProjectController {
 
     /**
      * 匯入專案。
-     * POST /api/projects/import?userId={userId}
+     * POST /api/projects/import
      */
     @PostMapping("/import")
     public ResponseEntity<?> importProject(
-            @RequestParam UUID userId,
+            @AuthenticationPrincipal User user,
             @RequestBody ImportProjectRequest request) {
         try {
-            Project project = projectService.importProject(userId, request);
+            Project project = projectService.importProject(user.getId(), request);
             return ResponseEntity.status(HttpStatus.CREATED).body(project);
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
@@ -75,11 +75,11 @@ public class ProjectController {
 
     /**
      * 查詢使用者的所有專案。
-     * GET /api/projects?userId={userId}
+     * GET /api/projects
      */
     @GetMapping
-    public ResponseEntity<List<Project>> listProjects(@RequestParam UUID userId) {
-        return ResponseEntity.ok(projectService.getProjectsByUser(userId));
+    public ResponseEntity<List<Project>> listProjects(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(projectService.getProjectsByUser(user.getId()));
     }
 
     /**
@@ -87,6 +87,7 @@ public class ProjectController {
      * GET /api/projects/{id}/files
      */
     @GetMapping("/{id}/files")
+    @PreAuthorize("@projectSecurityService.isViewer(#id)")
     public ResponseEntity<?> getFileTree(@PathVariable UUID id) {
         try {
             List<FileTreeNode> fileTree = projectService.getFileTree(id);
@@ -104,6 +105,7 @@ public class ProjectController {
      * GET /api/projects/{id}/files/content?path={path}
      */
     @GetMapping("/{id}/files/content")
+    @PreAuthorize("@projectSecurityService.isViewer(#id)")
     public ResponseEntity<?> getFileContent(
             @PathVariable UUID id,
             @RequestParam String path) {
@@ -123,6 +125,7 @@ public class ProjectController {
      * PUT /api/projects/{id}/files/content
      */
     @PutMapping("/{id}/files/content")
+    @PreAuthorize("@projectSecurityService.isMember(#id)")
     public ResponseEntity<?> updateFileContent(
             @PathVariable UUID id,
             @RequestBody Map<String, String> payload) {
@@ -149,6 +152,7 @@ public class ProjectController {
      * POST /api/projects/{id}/run
      */
     @PostMapping("/{id}/run")
+    @PreAuthorize("@projectSecurityService.isMember(#id)")
     public ResponseEntity<?> runProject(@PathVariable UUID id) {
         try {
             dockerService.startProjectContainer(id);
@@ -165,6 +169,7 @@ public class ProjectController {
      * POST /api/projects/{id}/stop
      */
     @PostMapping("/{id}/stop")
+    @PreAuthorize("@projectSecurityService.isMember(#id)")
     public ResponseEntity<?> stopProject(@PathVariable UUID id) {
         try {
             dockerService.stopProjectContainer(id);
@@ -179,6 +184,7 @@ public class ProjectController {
      * POST /api/projects/{id}/restart
      */
     @PostMapping("/{id}/restart")
+    @PreAuthorize("@projectSecurityService.isMember(#id)")
     public ResponseEntity<?> restartProject(@PathVariable UUID id) {
         try {
             dockerService.restartProjectContainer(id);
@@ -193,6 +199,7 @@ public class ProjectController {
      * GET /api/projects/{id}/status
      */
     @GetMapping("/{id}/status")
+    @PreAuthorize("@projectSecurityService.isViewer(#id)")
     public ResponseEntity<?> getProjectStatus(@PathVariable UUID id) {
         try {
             Map<String, Object> status = dockerService.getProjectContainerStatus(id);
