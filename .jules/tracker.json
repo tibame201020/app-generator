@@ -330,7 +330,7 @@
           "id": "task_4_1_2",
           "phase": "phase_4",
           "title": "實作 WebSocket Client Hook",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_1_3_4"
           ],
