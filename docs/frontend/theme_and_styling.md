@@ -8,13 +8,14 @@
 
 ### 支援的主題
 目前專案在 `tailwind.config.ts` 中配置了以下 DaisyUI 主題：
-- `light` (預設淺色模式)
+- `dracula` (深色駭客風, 全站預設主題)
+- `light` (淺色模式)
 - `dark` (深色模式)
 
 ### 切換主題
 DaisyUI 支援透過 `data-theme` 屬性切換主題。
 ```html
-<html data-theme="dark">
+<html data-theme="dracula">
 ```
 開發者可透過 React Context 或 Hook 動態修改 `document.documentElement` 的屬性來實作主題切換功能。
 
@@ -49,7 +50,9 @@ DaisyUI 支援透過 `data-theme` 屬性切換主題。
 
 系統採用標準的後台管理介面佈局，包含：
 - **Navbar**: 頂部導航列，包含 Logo、主題切換與使用者選單。
+  - 元件類別範例：`<div className="navbar bg-base-100 shadow-sm text-base-content">...</div>`
 - **Sidebar**: 左側功能選單，依據使用者角色顯示不同功能。
+  - 元件類別範例：`<ul className="menu bg-base-200 w-56 min-h-full">...</ul>`
 - **Main Content**: 右側主要內容區域，透過 `react-router-dom` 渲染對應頁面。
 
 ### 常用 Layout Utility
