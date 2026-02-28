@@ -360,7 +360,7 @@
           "id": "task_4_2_1",
           "phase": "phase_4",
           "title": "撰寫 docs/frontend/theme_and_styling.md 文件",
-          "status": "pending",
+          "status": "completed",
           "depends_on": [
             "task_4_1_1"
           ],

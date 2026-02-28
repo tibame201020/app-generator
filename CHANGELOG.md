@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- Task 4.2.1: Wrote docs/frontend/theme_and_styling.md, configured dracula as default theme and added Navbar/Sidebar examples.
 - Initiated project boilerplate and AI Agent protocols.
 - Task 1.4.1: Created Backend Dockerfile with multi-stage build.
 - Task 1.4.2: Created Dockerfile for Frontend (Vite + React) development with hot-reload support.
