@@ -36,3 +36,4 @@ All notable changes to this project will be documented in this file.
 - Task 4.1.1: Implemented core UI layout components (Navbar, Sidebar, MainLayout) using DaisyUI.
 - Task 4.1.2: Implemented WebSocket Client Hook and AgentContext for real-time agent message streaming.
 - Task 4.1.3: Implemented ChatMessage component with Role-based styling, Markdown rendering, and Code Syntax Highlighting.
+- Task 4.1.4: Implemented InternalLogPanel component to display real-time Agent system logs via WebSocket, separating internal thoughts from user chat.

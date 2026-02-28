@@ -1,10 +1,11 @@
 import MainLayout from './components/Layout/MainLayout';
 import { useAgentContext } from './context/AgentContext';
 import ChatMessage from './components/ChatMessage';
+import InternalLogPanel from './components/InternalLog/InternalLogPanel';
 import { AgentRole } from './types/agent';
 
 function App() {
-  const { status, lastMessage, projectId } = useAgentContext();
+  const { status, messages, projectId } = useAgentContext();
 
   const demoMessages = [
     {
@@ -45,17 +46,7 @@ function App() {
         </div>
 
         {/* Chat Area - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-base-100">
-            {/* Real-time Last Message (if any) */}
-            {lastMessage && (
-               <div className="alert alert-info shadow-lg mb-4">
-                  <div>
-                    <h3 className="font-bold">New Incoming Message!</h3>
-                    <div className="text-xs">{JSON.stringify(lastMessage)}</div>
-                  </div>
-               </div>
-            )}
-
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-base-100 mb-12 lg:mb-0">
             {/* Demo Chat Flow */}
             <div className="divider">Demo Conversation</div>
 
@@ -77,6 +68,9 @@ function App() {
             </div>
         </div>
       </div>
+
+      {/* Internal Log Panel */}
+      <InternalLogPanel messages={messages} />
     </MainLayout>
   )
 }
