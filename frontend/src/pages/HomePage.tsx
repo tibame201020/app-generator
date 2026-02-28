@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getProjects, importProject } from '../services/projectService';
 import { Project } from '../types';
 import { ImportProjectModal } from '../components/Project/ImportProjectModal';
+import { UserInvitations } from '../components/UserInvitations';
 import { Plus, LogOut } from 'lucide-react';
 import { useAuthStore } from '../stores/useAuthStore';
 
@@ -62,6 +63,9 @@ const HomePage: React.FC = () => {
 
       {loading && <div>Loading...</div>}
       {error && <div className="text-red-500">Error: {error}</div>}
+
+      <UserInvitations />
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {projects.map((project) => (
           <Link

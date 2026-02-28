@@ -208,4 +208,22 @@ public class ProjectController {
             return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
         }
     }
+
+    @PostMapping("/{id}/transfer-ownership")
+    @PreAuthorize("@projectSecurityService.isAdmin(#id)")
+    public ResponseEntity<?> transferOwnership(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal User user,
+            @RequestBody Map<String, UUID> request) {
+        UUID newOwnerId = request.get("newOwnerId");
+        if (newOwnerId == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "newOwnerId is required"));
+        }
+        try {
+            projectService.transferOwnership(id, user.getId(), newOwnerId);
+            return ResponseEntity.ok(Map.of("message", "Ownership transferred"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

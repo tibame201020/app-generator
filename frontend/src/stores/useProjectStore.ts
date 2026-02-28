@@ -4,14 +4,6 @@ import * as api from '../services/projectService';
 import { ProjectRole } from './useAuthStore';
 import axios from 'axios';
 
-interface ProjectMember {
-    id: string;
-    userId: string;
-    email: string; // Assuming we get email
-    role: ProjectRole;
-    joinedAt: string;
-}
-
 interface ProjectState {
   currentProject: Project | null;
   currentUserRole: ProjectRole | null;

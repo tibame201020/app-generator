@@ -3,8 +3,11 @@ package com.tibame.app_generator.service;
 import com.tibame.app_generator.dto.FileTreeNode;
 import com.tibame.app_generator.dto.ImportProjectRequest;
 import com.tibame.app_generator.enums.ImportStatus;
+import com.tibame.app_generator.enums.ProjectRole;
 import com.tibame.app_generator.model.Project;
+import com.tibame.app_generator.model.ProjectMember;
 import com.tibame.app_generator.model.User;
+import com.tibame.app_generator.repository.ProjectMemberRepository;
 import com.tibame.app_generator.repository.ProjectRepository;
 import com.tibame.app_generator.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +33,7 @@ public class ProjectService {
     private final UserRepository userRepository;
     private final GitService gitService;
     private final ProjectImportService projectImportService;
+    private final ProjectMemberRepository projectMemberRepository;
 
     /**
      * 建立新專案：寫入 DB 並初始化 Git Bare Repository。
@@ -59,6 +63,14 @@ public class ProjectService {
         String repoPath = gitService.initBareRepository(userId, project.getId());
         project.setGitRepoPath(repoPath);
         project = projectRepository.save(project);
+
+        // Add creator as ADMIN member
+        ProjectMember member = ProjectMember.builder()
+                .project(project)
+                .user(user)
+                .role(ProjectRole.ADMIN)
+                .build();
+        projectMemberRepository.save(member);
 
         log.info("Created project '{}' (id={}) with git repo at: {}",
                 name, project.getId(), repoPath);
@@ -98,6 +110,14 @@ public class ProjectService {
 
         // 非同步觸發 clone & analysis
         projectImportService.importProjectAsync(project.getId());
+
+        // Add creator as ADMIN member
+        ProjectMember member = ProjectMember.builder()
+                .project(project)
+                .user(user)
+                .role(ProjectRole.ADMIN)
+                .build();
+        projectMemberRepository.save(member);
 
         return project;
     }
@@ -139,5 +159,25 @@ public class ProjectService {
     public void saveFileContent(UUID projectId, String filePath, String content) throws IOException, GitAPIException {
         Project project = getProjectById(projectId);
         gitService.updateFileContent(project.getUser().getId(), projectId, filePath, content);
+    }
+
+    @Transactional
+    public void transferOwnership(UUID projectId, UUID currentOwnerId, UUID newOwnerId) {
+        Project project = getProjectById(projectId);
+
+        if (!project.getUser().getId().equals(currentOwnerId)) {
+            throw new IllegalArgumentException("Only the project owner can transfer ownership");
+        }
+
+        User newOwner = userRepository.findById(newOwnerId)
+                .orElseThrow(() -> new IllegalArgumentException("New owner not found"));
+
+        // Verify new owner is an ADMIN member
+        projectMemberRepository.findByProjectIdAndUserId(projectId, newOwnerId)
+                .filter(m -> m.getRole() == ProjectRole.ADMIN)
+                .orElseThrow(() -> new IllegalArgumentException("New owner must be an existing ADMIN of the project"));
+
+        project.setUser(newOwner);
+        projectRepository.save(project);
     }
 }
