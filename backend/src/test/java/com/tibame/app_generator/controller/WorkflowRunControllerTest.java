@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tibame.app_generator.model.WorkflowRun;
 import com.tibame.app_generator.repository.AgentTaskRepository;
 import com.tibame.app_generator.repository.WorkflowRunRepository;
+import com.tibame.app_generator.service.JwtService;
 import com.tibame.app_generator.service.WorkflowService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ public class WorkflowRunControllerTest {
     @MockBean private WorkflowService workflowService;
     @MockBean private WorkflowRunRepository workflowRunRepository;
     @MockBean private AgentTaskRepository agentTaskRepository;
+    @MockBean private JwtService jwtService;
 
     @Test
     public void testGetProjectRuns() throws Exception {

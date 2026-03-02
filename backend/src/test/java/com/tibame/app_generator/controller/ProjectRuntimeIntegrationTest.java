@@ -3,6 +3,7 @@ package com.tibame.app_generator.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tibame.app_generator.enums.ContainerStatus;
 import com.tibame.app_generator.service.DockerService;
+import com.tibame.app_generator.service.JwtService;
 import com.tibame.app_generator.service.ProjectService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class ProjectRuntimeIntegrationTest {
 
     @MockBean
     private DockerService dockerService;
+
+    @MockBean
+    private JwtService jwtService;
 
     @Autowired
     private ObjectMapper objectMapper;

@@ -44,6 +44,9 @@ public class WorkflowRetryIntegrationTest {
     @MockBean
     private LlmAgentExecutionService llmAgentExecutionService;
 
+    @MockBean
+    private com.tibame.app_generator.plugin.PluginManager pluginManager;
+
     private Project project;
     private WorkflowRun run;
 
@@ -99,6 +102,10 @@ public class WorkflowRetryIntegrationTest {
         doThrow(new RuntimeException("Fail 1"))
             .when(llmAgentExecutionService).executeTask(any(), any());
 
+        // We also need to mock pluginManager since PM goes through the plugin architecture now
+        doThrow(new com.tibame.app_generator.plugin.PluginException("Fail 1"))
+            .when(pluginManager).executeCapability(any(), any());
+
         workflowExecutor.executeRunAsync(run.getId(), project.getId());
 
         int retries = 0;
@@ -129,6 +136,7 @@ public class WorkflowRetryIntegrationTest {
 
         assertNotNull(task.getAttemptHistory(), "Attempt history should not be null");
         assertTrue(task.getAttemptHistory().size() >= 1, "Attempt history should have at least 1 entry");
-        assertEquals("Fail 1", task.getAttemptHistory().get(0).get("error"), "Error message should match");
+        String errorMsg = (String) task.getAttemptHistory().get(0).get("error");
+        assertTrue(errorMsg != null && errorMsg.contains("Fail 1"), "Error message should match: " + errorMsg);
     }
 }
