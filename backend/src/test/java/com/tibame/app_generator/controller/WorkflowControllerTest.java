@@ -2,6 +2,7 @@ package com.tibame.app_generator.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tibame.app_generator.model.Workflow;
+import com.tibame.app_generator.service.JwtService;
 import com.tibame.app_generator.service.WorkflowService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ class WorkflowControllerTest {
 
     @MockBean
     private WorkflowService workflowService;
+
+    @MockBean
+    private JwtService jwtService;
 
     @Autowired
     private ObjectMapper objectMapper;

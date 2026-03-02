@@ -11,7 +11,11 @@ import com.tibame.app_generator.repository.AgentTaskRepository;
 import com.tibame.app_generator.repository.ProjectRepository;
 import com.tibame.app_generator.repository.WorkflowRepository;
 import com.tibame.app_generator.repository.WorkflowRunRepository;
+import com.tibame.app_generator.plugin.LlmClient;
+import com.tibame.app_generator.plugin.PluginManager;
+import com.tibame.app_generator.plugin.TaskContext;
 import com.tibame.app_generator.service.llm.LlmAgentExecutionService;
+import dev.langchain4j.model.chat.ChatLanguageModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -35,6 +39,8 @@ public class WorkflowExecutor {
     private final AgentTaskService agentTaskService;
     private final AgentTaskRepository agentTaskRepository;
     private final LlmAgentExecutionService llmAgentExecutionService;
+    private final PluginManager pluginManager;
+    private final ChatLanguageModel chatLanguageModel;
 
     @Async
     public void executeRunAsync(UUID runId, UUID projectId) {
@@ -171,8 +177,37 @@ public class WorkflowExecutor {
          AgentTask task = agentTaskService.createTask(run.getProject().getId(), run, agentType, label != null ? label : agentType.name() + " Task", data);
 
          try {
-             // Execute
-             Map<String, Object> result = llmAgentExecutionService.executeTask(task, context);
+             // Execute via Plugin Manager if capability exists, else fallback
+             Map<String, Object> result;
+
+             if (pluginManager.hasCapability(agentType.name())) {
+                 log.info("Executing task {} via Plugin capability: {}", task.getId(), agentType.name());
+                 agentTaskService.startTask(task.getId());
+
+                 TaskContext taskContext = new TaskContext() {
+                     @Override
+                     public UUID getTaskId() { return task.getId(); }
+                     @Override
+                     public Map<String, Object> getInputs() { return context; }
+                     @Override
+                     public LlmClient getLlmClient() {
+                         return prompt -> chatLanguageModel.generate(prompt);
+                     }
+                     @Override
+                     public void updateProgress(int progress, String message) {
+                         agentTaskService.updateProgress(task.getId(), progress, message);
+                     }
+                 };
+
+                 result = pluginManager.executeCapability(agentType.name(), taskContext);
+
+                 String summary = (String) result.getOrDefault("summary", "Task completed via Plugin.");
+                 agentTaskService.updateContext(task.getId(), result);
+                 agentTaskService.completeTask(task.getId(), summary);
+             } else {
+                 log.info("Executing task {} via Legacy built-in execution: {}", task.getId(), agentType.name());
+                 result = llmAgentExecutionService.executeTask(task, context);
+             }
 
              // Update context for next steps
              if (result != null) {
